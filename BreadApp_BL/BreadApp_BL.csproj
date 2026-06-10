@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BreadApp_DL\BreadApp_DL.csproj" />
+  </ItemGroup>
+
 </Project>

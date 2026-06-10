@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BreadApp_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Transactions")]
     [ApiController]
     public class TransactionsControllers : ControllerBase
     {

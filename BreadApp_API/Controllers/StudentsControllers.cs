@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BreadApp_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Students")]
     [ApiController]
-    public class StudentControllers : ControllerBase
+    public class StudentsControllers : ControllerBase
     {
     }
 }

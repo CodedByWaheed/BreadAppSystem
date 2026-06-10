@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="BreadApp_API/BreadApp_API.csproj" />
+  <Project Path="BreadApp_BL/BreadApp_BL.csproj" />
+  <Project Path="BreadApp_DL/BreadApp_DL.csproj" />
 </Solution>
