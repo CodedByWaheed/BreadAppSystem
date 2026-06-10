@@ -1,0 +1,9 @@
+.vs
+x64
+*.user
+bin
+obj
+debug
+*.vcxproj.user
+Config.json
+Readme.md
