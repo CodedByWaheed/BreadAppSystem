@@ -17,7 +17,7 @@ namespace BreadApp_BL
         public int? FamilyNumber { get; set; }
         public string? Phone { get; set; }
         public string? PasswordHash { get; set; }
-        public double? WalletBalance { get; set; }
+        public Decimal? WalletBalance { get; set; }
         public string? WifeHusbNational { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
@@ -42,7 +42,7 @@ namespace BreadApp_BL
         }
         private Users(int UserID ,Guid PublicID , string NationalNumber , string FirstName , string SecondName , string LastName , 
             DateTime DateOfBirth , bool MaritalStatus , int FamilyNumber , string Phone , string PasswordHash
-            , double WalletBalance , string WifeHusbNational , bool IsActive , DateTime CreatedAt)
+            , Decimal WalletBalance , string WifeHusbNational , bool IsActive , DateTime CreatedAt)
         {
             this.UserID = UserID;
             this.PublicID = PublicID;

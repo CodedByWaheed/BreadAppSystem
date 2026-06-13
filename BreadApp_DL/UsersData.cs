@@ -12,7 +12,7 @@ namespace BreadApp_DL
         {
             public UserDTO(int? UserID , Guid? PublicDI , string? NationalNumber, string? FirstName
                 , string? SecondName, string? LastName, DateTime? DateOfBirth, bool? MaritalStatus
-                , int? FamilyNumber, string? Phone, string? PasswordHash, double? WalletBalance,
+                , int? FamilyNumber, string? Phone, string? PasswordHash, Decimal? WalletBalance,
                 string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt)
             {
                 this.UserID = UserID;
@@ -42,14 +42,17 @@ namespace BreadApp_DL
             public int? FamilyNumber { get; set; }
             public string? Phone { get; set; }
             public string? PasswordHash { get; set; }
-            public double? WalletBalance { get; set; }
+            public Decimal? WalletBalance { get; set; }
             public string? WifeHusbNational { get; set; }
             public bool? IsActive { get; set; }
             public DateTime? CreatedAt { get; set; }
         }
         public class UserInfoDTO
         {
-            public UserInfoDTO(int? UserID, Guid? PublicID, string? NationalNumber, string? FirstName, string? SecondName, string? LastName, DateTime? DateOfBirth, bool? MaritalStatus, int? FamilyNumber, string? Phone, double? WalletBalance, string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt)
+            public UserInfoDTO(int? UserID, Guid? PublicID, string? NationalNumber,
+                string? FirstName, string? SecondName, string? LastName, DateTime? DateOfBirth,
+                bool? MaritalStatus, int? FamilyNumber, string? Phone, Decimal? WalletBalance,
+                string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt)
             {
                 this.UserID = UserID;
                 this.PublicID = PublicID;
@@ -76,7 +79,7 @@ namespace BreadApp_DL
             public bool? MaritalStatus { get; set; }
             public int? FamilyNumber { get; set; }
             public string? Phone { get; set; }
-            public double? WalletBalance { get; set; }
+            public Decimal? WalletBalance { get; set; }
             public string? WifeHusbNational { get; set; }
             public bool? IsActive { get; set; }
             public DateTime? CreatedAt { get; set; }
@@ -98,6 +101,26 @@ namespace BreadApp_DL
     {
 
 
+        private static UserInfoDTO MapRow(SqlDataReader reader)
+        {
+            return new UserInfoDTO
+            (
+                reader.IsDBNull(reader.GetOrdinal("UserID")) ? null : reader.GetInt32(reader.GetOrdinal("UserID")),
+                reader.IsDBNull(reader.GetOrdinal("PublicID")) ? null : reader.GetGuid(reader.GetOrdinal("PublicID")),
+                reader.IsDBNull(reader.GetOrdinal("NationalNumber")) ? null : reader.GetString(reader.GetOrdinal("NationalNumber")),
+                reader.IsDBNull(reader.GetOrdinal("FirstName")) ? null : reader.GetString(reader.GetOrdinal("FirstName")),
+                reader.IsDBNull(reader.GetOrdinal("SecondName")) ? null : reader.GetString(reader.GetOrdinal("SecondName")),
+                reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
+                reader.IsDBNull(reader.GetOrdinal("DateOfBirth")) ? null : reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
+                reader.IsDBNull(reader.GetOrdinal("MaritalStatus")) ? null : reader.GetBoolean(reader.GetOrdinal("MaritalStatus")),
+                reader.IsDBNull(reader.GetOrdinal("FamilyNumber")) ? null : reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
+                reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? null : reader.GetString(reader.GetOrdinal("PhoneNumber")),
+                reader.IsDBNull(reader.GetOrdinal("WalletBalance")) ? null : reader.GetDecimal(reader.GetOrdinal("WalletBalance")),
+                reader.IsDBNull(reader.GetOrdinal("WifeHusb")) ? null : reader.GetString(reader.GetOrdinal("WifeHusbd")),
+                reader.IsDBNull(reader.GetOrdinal("IsActive")) ? null : reader.GetBoolean(reader.GetOrdinal("IsActive")),
+                reader.IsDBNull(reader.GetOrdinal("CreatedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+                );
+        }
 
         public static UserInfoDTO GetUserBy(
             int? UserID  = null , 
@@ -124,24 +147,7 @@ namespace BreadApp_DL
 
                     if (reader.Read())
                     {
-                        return new UserInfoDTO
-                            (
-                                reader.GetInt32(reader.GetOrdinal("UserID")),
-                                reader.GetGuid(reader.GetOrdinal("PublicID")),
-                                reader.GetString(reader.GetOrdinal("NationalNumber")),
-                                reader.GetString(reader.GetOrdinal("FirstName")),
-                                reader.GetString(reader.GetOrdinal("SecondName")),
-                                reader.GetString(reader.GetOrdinal("LastName")),
-                                reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
-                                reader.GetBoolean(reader.GetOrdinal("MaritalStatus")),
-                                reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
-                                reader.GetString(reader.GetOrdinal("Phone")),
-                                reader.GetDouble(reader.GetOrdinal("WalletBalance")),
-                                reader.GetString(reader.GetOrdinal("WifeHusbNational")),
-                                reader.GetBoolean(reader.GetOrdinal("IsActive")),
-                                reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
-
-                            );
+                        return MapRow(reader);
                     
                     }
                 }
@@ -167,23 +173,7 @@ namespace BreadApp_DL
 
                     while (reader.Read())
                     {
-                        UserList.Add(new UserInfoDTO
-                            (
-                                reader.GetInt32(reader.GetOrdinal("UserID")),
-                                reader.GetGuid(reader.GetOrdinal("PublicID")),
-                                reader.GetString(reader.GetOrdinal("NationalNumber")),
-                                reader.GetString(reader.GetOrdinal("FirstName")),
-                                reader.GetString(reader.GetOrdinal("SecondName")),
-                                reader.GetString(reader.GetOrdinal("LastName")),
-                                reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
-                                reader.GetBoolean(reader.GetOrdinal("MaritalStatus")),
-                                reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
-                                reader.GetString(reader.GetOrdinal("Phone")),
-                                reader.GetDouble(reader.GetOrdinal("WalletBalance")),
-                                reader.GetString(reader.GetOrdinal("WifeHusbNational")),
-                                reader.GetBoolean(reader.GetOrdinal("IsActive")),
-                                reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
-                            ));
+                        UserList.Add(MapRow(reader));
                     }
                 }
                
@@ -279,23 +269,7 @@ namespace BreadApp_DL
 
                     if (reader.Read())
                     {
-                        return new UserInfoDTO
-                       (
-                            reader.GetInt32(reader.GetOrdinal("UserID")),
-                            reader.GetGuid(reader.GetOrdinal("PublicID")),
-                            reader.GetString(reader.GetOrdinal("NationalNumber")),
-                            reader.GetString(reader.GetOrdinal("FirstName")),
-                            reader.GetString(reader.GetOrdinal("SecondName")),
-                            reader.GetString(reader.GetOrdinal("LastName")),
-                            reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
-                            reader.GetBoolean(reader.GetOrdinal("MaritalStatus")),
-                            reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
-                            reader.GetString(reader.GetOrdinal("Phone")),
-                            reader.GetDouble(reader.GetOrdinal("WalletBalance")),
-                            reader.GetString(reader.GetOrdinal("WifeHusbNational")),
-                            reader.GetBoolean(reader.GetOrdinal("IsActive")),
-                            reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
-                       );
+                        return MapRow(reader); 
                     }
                 }
             }
