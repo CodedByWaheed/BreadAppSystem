@@ -10,8 +10,26 @@ namespace BreadApp_DL
     {
         public class UserDTO
         {
+            public UserDTO(int UserID , Guid PublicDI , string NationalNumber, string FirstName, string SecondName, string LastName, DateTime DateOfBirth, bool MaritalStatus, int FamilyNumber, string Phone, string PasswordHash, double WalletBalance, string WifeHusbNational, bool IsActive, DateTime CreatedAt)
+            {
+                this.UserID = UserID;
+                this.PublicID = PublicDI;
+                this.NationalNumber = NationalNumber;
+                this.FirstName = FirstName;
+                this.SecondName = SecondName;
+                this.LastName = LastName;
+                this.DateOfBirth = DateOfBirth;
+                this.MaritalStatus = MaritalStatus;
+                this.FamilyNumber = FamilyNumber;
+                this.Phone = Phone;
+                this.PasswordHash = PasswordHash;
+                this.WalletBalance = WalletBalance;
+                this.WifeHusbNational = WifeHusbNational;
+                this.IsActive = IsActive;
+                this.CreatedAt = CreatedAt;
+            }
             public int UserID { get; set; }
-            public int PublicID { get; set; }
+            public Guid PublicID { get; set; }
             public string NationalNumber { get; set; }
             public string FirstName { get; set; }
             public string SecondName { get; set; }
@@ -26,117 +44,189 @@ namespace BreadApp_DL
             public bool IsActive { get; set; }
             public DateTime CreatedAt { get; set; }
         }
-
-        public class CreateUserDTO
+        public class UserInfoDTO
         {
-            public string Username { get; set; }
-            public string Password { get; set; } // hashed in service layer
-            public string FullName { get; set; }
-            public string Phone { get; set; }
-            public string Role { get; set; }
-        }
-
-        public class UpdateUserDTO
-        {
+            public UserInfoDTO(int UserID, Guid PublicDI, string NationalNumber, string FirstName, string SecondName, string LastName, DateTime DateOfBirth, bool MaritalStatus, int FamilyNumber, string Phone, double WalletBalance, string WifeHusbNational, bool IsActive, DateTime CreatedAt)
+            {
+                this.UserID = UserID;
+                this.PublicID = PublicDI;
+                this.NationalNumber = NationalNumber;
+                this.FirstName = FirstName;
+                this.SecondName = SecondName;
+                this.LastName = LastName;
+                this.DateOfBirth = DateOfBirth;
+                this.MaritalStatus = MaritalStatus;
+                this.FamilyNumber = FamilyNumber;
+                this.Phone = Phone;
+                this.WalletBalance = WalletBalance;
+                this.WifeHusbNational = WifeHusbNational;
+                this.IsActive = IsActive;
+                this.CreatedAt = CreatedAt;
+            }
             public int UserID { get; set; }
-            public string FullName { get; set; }
+            public Guid PublicID { get; set; }
+            public string NationalNumber { get; set; }
+            public string FirstName { get; set; }
+            public string SecondName { get; set; }
+            public string LastName { get; set; }
+            public DateTime DateOfBirth { get; set; }
+            public bool MaritalStatus { get; set; }
+            public int FamilyNumber { get; set; }
             public string Phone { get; set; }
-            public string Role { get; set; }
+            public double WalletBalance { get; set; }
+            public string WifeHusbNational { get; set; }
             public bool IsActive { get; set; }
+            public DateTime CreatedAt { get; set; }
         }
-
         public class LoginDTO
         {
-            public string Username { get; set; }
+            public LoginDTO( string NationalNo, string Password)
+            {
+                this.NationalNo = NationalNo;
+                this.Password = Password;
+            })
+            public string NationalNo { get; set; }
             public string Password { get; set; }
         }
 
-        public class PagedResult<T>
-        {
-            public List<T> Items { get; set; }
-            public int TotalCount { get; set; }
-        }
+        //public class CreateUserDTO
+        //{
+        //    public string Username { get; set; }
+        //    public string Password { get; set; } // hashed in service layer
+        //    public string FullName { get; set; }
+        //    public string Phone { get; set; }
+        //    public string Role { get; set; }
+        //}
+
+        //public class UpdateUserDTO
+        //{
+        //    public int UserID { get; set; }
+        //    public string FullName { get; set; }
+        //    public string Phone { get; set; }
+        //    public string Role { get; set; }
+        //    public bool IsActive { get; set; }
+        //}
+
+
+
+        //public class PagedResult<T>
+        //{
+        //    public List<T> Items { get; set; }
+        //    public int TotalCount { get; set; }
+        //}
     }
     public class UsersData
     {
 
-        private static string _connectionString ="Server=localhost;Database=BreadApp;User Id=sa;Password=123456;Encrypt=False;TrustServerCertificate=True;Connection Timeout=30;";
 
 
-        public static UserModel.UserDTO GetUserById(int userId)
+        public static UserInfoDTO GetUserBy(int? UserID , Guid? PublicID , String? NationalNumber , string?Phone , bool? IsActive )
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+          
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("sp_Users_GetById", conn))
+                using (SqlCommand cmd = new SqlCommand("sp_Users_Get", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@UserID", userId);
+                    cmd.Parameters.AddWithValue("@UserID", UserID ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@PublicID", PublicID ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@NationalNumber", NationalNumber ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Phone", Phone ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
+                    
 
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.Read())
                     {
-                        return new UserDTO
-                        {
-                        };
+                        return new UserInfoDTO
+                            (
+                                reader.GetInt32(reader.GetOrdinal("UserID")),
+                                reader.GetGuid(reader.GetOrdinal("PublicID")),
+                                reader.GetString(reader.GetOrdinal("NationalNumber")),
+                                reader.GetString(reader.GetOrdinal("FirstName")),
+                                reader.GetString(reader.GetOrdinal("SecondName")),
+                                reader.GetString(reader.GetOrdinal("LastName")),
+                                reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
+                                reader.GetBoolean(reader.GetOrdinal("MaritalStatus")),
+                                reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
+                                reader.GetString(reader.GetOrdinal("Phone")),
+                                reader.GetDouble(reader.GetOrdinal("WalletBalance")),
+                                reader.GetString(reader.GetOrdinal("WifeHusbNational")),
+                                reader.GetBoolean(reader.GetOrdinal("IsActive")),
+                                reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+
+                            );
+                    
                     }
                 }
             }
             return null;
         }
 
-        public static UserModel.PagedResult<UserModel.UserDTO> GetUsers(int pageNumber, int pageSize)
+        public static List<UserModel.UserInfoDTO> GetUsers(int pageNumber = 1, int pageSize = 10)
         {
-            List<UserDTO> users = new List<UserDTO>();
-            int totalCount = 0;
+           
+            var UserList = new List<UserInfoDTO>();
 
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("sp_Users_GetPaged", conn))
+                using (SqlCommand cmd = new SqlCommand("sp_Users_Get", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@PageNumber", pageNumber);
-                    cmd.Parameters.AddWithValue("@PageSize", pageSize);
+                    cmd.Parameters.AddWithValue("@PageNumber", pageNumber< 1 ? 1 : pageNumber);
+                    cmd.Parameters.AddWithValue("@PageRow", pageSize<1 ? 10 : pageSize);
 
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while (reader.Read())
                     {
-                        users.Add(new UserDTO
-                        {
-                       
-                        });
-                    }
-
-                    if (reader.NextResult() && reader.Read())
-                    {
-                        totalCount = (int)reader["TotalCount"];
+                        UserList.Add(new UserInfoDTO
+                            (
+                                reader.GetInt32(reader.GetOrdinal("UserID")),
+                                reader.GetGuid(reader.GetOrdinal("PublicID")),
+                                reader.GetString(reader.GetOrdinal("NationalNumber")),
+                                reader.GetString(reader.GetOrdinal("FirstName")),
+                                reader.GetString(reader.GetOrdinal("SecondName")),
+                                reader.GetString(reader.GetOrdinal("LastName")),
+                                reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
+                                reader.GetBoolean(reader.GetOrdinal("MaritalStatus")),
+                                reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
+                                reader.GetString(reader.GetOrdinal("Phone")),
+                                reader.GetDouble(reader.GetOrdinal("WalletBalance")),
+                                reader.GetString(reader.GetOrdinal("WifeHusbNational")),
+                                reader.GetBoolean(reader.GetOrdinal("IsActive")),
+                                reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+                            ));
                     }
                 }
+               
             }
 
-            return new PagedResult<UserDTO>
-            {
-                Items = users,
-                TotalCount = totalCount
-            };
+            return UserList;
         }
 
-        public static int CreateUser(UserModel.CreateUserDTO user)
+        public static int CreateUser(UserModel.UserDTO user)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Create", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Username", user.Username);
-                    cmd.Parameters.AddWithValue("@Password", user.Password);
-                    cmd.Parameters.AddWithValue("@FullName", user.FullName);
+                    cmd.Parameters.AddWithValue("@NationalNumber", user.NationalNumber ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FirstName", user.FirstName ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@SecondName", user.SecondName ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@LastName", user.LastName ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@DateOfBirth", user.DateOfBirth);
+                    cmd.Parameters.AddWithValue("@MaritalStatus", user.MaritalStatus);
+                    cmd.Parameters.AddWithValue("@FamilyNumber", user.FamilyNumber < 1 ? (object)DBNull.Value : user.FamilyNumber);
                     cmd.Parameters.AddWithValue("@Phone", user.Phone);
-                    cmd.Parameters.AddWithValue("@Role", user.Role);
+                    cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash );
+                    cmd.Parameters.AddWithValue("@WifeHusbNational", user.WifeHusbNational );
+                    cmd.Parameters.AddWithValue("@IsActive", true);
 
                     conn.Open();
                     return Convert.ToInt32(cmd.ExecuteScalar());
@@ -144,9 +234,9 @@ namespace BreadApp_DL
             }
         }
 
-        public static bool UpdateUser(UserModel.UpdateUserDTO user)
+        public static bool UpdateUser(UserModel.UserDTO user)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Update", conn))
                 {
@@ -178,33 +268,6 @@ namespace BreadApp_DL
                 }
             }
         }
-
-        public static UserDTO GetByUsername(string username)
-        {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("sp_Users_GetByUsername", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Username", username);
-
-                    conn.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    if (reader.Read())
-                    {
-                        return new UserDTO
-                        {
-                           
-                        };
-                    }
-                }
-            }
-            return null;
-        }
-
-
-
         public static UserModel.UserDTO Authenticate(UserModel.LoginDTO login)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
