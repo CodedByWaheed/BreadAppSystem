@@ -117,10 +117,10 @@ namespace BreadApp_BL
             return false;
 
         }
-        public bool DeleteUser()
+        public bool DeleteUser(bool HardDelete = false)
         {
             if(this.UserID.HasValue)
-                return UsersData.DeleteUser(this.UserID.Value);
+                return UsersData.DeleteUser(this.UserID.Value, HardDelete);
 
             return false;
         }
