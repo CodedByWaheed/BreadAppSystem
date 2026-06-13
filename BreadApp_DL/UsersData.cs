@@ -241,13 +241,14 @@ namespace BreadApp_DL
             }
         }
 
-        public static bool DeleteUser(int UserID , bool  HardDelete = false)
+        public static bool DeleteUser(int userId)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Delete", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UserID", userId);
 
                     cmd.Parameters.AddWithValue("@UserID", UserID);
                     cmd.Parameters.AddWithValue("@HardDelete", HardDelete);
