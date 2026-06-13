@@ -22,6 +22,7 @@ namespace BreadApp_BL
         public bool? IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
 
+       
         public Users()
         {
             UserID = null;
@@ -62,7 +63,7 @@ namespace BreadApp_BL
 
         private bool _AddUser()
         {
-            int? UserID = UsersData.CreateUser(new UserModel.UserDTO
+           this.UserID = UsersData.CreateUser(new UserModel.UserDTO
             (
                 this.UserID,
                 this.PublicID,
@@ -80,7 +81,7 @@ namespace BreadApp_BL
                 this.IsActive,
                 this.CreatedAt
             ));
-            return UserID.Value > 0;
+            return UserID!.Value > 0;
         }
         private bool _UpdateUser()
         {
@@ -159,5 +160,31 @@ namespace BreadApp_BL
                 PsswordHash
             ));
         }
-}
+
+        public static Users? Find(int UserID)
+        {
+            var dto = UsersData.GetUserBy(UserID:UserID);
+
+           
+            if (dto == null) return null;
+
+            return new Users(
+                dto.UserID!.Value , 
+                dto.PublicID!.Value,
+                dto.NationalNumber?? "",
+                dto.FirstName??"" , 
+                dto.SecondName ?? "",
+                dto.LastName ?? "" ,
+                dto.DateOfBirth!.Value,
+                dto.MaritalStatus!.Value ,
+                dto.FamilyNumber!.Value ,
+                dto.Phone ?? "" , 
+                "",
+                dto.WalletBalance!.Value ,
+                dto.WifeHusbNational ?? "",
+                dto.IsActive!.Value,
+                dto.CreatedAt!.Value
+            );
+        }
+    }
 }

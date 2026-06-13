@@ -99,7 +99,12 @@ namespace BreadApp_DL
 
 
 
-        public static UserInfoDTO GetUserBy(int? UserID , Guid? PublicID , String? NationalNumber , string?Phone , bool? IsActive )
+        public static UserInfoDTO GetUserBy(
+            int? UserID  = null , 
+            Guid? PublicID = null ,
+            String? NationalNumber = null, 
+            string? Phone = null,
+            bool? IsActive = null)
         {
           
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
