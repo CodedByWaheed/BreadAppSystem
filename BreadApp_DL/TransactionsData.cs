@@ -9,7 +9,7 @@ namespace BreadApp_DL
         {
             public TransactionDTO(int? TransactionID, Guid? PublicID, int? SenderUserID,
                 int? ReceiverUserID, int? BreadPointID, int? QRCodeID,
-                decimal? Amount, string? TransactionType, string? Status,
+                decimal? Amount, int? TransactionType, int? Status,
                 DateTime? CreatedAt, DateTime? ConfirmedAt, string? Notes)
             {
                 this.TransactionID = TransactionID;
@@ -33,8 +33,8 @@ namespace BreadApp_DL
             public int? BreadPointID { get; set; }
             public int? QRCodeID { get; set; }
             public decimal? Amount { get; set; }
-            public string? TransactionType { get; set; }
-            public string? Status { get; set; }
+            public int? TransactionType { get; set; }
+            public int? Status { get; set; }
             public DateTime? CreatedAt { get; set; }
             public DateTime? ConfirmedAt { get; set; }
             public string? Notes { get; set; }
@@ -55,8 +55,8 @@ namespace BreadApp_DL
                 reader.IsDBNull(reader.GetOrdinal("BreadPointID")) ? null : reader.GetInt32(reader.GetOrdinal("BreadPointID")),
                 reader.IsDBNull(reader.GetOrdinal("QRCodeID")) ? null : reader.GetInt32(reader.GetOrdinal("QRCodeID")),
                 reader.IsDBNull(reader.GetOrdinal("Amount")) ? null : reader.GetDecimal(reader.GetOrdinal("Amount")),
-                reader.IsDBNull(reader.GetOrdinal("TransactionType")) ? null : reader.GetString(reader.GetOrdinal("TransactionType")),
-                reader.IsDBNull(reader.GetOrdinal("Status")) ? null : reader.GetString(reader.GetOrdinal("Status")),
+                reader.IsDBNull(reader.GetOrdinal("TransactionType")) ? null : reader.GetInt32(reader.GetOrdinal("TransactionType")),
+                reader.IsDBNull(reader.GetOrdinal("Status")) ? null : reader.GetInt32(reader.GetOrdinal("Status")),
                 reader.IsDBNull(reader.GetOrdinal("CreatedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                 reader.IsDBNull(reader.GetOrdinal("ConfirmedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ConfirmedAt")),
                 reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString(reader.GetOrdinal("Notes"))
@@ -174,7 +174,7 @@ namespace BreadApp_DL
         }
 
       
-        public static bool UpdateTransaction(int TransactionID, string? Status = null, string? Notes = null)
+        public static bool UpdateTransaction(int TransactionID, int? Status = null, string? Notes = null)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {

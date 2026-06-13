@@ -8,7 +8,7 @@ namespace BreadApp_DL
         public class QRCodeDTO
         {
             public QRCodeDTO(int? QRCodeID, Guid? PublicID, int? UserID, int? BreadPointID,
-                int? PortionCount, string? Status, string? Token,
+                int? PortionCount, int? Status, string? Token,
                 DateTime? CreatedAt, DateTime? ExpiresAt, DateTime? ScannedAt, bool? IsScanned)
             {
                 this.QRCodeID = QRCodeID;
@@ -29,7 +29,7 @@ namespace BreadApp_DL
             public int? UserID { get; set; }
             public int? BreadPointID { get; set; }
             public int? PortionCount { get; set; }
-            public string? Status { get; set; }
+            public int? Status { get; set; }
             public string? Token { get; set; }
             public DateTime? CreatedAt { get; set; }
             public DateTime? ExpiresAt { get; set; }
@@ -73,7 +73,7 @@ namespace BreadApp_DL
                 reader.IsDBNull(reader.GetOrdinal("UserID")) ? null : reader.GetInt32(reader.GetOrdinal("UserID")),
                 reader.IsDBNull(reader.GetOrdinal("BreadPointID")) ? null : reader.GetInt32(reader.GetOrdinal("BreadPointID")),
                 reader.IsDBNull(reader.GetOrdinal("PortionCount")) ? null : reader.GetInt32(reader.GetOrdinal("PortionCount")),
-                reader.IsDBNull(reader.GetOrdinal("Status")) ? null : reader.GetString(reader.GetOrdinal("Status")),
+                reader.IsDBNull(reader.GetOrdinal("Status")) ? null : reader.GetInt32(reader.GetOrdinal("Status")),
                 reader.IsDBNull(reader.GetOrdinal("Token")) ? null : reader.GetString(reader.GetOrdinal("Token")),
                 reader.IsDBNull(reader.GetOrdinal("CreatedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                 reader.IsDBNull(reader.GetOrdinal("ExpiresAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ExpiresAt")),

@@ -4,6 +4,7 @@ namespace BreadApp_BL
 {
     public class QRCodes
     {
+        public enum enStatus { Active = 1, Scanned = 2 , Expired = 3, Cancelled = 4 }
         enum enMode { Add = 1, Update = 2 }
         enMode _Mode;
 
@@ -12,7 +13,7 @@ namespace BreadApp_BL
         public int? UserID { get; set; }
         public int? BreadPointID { get; set; }
         public int? PortionCount { get; set; }
-        public string? Status { get; set; }
+        public enStatus? Status { get; set; }
         public string? Token { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ExpiresAt { get; set; }
@@ -26,7 +27,7 @@ namespace BreadApp_BL
             UserID = null;
             BreadPointID = null;
             PortionCount = 1;
-            Status = "Active";
+            Status = enStatus.Active;
             Token = null;
             CreatedAt = null;
             ExpiresAt = null;
@@ -36,7 +37,7 @@ namespace BreadApp_BL
         }
 
         private QRCodes(int QRCodeID, Guid PublicID, int UserID, int BreadPointID,
-            int PortionCount, string Status, string Token,
+            int PortionCount, enStatus? Status, string Token,
             DateTime CreatedAt, DateTime ExpiresAt, DateTime? ScannedAt, bool IsScanned)
         {
             this.QRCodeID = QRCodeID;
@@ -61,7 +62,7 @@ namespace BreadApp_BL
                 this.UserID,
                 this.BreadPointID,
                 this.PortionCount,
-                this.Status,
+                (int)this.Status,
                 this.Token,
                 this.CreatedAt,
                 this.ExpiresAt,
@@ -164,14 +165,34 @@ namespace BreadApp_BL
         {
             var dto = QRCodesData.GetQRCodeBy(QRCodeID: QRCodeID);
             if (dto == null) return null;
+            enStatus Status;
+            switch (dto.Status)
+            {
+                case 1:
+                    Status = enStatus.Active;
+                    break;
+                case 2:
+                    Status = enStatus.Scanned;
+                    break;
+                case 3:
+                    Status = enStatus.Expired;
+                    break;
+                case 4:
+                    Status = enStatus.Cancelled;
+                    break;
+                default:
+                    Status = enStatus.Cancelled;
+                    break;
 
+
+            }
             return new QRCodes(
                 dto.QRCodeID!.Value,
                 dto.PublicID!.Value,
                 dto.UserID!.Value,
                 dto.BreadPointID!.Value,
                 dto.PortionCount!.Value,
-                dto.Status!,
+                Status,
                 dto.Token!,
                 dto.CreatedAt!.Value,
                 dto.ExpiresAt!.Value,

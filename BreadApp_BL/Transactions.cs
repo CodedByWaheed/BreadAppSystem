@@ -1,9 +1,13 @@
 ﻿using BreadApp_DL;
+using System.Net.Http.Headers;
+using System.Transactions;
 
 namespace BreadApp_BL
 {
     public class Transactions
     {
+        public enum enStatus { Pending = 1 , Confirmed = 2 , Canceled = 3 }
+        public enum enTransactionType { BreadBuying = 1 , Payment = 2 , Refund =3 , TopApp = 4 }
         enum enMode { Add = 1, Update = 2 }
         enMode _Mode;
 
@@ -14,8 +18,8 @@ namespace BreadApp_BL
         public int? BreadPointID { get; set; }
         public int? QRCodeID { get; set; }
         public decimal? Amount { get; set; }
-        public string? TransactionType { get; set; }
-        public string? Status { get; set; }
+        public enTransactionType? TransactionType { get; set; }
+        public enStatus? Status { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ConfirmedAt { get; set; }
         public string? Notes { get; set; }
@@ -30,7 +34,7 @@ namespace BreadApp_BL
             QRCodeID = null;
             Amount = null;
             TransactionType = null;
-            Status = "Pending";
+            Status = enStatus.Pending;
             CreatedAt = null;
             ConfirmedAt = null;
             Notes = null;
@@ -39,7 +43,7 @@ namespace BreadApp_BL
 
         private Transactions(int TransactionID, Guid PublicID, int SenderUserID,
             int? ReceiverUserID, int? BreadPointID, int? QRCodeID,
-            decimal Amount, string TransactionType, string Status,
+            decimal Amount, enTransactionType? TransactionType, enStatus? Status,
             DateTime CreatedAt, DateTime? ConfirmedAt, string? Notes)
         {
             this.TransactionID = TransactionID;
@@ -67,8 +71,8 @@ namespace BreadApp_BL
                 this.BreadPointID,
                 this.QRCodeID,
                 this.Amount,
-                this.TransactionType,
-                this.Status,
+                (int)this.TransactionType,
+                (int)this.Status,
                 this.CreatedAt,
                 this.ConfirmedAt,
                 this.Notes
@@ -79,7 +83,43 @@ namespace BreadApp_BL
         {
             var dto = TransactionsData.GetTransactionBy(TransactionID: TransactionID);
             if (dto == null) return null;
+            enStatus Status;
+            switch (dto.Status)
+            {
+                case 1:
+                    Status = enStatus.Pending;
+                    break;
+                case 2:
+                    Status = enStatus.Confirmed;
+                    break;
+                case 3:
+                    Status = enStatus.Canceled;
+                    break;
+                default:
+                    Status = enStatus.Canceled;
+                    break;
 
+
+            }
+            enTransactionType TransactionType;
+            switch (dto.TransactionType)
+            {
+                case 1:
+                    TransactionType = enTransactionType.BreadBuying;
+                    break;
+                case 2:
+                    TransactionType = enTransactionType.Payment;
+                    break;
+                case 3:
+                    TransactionType = enTransactionType.Refund;
+                    break;
+                case 4:
+                    TransactionType = enTransactionType.TopApp;
+                    break;
+                default:
+                    TransactionType = enTransactionType.TopApp;
+                    break;
+            }
             return new Transactions(
                 dto.TransactionID!.Value,
                 dto.PublicID!.Value,
@@ -88,8 +128,8 @@ namespace BreadApp_BL
                 dto.BreadPointID,
                 dto.QRCodeID,
                 dto.Amount!.Value,
-                dto.TransactionType!,
-                dto.Status!,
+                TransactionType,
+                Status,
                 dto.CreatedAt!.Value,
                 dto.ConfirmedAt,
                 dto.Notes
@@ -106,7 +146,7 @@ namespace BreadApp_BL
         {
             return TransactionsData.UpdateTransaction(
                 this.TransactionID!.Value,
-                this.Status,
+                (int)this.Status,
                 this.Notes
             );
         }
@@ -130,6 +170,14 @@ namespace BreadApp_BL
             if (this.TransactionID.HasValue)
                 return TransactionsData.ConfirmTransaction(this.TransactionID.Value);
 
+            return false;
+        }
+        public static bool Confirm(int? TransactionID)
+        {
+            if (TransactionID!.Value < 1)
+                return false;
+            if (TransactionID.HasValue)
+                return TransactionsData.ConfirmTransaction(TransactionID!.Value);
             return false;
         }
 
