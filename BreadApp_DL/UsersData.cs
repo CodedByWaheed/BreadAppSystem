@@ -10,10 +10,10 @@ namespace BreadApp_DL
     {
         public class UserDTO
         {
-            public UserDTO(int UserID , Guid PublicDI , string NationalNumber, string FirstName
-                , string SecondName, string LastName, DateTime DateOfBirth, bool MaritalStatus
-                , int FamilyNumber, string Phone, string PasswordHash, double WalletBalance,
-                string WifeHusbNational, bool IsActive, DateTime CreatedAt)
+            public UserDTO(int? UserID , Guid? PublicDI , string? NationalNumber, string? FirstName
+                , string? SecondName, string? LastName, DateTime? DateOfBirth, bool? MaritalStatus
+                , int? FamilyNumber, string? Phone, string? PasswordHash, double? WalletBalance,
+                string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt)
             {
                 this.UserID = UserID;
                 this.PublicID = PublicDI;
@@ -49,10 +49,10 @@ namespace BreadApp_DL
         }
         public class UserInfoDTO
         {
-            public UserInfoDTO(int UserID, Guid PublicDI, string NationalNumber, string FirstName, string SecondName, string LastName, DateTime DateOfBirth, bool MaritalStatus, int FamilyNumber, string Phone, double WalletBalance, string WifeHusbNational, bool IsActive, DateTime CreatedAt)
+            public UserInfoDTO(int? UserID, Guid? PublicID, string? NationalNumber, string? FirstName, string? SecondName, string? LastName, DateTime? DateOfBirth, bool? MaritalStatus, int? FamilyNumber, string? Phone, double? WalletBalance, string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt)
             {
                 this.UserID = UserID;
-                this.PublicID = PublicDI;
+                this.PublicID = PublicID;
                 this.NationalNumber = NationalNumber;
                 this.FirstName = FirstName;
                 this.SecondName = SecondName;
@@ -83,7 +83,7 @@ namespace BreadApp_DL
         }
         public class LoginDTO
         {
-            public LoginDTO( string NationalNo, string Password)
+            public LoginDTO( string? NationalNo, string? Password)
             {
                 this.NationalNo = NationalNo;
                 this.Password = Password;
@@ -211,6 +211,7 @@ namespace BreadApp_DL
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
+            return -1;
         }
 
         public static bool UpdateUser(UserModel.UserDTO user)
@@ -240,7 +241,7 @@ namespace BreadApp_DL
             }
         }
 
-        public static bool DeleteUser(int UserID , bool HardDelete = false)
+        public static bool DeleteUser(int UserID , bool  HardDelete = false)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
