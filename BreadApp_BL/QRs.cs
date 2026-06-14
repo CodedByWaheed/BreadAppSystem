@@ -165,34 +165,14 @@ namespace BreadApp_BL
         {
             var dto = QRCodesData.GetQRCodeBy(QRCodeID: QRCodeID);
             if (dto == null) return null;
-            enStatus Status;
-            switch (dto.Status)
-            {
-                case 1:
-                    Status = enStatus.Active;
-                    break;
-                case 2:
-                    Status = enStatus.Scanned;
-                    break;
-                case 3:
-                    Status = enStatus.Expired;
-                    break;
-                case 4:
-                    Status = enStatus.Cancelled;
-                    break;
-                default:
-                    Status = enStatus.Cancelled;
-                    break;
-
-
-            }
+           
             return new QRCodes(
                 dto.QRCodeID!.Value,
                 dto.PublicID!.Value,
                 dto.UserID!.Value,
                 dto.BreadPointID!.Value,
                 dto.PortionCount!.Value,
-                Status,
+                (enStatus)dto.Status,
                 dto.Token!,
                 dto.CreatedAt!.Value,
                 dto.ExpiresAt!.Value,

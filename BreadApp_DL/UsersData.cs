@@ -10,13 +10,13 @@ namespace BreadApp_DL
     {
         public class UserDTO
         {
-            public UserDTO(int? UserID , Guid? PublicDI , string? NationalNumber, string? FirstName
+          public UserDTO(int? UserID , Guid? PublicID , string? NationalNumber, string? FirstName
                 , string? SecondName, string? LastName, DateTime? DateOfBirth, bool? MaritalStatus
                 , int? FamilyNumber, string? Phone, string? PasswordHash, Decimal? WalletBalance,
                 string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt)
             {
                 this.UserID = UserID;
-                this.PublicID = PublicDI;
+                this.PublicID = PublicID;
                 this.NationalNumber = NationalNumber;
                 this.FirstName = FirstName;
                 this.SecondName = SecondName;
@@ -116,7 +116,7 @@ namespace BreadApp_DL
                 reader.IsDBNull(reader.GetOrdinal("FamilyNumber")) ? null : reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
                 reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? null : reader.GetString(reader.GetOrdinal("PhoneNumber")),
                 reader.IsDBNull(reader.GetOrdinal("WalletBalance")) ? null : reader.GetDecimal(reader.GetOrdinal("WalletBalance")),
-                reader.IsDBNull(reader.GetOrdinal("WifeHusb")) ? null : reader.GetString(reader.GetOrdinal("WifeHusbd")),
+                reader.IsDBNull(reader.GetOrdinal("WifeHusb")) ? null : reader.GetString(reader.GetOrdinal("WifeHusb")),
                 reader.IsDBNull(reader.GetOrdinal("IsActive")) ? null : reader.GetBoolean(reader.GetOrdinal("IsActive")),
                 reader.IsDBNull(reader.GetOrdinal("CreatedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
                 );
@@ -138,7 +138,7 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@UserID", UserID ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@PublicID", PublicID ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@NationalNumber", NationalNumber ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Phone", Phone ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@PhoneNumber", Phone ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
                     
 
@@ -197,16 +197,21 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@DateOfBirth", user.DateOfBirth);
                     cmd.Parameters.AddWithValue("@MaritalStatus", user.MaritalStatus);
                     cmd.Parameters.AddWithValue("@FamilyNumber", user.FamilyNumber < 1 ? (object)DBNull.Value : user.FamilyNumber);
-                    cmd.Parameters.AddWithValue("@Phone", user.Phone);
+                    cmd.Parameters.AddWithValue("@PhoneNumber", user.Phone);
                     cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash );
-                    cmd.Parameters.AddWithValue("@WifeHusbNational", user.WifeHusbNational );
+                    cmd.Parameters.AddWithValue("@WifeHusb", user.WifeHusbNational );
                     cmd.Parameters.AddWithValue("@IsActive", true);
-
+                    var outputParam = new SqlParameter("@NewUserID", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(outputParam);  
                     conn.Open();
-                    return Convert.ToInt32(cmd.ExecuteScalar());
+                    cmd.ExecuteNonQuery();
+                    return (int)outputParam.Value;
                 }
             }
-            return -1;
+          
         }
 
         public static bool UpdateUser(UserModel.UserDTO user)

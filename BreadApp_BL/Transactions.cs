@@ -83,43 +83,7 @@ namespace BreadApp_BL
         {
             var dto = TransactionsData.GetTransactionBy(TransactionID: TransactionID);
             if (dto == null) return null;
-            enStatus Status;
-            switch (dto.Status)
-            {
-                case 1:
-                    Status = enStatus.Pending;
-                    break;
-                case 2:
-                    Status = enStatus.Confirmed;
-                    break;
-                case 3:
-                    Status = enStatus.Canceled;
-                    break;
-                default:
-                    Status = enStatus.Canceled;
-                    break;
-
-
-            }
-            enTransactionType TransactionType;
-            switch (dto.TransactionType)
-            {
-                case 1:
-                    TransactionType = enTransactionType.BreadBuying;
-                    break;
-                case 2:
-                    TransactionType = enTransactionType.Payment;
-                    break;
-                case 3:
-                    TransactionType = enTransactionType.Refund;
-                    break;
-                case 4:
-                    TransactionType = enTransactionType.TopApp;
-                    break;
-                default:
-                    TransactionType = enTransactionType.TopApp;
-                    break;
-            }
+           
             return new Transactions(
                 dto.TransactionID!.Value,
                 dto.PublicID!.Value,
@@ -128,8 +92,8 @@ namespace BreadApp_BL
                 dto.BreadPointID,
                 dto.QRCodeID,
                 dto.Amount!.Value,
-                TransactionType,
-                Status,
+                (enTransactionType)dto.TransactionType,
+                (enStatus)dto.Status,
                 dto.CreatedAt!.Value,
                 dto.ConfirmedAt,
                 dto.Notes

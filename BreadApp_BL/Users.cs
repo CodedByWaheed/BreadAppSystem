@@ -4,7 +4,7 @@ namespace BreadApp_BL
 {
     public class Users
     {
-        enum enMode { Add = 1 , Update =2 }
+        public enum enMode { Add = 1 , Update =2 }
         enMode _Mode;
         public int? UserID { get; set; }
         public Guid? PublicID { get; set; }
@@ -23,7 +23,7 @@ namespace BreadApp_BL
         public DateTime? CreatedAt { get; set; }
 
        
-        public Users()
+        public Users ()
         {
             UserID = null;
             PublicID = null;
@@ -39,26 +39,44 @@ namespace BreadApp_BL
             WifeHusbNational = null;
             IsActive = false;
             CreatedAt = null;
+            _Mode = enMode.Add;
         }
-        private Users(int UserID ,Guid PublicID , string NationalNumber , string FirstName , string SecondName , string LastName , 
-            DateTime DateOfBirth , bool MaritalStatus , int FamilyNumber , string Phone , string PasswordHash
-            , Decimal WalletBalance , string WifeHusbNational , bool IsActive , DateTime CreatedAt)
+        public Users(UserModel.UserDTO UserDTO ,enMode Mode = enMode.Update )
         {
-            this.UserID = UserID;
-            this.PublicID = PublicID;
-            this.NationalNumber = NationalNumber;
-            this.FirstName = FirstName;
-            this.SecondName = SecondName;
-            this.LastName = LastName;
-            this.DateOfBirth = DateOfBirth;
-            this.MaritalStatus = MaritalStatus;
-            this.FamilyNumber = FamilyNumber;
-            this.Phone = Phone;
-            this.PasswordHash = PasswordHash;
-            this.WalletBalance = WalletBalance;
-            this.WifeHusbNational = WifeHusbNational;
-            this.IsActive = IsActive;
-            this.CreatedAt = CreatedAt;
+            this.UserID = UserDTO.UserID;
+            this.PublicID = UserDTO.PublicID;
+            this.NationalNumber = UserDTO.NationalNumber;
+            this.FirstName = UserDTO.FirstName;
+            this.SecondName = UserDTO.SecondName;
+            this.LastName = UserDTO.LastName;
+            this.DateOfBirth = UserDTO.DateOfBirth;
+            this.MaritalStatus = UserDTO.MaritalStatus;
+            this.FamilyNumber = UserDTO.FamilyNumber;
+            this.Phone = UserDTO.Phone;
+            this.WalletBalance = UserDTO.WalletBalance;
+            this.PasswordHash = UserDTO.PasswordHash;
+            this.WifeHusbNational = UserDTO.WifeHusbNational;
+            this.IsActive = UserDTO.IsActive;
+            this.CreatedAt = UserDTO.CreatedAt;
+            this._Mode = Mode;
+        }
+        private Users(UserModel.UserInfoDTO UserDTO, enMode Mode = enMode.Update)
+        {
+            this.UserID = UserDTO.UserID;
+            this.PublicID = UserDTO.PublicID;
+            this.NationalNumber = UserDTO.NationalNumber;
+            this.FirstName = UserDTO.FirstName;
+            this.SecondName = UserDTO.SecondName;
+            this.LastName = UserDTO.LastName;
+            this.DateOfBirth = UserDTO.DateOfBirth;
+            this.MaritalStatus = UserDTO.MaritalStatus;
+            this.FamilyNumber = UserDTO.FamilyNumber;
+            this.Phone = UserDTO.Phone;
+            this.WalletBalance = UserDTO.WalletBalance;
+            this.WifeHusbNational = UserDTO.WifeHusbNational;
+            this.IsActive = UserDTO.IsActive;
+            this.CreatedAt = UserDTO.CreatedAt;
+            this._Mode = Mode;
         }
 
         private bool _AddUser()
@@ -81,7 +99,7 @@ namespace BreadApp_BL
                 this.IsActive,
                 this.CreatedAt
             ));
-            return UserID!.Value > 0;
+            return UserID.Value > 0;
         }
         private bool _UpdateUser()
         {
@@ -129,30 +147,41 @@ namespace BreadApp_BL
         {
             return UsersData.GetUsers(PageNumber, PageSize);
         }
-        public static UserModel.UserInfoDTO GetUserBy(int? UserID, Guid? PublicID, String? NationalNumber, string? Phone, bool? IsActive)
+        public static UserModel.UserInfoDTO? GetUserBy(int? UserID, Guid? PublicID, String? NationalNumber, string? Phone, bool? IsActive)
         {
-            return UsersData.GetUserBy(UserID, PublicID, NationalNumber, Phone, IsActive);
+            if(UserID.HasValue)
+                return UsersData.GetUserBy(UserID : UserID);
+            if(PublicID.HasValue)
+                return UsersData.GetUserBy(PublicID: PublicID);
+            if (!string.IsNullOrEmpty(NationalNumber))
+                return UsersData.GetUserBy(NationalNumber: NationalNumber);
+            if (!string.IsNullOrEmpty(Phone))
+                return UsersData.GetUserBy(Phone: Phone);
+            if (IsActive.HasValue)
+                return UsersData.GetUserBy(IsActive: IsActive);
+            return null;
+
         }
-        public static UserModel.UserInfoDTO GetUserByID(int? UserID)
-        {
-            return UsersData.GetUserBy(UserID, null, null, null, null);
-        }
-        public static UserModel.UserInfoDTO GetUserByPublicID( Guid? PublicID)
-        {
-            return UsersData.GetUserBy(null, PublicID, null, null, null);
-        }
-        public static UserModel.UserInfoDTO GetUserByNationalNumber( String? NationalNumber)
-        {
-            return UsersData.GetUserBy(null, null, NationalNumber, null, null);
-        }
-        public static UserModel.UserInfoDTO GetUserByPhone(string? Phone)
-        {
-            return UsersData.GetUserBy(null, null, null, Phone, null);
-        }
-        public static UserModel.UserInfoDTO GetUserByActiveStatus(bool? IsActive)
-        {
-            return UsersData.GetUserBy(null, null, null, null, IsActive);
-        }
+        //public static UserModel.UserInfoDTO GetUserByID(int? UserID)
+        //{
+        //    return UsersData.GetUserBy(UserID, null, null, null, null);
+        //}
+        //public static UserModel.UserInfoDTO GetUserByPublicID( Guid? PublicID)
+        //{
+        //    return UsersData.GetUserBy(null, PublicID, null, null, null);
+        //}
+        //public static UserModel.UserInfoDTO GetUserByNationalNumber( string? NationalNumber)
+        //{
+        //    return UsersData.GetUserBy(null, null, NationalNumber, null, null);
+        //}
+        //public static UserModel.UserInfoDTO GetUserByPhone(string? Phone)
+        //{
+        //    return UsersData.GetUserBy(null, null, null, Phone, null);
+        //}
+        //public static UserModel.UserInfoDTO GetUserByActiveStatus(bool? IsActive)
+        //{
+        //    return UsersData.GetUserBy(null, null, null, null, IsActive);
+        //}
         public static UserModel.UserInfoDTO Login(string? NationalNumber, string? PsswordHash)
         {
             return UsersData.Authenticate(new UserModel.LoginDTO(
@@ -168,23 +197,7 @@ namespace BreadApp_BL
            
             if (dto == null) return null;
 
-            return new Users(
-                dto.UserID!.Value , 
-                dto.PublicID!.Value,
-                dto.NationalNumber?? "",
-                dto.FirstName??"" , 
-                dto.SecondName ?? "",
-                dto.LastName ?? "" ,
-                dto.DateOfBirth!.Value,
-                dto.MaritalStatus!.Value ,
-                dto.FamilyNumber!.Value ,
-                dto.Phone ?? "" , 
-                "",
-                dto.WalletBalance!.Value ,
-                dto.WifeHusbNational ?? "",
-                dto.IsActive!.Value,
-                dto.CreatedAt!.Value
-            );
+            return new Users(dto);
         }
     }
 }
