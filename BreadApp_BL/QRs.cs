@@ -79,7 +79,7 @@ namespace BreadApp_BL
                 this.UserID,
                 this.BreadPointID,
                 this.PortionCount,
-                (int)this.Status,
+                this.Status.HasValue ? (int?)this.Status.Value : null,
                 this.Token,
                 this.CreatedAt,
                 this.ExpiresAt,
@@ -103,7 +103,7 @@ namespace BreadApp_BL
             if (!this.UserID.HasValue || !this.BreadPointID.HasValue)
                 return false;
 
-            this.BreadPointID = QRCodesData.CreateQRCode(_ToCreationDTO());
+            this.QRCodeID = QRCodesData.CreateQRCode(_ToCreationDTO());
                 
 
             if (this.BreadPointID.HasValue)
@@ -123,7 +123,7 @@ namespace BreadApp_BL
                 case enMode.Add:
                     if (_AddQRCode())
                     {
-                        _Mode = enMode.Add;
+                        _Mode = enMode.Update;
                         return true;
                     }
                     return false;

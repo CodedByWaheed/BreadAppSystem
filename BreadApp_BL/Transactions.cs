@@ -85,8 +85,8 @@ namespace BreadApp_BL
                 this.BreadPointID,
                 this.QRCodeID,
                 this.Amount,
-                (int)this.TransactionType,
-                (int)this.Status,
+                this.TransactionType.HasValue ? (int)this.TransactionType : null,
+                this.Status.HasValue ? (int)this.Status : null,
                 this.CreatedAt,
                 this.ConfirmedAt,
                 this.Notes
@@ -142,14 +142,7 @@ namespace BreadApp_BL
 
             return false;
         }
-        public static bool Confirm(int? TransactionID)
-        {
-            if (TransactionID!.Value < 1)
-                return false;
-            if (TransactionID.HasValue)
-                return TransactionsData.ConfirmTransaction(TransactionID!.Value);
-            return false;
-        }
+      
 
         public bool Delete(bool HardDelete = false)
         {
