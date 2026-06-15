@@ -2,10 +2,10 @@
 
 namespace BreadApp_BL
 {
-    public class QRCodes
+    public class QRs
     {
         public enum enStatus { Active = 1, Scanned = 2 , Expired = 3, Cancelled = 4 }
-        enum enMode { Add = 1, Update = 2 }
+        public enum enMode { Add = 1, Update = 2 }
         enMode _Mode;
 
         public int? QRCodeID { get; set; }
@@ -20,7 +20,7 @@ namespace BreadApp_BL
         public DateTime? ScannedAt { get; set; }
         public bool? IsScanned { get; set; }
 
-        public QRCodes()
+        public QRs()
         {
             QRCodeID = null;
             PublicID = null;
@@ -36,24 +36,41 @@ namespace BreadApp_BL
             _Mode = enMode.Add;
         }
 
-        private QRCodes(int QRCodeID, Guid PublicID, int UserID, int BreadPointID,
-            int PortionCount, enStatus? Status, string Token,
-            DateTime CreatedAt, DateTime ExpiresAt, DateTime? ScannedAt, bool IsScanned)
+        public QRs(QRCodeModel.QRCodeDTO QrDTO , enMode Mode = enMode.Update)
         {
-            this.QRCodeID = QRCodeID;
-            this.PublicID = PublicID;
-            this.UserID = UserID;
-            this.BreadPointID = BreadPointID;
-            this.PortionCount = PortionCount;
-            this.Status = Status;
-            this.Token = Token;
-            this.CreatedAt = CreatedAt;
-            this.ExpiresAt = ExpiresAt;
-            this.ScannedAt = ScannedAt;
-            this.IsScanned = IsScanned;
-            _Mode = enMode.Update;
+            this.QRCodeID = QrDTO.QRCodeID;
+            this.PublicID = QrDTO.PublicID;
+            this.UserID = QrDTO.UserID;
+            this.BreadPointID = QrDTO.BreadPointID;
+            this.PortionCount = QrDTO.PortionCount;
+            this.Status = (enStatus)QrDTO.Status;
+            this.Token = QrDTO.Token;
+            this.CreatedAt = QrDTO.CreatedAt;
+            this.ExpiresAt = QrDTO.ExpiresAt;
+            this.ScannedAt = QrDTO.ScannedAt;
+            this.IsScanned = QrDTO.IsScanned;
+
+            _Mode = Mode;
         }
 
+        public QRs(QRCodeModel.CreateQRDTO cQrDTO, enMode Mode = enMode.Add)
+        {
+
+            this.QRCodeID = null;
+            this.PublicID = null;
+            this.UserID = cQrDTO.UserID;
+            this.BreadPointID = cQrDTO.BreadPointID;
+            this.PortionCount = cQrDTO.PortionCount;
+            this.Status = enStatus.Active;
+            this.Token = null;
+            this.CreatedAt = DateTime.Now;
+            this.ExpiresAt = DateTime.Now.AddHours(24);
+            this.ScannedAt = null;
+            this.IsScanned = null;
+
+            _Mode = Mode;
+       
+        }
         private QRCodeModel.QRCodeDTO _ToDTO()
         {
             return new QRCodeModel.QRCodeDTO(
@@ -70,18 +87,24 @@ namespace BreadApp_BL
                 this.IsScanned
             );
         }
+        private QRCodeModel.CreateQRDTO _ToCreationDTO()
+        {
+            return new QRCodeModel.CreateQRDTO(
+                
+                this.UserID,
+                this.BreadPointID,
+                this.PortionCount,
+                this.ExpiresAt
+            );
+        }
 
         private bool _AddQRCode()
         {
             if (!this.UserID.HasValue || !this.BreadPointID.HasValue)
                 return false;
 
-            this.BreadPointID = QRCodesData.CreateQRCode(
-                this.UserID.Value,
-                this.BreadPointID.Value,
-                this.PortionCount ?? 1,
-                this.ExpiresAt
-            );
+            this.BreadPointID = QRCodesData.CreateQRCode(_ToCreationDTO());
+                
 
             if (this.BreadPointID.HasValue)
                 return this.BreadPointID.Value > 0;
@@ -95,16 +118,23 @@ namespace BreadApp_BL
 
         public bool Save()
         {
-            if (_Mode == enMode.Add)
-                if (_AddQRCode())
-                {
-                    _Mode = enMode.Add;
-                    return true;
-                }
-                else if (_Mode == enMode.Update)
+            switch (_Mode)
+            {
+                case enMode.Add:
+                    if (_AddQRCode())
+                    {
+                        _Mode = enMode.Add;
+                        return true;
+                    }
+                    return false;
+                case enMode.Update:
                     return _UpdateQRCode();
+                    
+                default:
+                    return false;
 
-            return false;
+            }
+          
         }
 
         public bool Delete(bool HardDelete = false)
@@ -124,61 +154,30 @@ namespace BreadApp_BL
 
         
 
-        public static QRCodeModel.QRCodeDTO? GetQRCodeBy(
-            int? QRCodeID = null, Guid? PublicID = null,
-            int? UserID = null, int? BreadPointID = null,
-            string? Token = null, string? Status = null,
-            bool? IsScanned = null)
+        public static QRCodeModel.QRCodeDTO? GetOneQRCodeBy(
+            int? QRCodeID = null, Guid? PublicID = null, 
+            string? Token = null)
         {
-            return QRCodesData.GetQRCodeBy(QRCodeID, PublicID, UserID, BreadPointID, Token, Status, IsScanned);
+            return QRCodesData.GetOneQRCodeBy(QRCodeID:QRCodeID, PublicID:PublicID, Token:Token);
         }
 
-        public static QRCodeModel.QRCodeDTO? GetQRCodeByID(int QRCodeID)
-        {
-            return QRCodesData.GetQRCodeBy(QRCodeID: QRCodeID);
-        }
 
-        public static QRCodeModel.QRCodeDTO? GetQRCodeByPublicID(Guid PublicID)
-        {
-            return QRCodesData.GetQRCodeBy(PublicID: PublicID);
-        }
-
-        public static QRCodeModel.QRCodeDTO? GetQRCodeByToken(string Token)
-        {
-            return QRCodesData.GetQRCodeBy(Token: Token);
-        }
 
         public static List<QRCodeModel.QRCodeDTO> GetAllQRCodes(
             int? UserID = null, int? BreadPointID = null,
             string? Status = null, bool? IsScanned = null,
             int PageNumber = 1, int PageSize = 10)
         {
-            return QRCodesData.GetQRCodes(UserID, BreadPointID, Status, IsScanned, PageNumber, PageSize);
+            return QRCodesData.GetAllQRCodes(UserID: UserID, BreadPointID: BreadPointID, Status: Status, IsScanned: IsScanned, PageNumber: PageNumber, PageSize: PageSize);
         }
 
-        public static List<QRCodeModel.QRCodeDTO> GetActiveQRCodesByUser(int UserID)
+   
+        public static QRs? Find(int QRCodeID)
         {
-            return QRCodesData.GetQRCodes(UserID: UserID, Status: "Active", IsScanned: false);
-        }
-
-        public static QRCodes? Find(int QRCodeID)
-        {
-            var dto = QRCodesData.GetQRCodeBy(QRCodeID: QRCodeID);
+            var dto = QRCodesData.GetOneQRCodeBy(QRCodeID: QRCodeID);
             if (dto == null) return null;
            
-            return new QRCodes(
-                dto.QRCodeID!.Value,
-                dto.PublicID!.Value,
-                dto.UserID!.Value,
-                dto.BreadPointID!.Value,
-                dto.PortionCount!.Value,
-                (enStatus)dto.Status,
-                dto.Token!,
-                dto.CreatedAt!.Value,
-                dto.ExpiresAt!.Value,
-                dto.ScannedAt,
-                dto.IsScanned!.Value
-            );
+            return new QRs(dto);
         }
     }
 }

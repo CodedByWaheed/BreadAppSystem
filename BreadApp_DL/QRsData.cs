@@ -5,6 +5,25 @@ namespace BreadApp_DL
 {
     public class QRCodeModel
     {
+        public class CreateQRDTO
+        {
+            public CreateQRDTO(int? UserID,
+                int? BreadPointID, int? PortionCount, DateTime? ExpiresAt)
+            {
+
+                this.UserID = UserID;
+                this.BreadPointID = BreadPointID;
+                this.PortionCount = PortionCount;
+                this.ExpiresAt = ExpiresAt; ;
+            }
+
+
+            public int? UserID { get; set; }
+            public int? BreadPointID { get; set; }
+            public int? PortionCount { get; set; }
+
+            public DateTime? ExpiresAt { get; set; }
+        }
         public class QRCodeDTO
         {
             public QRCodeDTO(int? QRCodeID, Guid? PublicID, int? UserID, int? BreadPointID,
@@ -73,7 +92,7 @@ namespace BreadApp_DL
                 reader.IsDBNull(reader.GetOrdinal("UserID")) ? null : reader.GetInt32(reader.GetOrdinal("UserID")),
                 reader.IsDBNull(reader.GetOrdinal("BreadPointID")) ? null : reader.GetInt32(reader.GetOrdinal("BreadPointID")),
                 reader.IsDBNull(reader.GetOrdinal("PortionCount")) ? null : reader.GetInt32(reader.GetOrdinal("PortionCount")),
-                reader.IsDBNull(reader.GetOrdinal("Status")) ? null : reader.GetInt32(reader.GetOrdinal("Status")),
+                reader.IsDBNull(reader.GetOrdinal("Status")) ? null : reader.GetInt16(reader.GetOrdinal("Status")),
                 reader.IsDBNull(reader.GetOrdinal("Token")) ? null : reader.GetString(reader.GetOrdinal("Token")),
                 reader.IsDBNull(reader.GetOrdinal("CreatedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                 reader.IsDBNull(reader.GetOrdinal("ExpiresAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ExpiresAt")),
@@ -83,14 +102,12 @@ namespace BreadApp_DL
         }
 
      
-        public static QRCodeModel.QRCodeDTO? GetQRCodeBy(
+        public static QRCodeModel.QRCodeDTO? GetOneQRCodeBy(
             int? QRCodeID = null,
             Guid? PublicID = null,
-            int? UserID = null,
-            int? BreadPointID = null,
-            string? Token = null,
-            string? Status = null,
-            bool? IsScanned = null)
+            string? Token = null
+         
+            )
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
@@ -100,12 +117,8 @@ namespace BreadApp_DL
 
                     cmd.Parameters.AddWithValue("@QRCodeID", QRCodeID ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@PublicID", PublicID ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@UserID", UserID ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Token", Token ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Status", Status ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@IsScanned", IsScanned ?? (object)DBNull.Value);
-
+                   
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -117,13 +130,14 @@ namespace BreadApp_DL
         }
 
    
-        public static List<QRCodeModel.QRCodeDTO> GetQRCodes(
+        public static List<QRCodeModel.QRCodeDTO> GetAllQRCodes(
+
             int? UserID = null,
             int? BreadPointID = null,
             string? Status = null,
             bool? IsScanned = null,
-            int pageNumber = 1,
-            int pageSize = 10)
+            int PageNumber = 1,
+            int PageSize = 10)
         {
             var QRList = new List<QRCodeModel.QRCodeDTO>();
 
@@ -137,8 +151,8 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Status", Status ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsScanned", IsScanned ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
-                    cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
+                    cmd.Parameters.AddWithValue("@PageNumber", PageNumber < 1 ? 1 : PageNumber);
+                    cmd.Parameters.AddWithValue("@PageRow", PageSize < 1 ? 10 : PageSize);
 
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -150,7 +164,7 @@ namespace BreadApp_DL
             return QRList;
         }
 
-        public static int CreateQRCode(int UserID, int BreadPointID, int PortionCount = 1, DateTime? ExpiresAt = null)
+        public static int CreateQRCode(QRCodeModel.CreateQRDTO ctreatQrDTO)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
@@ -158,13 +172,18 @@ namespace BreadApp_DL
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@UserID", UserID);
-                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
-                    cmd.Parameters.AddWithValue("@PortionCount", PortionCount < 1 ? 1 : PortionCount);
-                    cmd.Parameters.AddWithValue("@ExpiresAt", ExpiresAt ?? (object)DBNull.Value);
-
+                    cmd.Parameters.AddWithValue("@UserID", ctreatQrDTO.UserID);
+                    cmd.Parameters.AddWithValue("@BreadPointID", ctreatQrDTO.BreadPointID);
+                    cmd.Parameters.AddWithValue("@PortionCount", ctreatQrDTO.PortionCount < 1 ? 1 : ctreatQrDTO.PortionCount);
+                    cmd.Parameters.AddWithValue("@ExpiresAt", ctreatQrDTO.ExpiresAt ?? (object)DBNull.Value);
+                    var outputParam = new SqlParameter("@NewID", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(outputParam);
                     conn.Open();
-                    return Convert.ToInt32(cmd.ExecuteScalar());
+                    cmd.ExecuteNonQuery();
+                    return (int)outputParam.Value;
                 }
             }
         }
@@ -182,9 +201,15 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@PortionCount", qrCode.PortionCount ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Status", qrCode.Status ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@ExpiresAt", qrCode.ExpiresAt ?? (object)DBNull.Value);
+                    var outputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(outputParam);
 
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return (int)outputParam.Value > 0;
                 }
             }
         }
@@ -232,9 +257,15 @@ namespace BreadApp_DL
 
                     cmd.Parameters.AddWithValue("@QRCodeID", QRCodeID);
                     cmd.Parameters.AddWithValue("@HardDelete", HardDelete);
+                    var outputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(outputParam);
 
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return (int)outputParam.Value>0;
                 }
             }
         }
