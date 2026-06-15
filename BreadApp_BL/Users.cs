@@ -1,4 +1,5 @@
 ﻿using BreadApp_DL;
+using System.Net.Http.Headers;
 
 namespace BreadApp_BL
 {
@@ -124,16 +125,25 @@ namespace BreadApp_BL
         }  
         public bool Save()
         {
-            if (_Mode == enMode.Add)
-                if (_AddUser())
-                {
-                    _Mode = enMode.Update;
-                    return true;
-                }
-            else if (_Mode == enMode.Update)
-                return _UpdateUser();
+            switch (_Mode)
+            {
+                case  enMode.Add:
+                    if(_AddUser())
+                    {
+                        _Mode = enMode.Update;
+                        return true;
+                    }
+                    else 
+                        return false;
+                    
+                case enMode.Update:
+                    return _UpdateUser();
+                    
+                default:
+                    return false;
 
-            return false;
+            }
+           
 
         }
         public bool DeleteUser(bool HardDelete = false)
@@ -143,11 +153,18 @@ namespace BreadApp_BL
 
             return false;
         }
-        public static List<UserModel.UserInfoDTO> GetAllUsers(int PageNumber = 1, int PageSize = 10)
+        public static bool DeleteUser(int? UserID ,bool HardDelete = false)
         {
-            return UsersData.GetUsers(PageNumber, PageSize);
+            if (UserID.HasValue)
+                return UsersData.DeleteUser(UserID.Value, HardDelete);
+
+            return false;
         }
-        public static UserModel.UserInfoDTO? GetUserBy(int? UserID, Guid? PublicID, String? NationalNumber, string? Phone, bool? IsActive)
+        public static List<UserModel.UserInfoDTO> GetAllUsers(bool? IsActive = true , int PageNumber = 1, int PageSize = 10)
+        {
+            return UsersData.GetUsers(IsActive ,PageNumber, PageSize);
+        }
+        public static UserModel.UserInfoDTO? GetUserBy(int? UserID = null, Guid? PublicID = null, String? NationalNumber = null, string? Phone = null, bool? IsActive = null)
         {
             if(UserID.HasValue)
                 return UsersData.GetUserBy(UserID : UserID);
@@ -162,26 +179,6 @@ namespace BreadApp_BL
             return null;
 
         }
-        //public static UserModel.UserInfoDTO GetUserByID(int? UserID)
-        //{
-        //    return UsersData.GetUserBy(UserID, null, null, null, null);
-        //}
-        //public static UserModel.UserInfoDTO GetUserByPublicID( Guid? PublicID)
-        //{
-        //    return UsersData.GetUserBy(null, PublicID, null, null, null);
-        //}
-        //public static UserModel.UserInfoDTO GetUserByNationalNumber( string? NationalNumber)
-        //{
-        //    return UsersData.GetUserBy(null, null, NationalNumber, null, null);
-        //}
-        //public static UserModel.UserInfoDTO GetUserByPhone(string? Phone)
-        //{
-        //    return UsersData.GetUserBy(null, null, null, Phone, null);
-        //}
-        //public static UserModel.UserInfoDTO GetUserByActiveStatus(bool? IsActive)
-        //{
-        //    return UsersData.GetUserBy(null, null, null, null, IsActive);
-        //}
         public static UserModel.UserInfoDTO Login(string? NationalNumber, string? PsswordHash)
         {
             return UsersData.Authenticate(new UserModel.LoginDTO(
@@ -190,7 +187,7 @@ namespace BreadApp_BL
             ));
         }
 
-        public static Users? Find(int UserID)
+        public static Users? Find(int? UserID)
         {
             var dto = UsersData.GetUserBy(UserID:UserID);
 

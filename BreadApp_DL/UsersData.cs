@@ -122,7 +122,7 @@ namespace BreadApp_DL
                 );
         }
 
-        public static UserInfoDTO GetUserBy(
+        public static UserInfoDTO? GetUserBy(
             int? UserID  = null , 
             Guid? PublicID = null ,
             String? NationalNumber = null, 
@@ -155,7 +155,7 @@ namespace BreadApp_DL
             return null;
         }
 
-        public static List<UserModel.UserInfoDTO> GetUsers(int pageNumber = 1, int pageSize = 10)
+        public static List<UserModel.UserInfoDTO> GetUsers(bool? IsActive = true, int pageNumber = 1, int pageSize = 10)
         {
            
             var UserList = new List<UserInfoDTO>();
@@ -167,6 +167,7 @@ namespace BreadApp_DL
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@PageNumber", pageNumber< 1 ? 1 : pageNumber);
                     cmd.Parameters.AddWithValue("@PageRow", pageSize<1 ? 10 : pageSize);
+                    cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
 
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -229,14 +230,20 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@DateOfBirth", user.DateOfBirth);
                     cmd.Parameters.AddWithValue("@MaritalStatus", user.MaritalStatus);
                     cmd.Parameters.AddWithValue("@FamilyNumber", user.FamilyNumber < 1 ? (object)DBNull.Value : user.FamilyNumber);
-                    cmd.Parameters.AddWithValue("@Phone", user.Phone);
+                    cmd.Parameters.AddWithValue("@PhoneNumber", user.Phone);
                     cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-                    cmd.Parameters.AddWithValue("@WifeHusbNational", user.WifeHusbNational??(Object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@WifeHusb", user.WifeHusbNational??(Object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsActive", user.IsActive);
 
+                    var outputParam = new SqlParameter("@OutputStatus", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(outputParam);
 
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return (int)outputParam.Value > 0;
                 }
             }
         }
@@ -248,17 +255,25 @@ namespace BreadApp_DL
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Delete", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@UserID", UserID);
 
+                    cmd.Parameters.AddWithValue("@UserID", UserID);
                     cmd.Parameters.AddWithValue("@HardDelete", HardDelete);
+                    var outputParam = new SqlParameter("@OutputStatus", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(outputParam);
 
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+
+                    cmd.ExecuteNonQuery();
+                    return (int)outputParam.Value > 0;
+                  
                 }
             }
         }
 
-        public static UserModel.UserInfoDTO Authenticate(UserModel.LoginDTO login)
+        public static UserModel.UserInfoDTO? Authenticate(UserModel.LoginDTO login)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
