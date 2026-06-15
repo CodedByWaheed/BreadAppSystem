@@ -1,6 +1,7 @@
 ﻿using BreadApp_DL;
 using System.Net.Http.Headers;
 using System.Transactions;
+using static BreadApp_DL.TransactionModel;
 
 namespace BreadApp_BL
 {
@@ -8,7 +9,7 @@ namespace BreadApp_BL
     {
         public enum enStatus { Pending = 1 , Confirmed = 2 , Canceled = 3 }
         public enum enTransactionType { BreadBuying = 1 , Payment = 2 , Refund =3 , TopApp = 4 }
-        enum enMode { Add = 1, Update = 2 }
+        public enum enMode { Add = 1, Update = 2 }
         enMode _Mode;
 
         public int? TransactionID { get; set; }
@@ -41,26 +42,39 @@ namespace BreadApp_BL
             _Mode = enMode.Add;
         }
 
-        private Transactions(int TransactionID, Guid PublicID, int SenderUserID,
-            int? ReceiverUserID, int? BreadPointID, int? QRCodeID,
-            decimal Amount, enTransactionType? TransactionType, enStatus? Status,
-            DateTime CreatedAt, DateTime? ConfirmedAt, string? Notes)
+        public Transactions(TransactionModel.TransactionDTO TransDTO , enMode Mode = enMode.Update)
         {
-            this.TransactionID = TransactionID;
-            this.PublicID = PublicID;
-            this.SenderUserID = SenderUserID;
-            this.ReceiverUserID = ReceiverUserID;
-            this.BreadPointID = BreadPointID;
-            this.QRCodeID = QRCodeID;
-            this.Amount = Amount;
-            this.TransactionType = TransactionType;
-            this.Status = Status;
-            this.CreatedAt = CreatedAt;
-            this.ConfirmedAt = ConfirmedAt;
-            this.Notes = Notes;
+            this.TransactionID = TransDTO.TransactionID;
+            this.PublicID = TransDTO.PublicID;
+            this.SenderUserID = TransDTO.SenderUserID;
+            this.ReceiverUserID = TransDTO.ReceiverUserID;
+            this.BreadPointID = TransDTO.BreadPointID;
+            this.QRCodeID = TransDTO.QRCodeID;
+            this.Amount = TransDTO.Amount;
+            this.TransactionType = (enTransactionType)TransDTO.TransactionType;
+            this.Status = (enStatus)TransDTO.Status;
+            this.CreatedAt = TransDTO.CreatedAt;
+            this.ConfirmedAt = TransDTO.ConfirmedAt;
+            this.Notes = TransDTO.Notes;
             _Mode = enMode.Update;
         }
 
+        public Transactions(CreateTransactionDTO cTransDTO, enMode Mode = enMode.Add)
+        {
+            this.TransactionID = null;
+            this.PublicID = null;
+            this.SenderUserID = cTransDTO.SenderUserID;
+            this.ReceiverUserID = cTransDTO.ReceiverUserID;
+            this.BreadPointID = cTransDTO.BreadPointID;
+            this.QRCodeID = cTransDTO.QRCodeID;
+            this.Amount = cTransDTO.Amount;
+            this.TransactionType = (enTransactionType)cTransDTO.TransactionType;
+            this.Status = enStatus.Pending;
+            this.CreatedAt = DateTime.Now;
+            this.ConfirmedAt = null;
+            this.Notes = cTransDTO.Notes;
+            _Mode = Mode;
+        }
         private TransactionModel.TransactionDTO _ToDTO()
         {
             return new TransactionModel.TransactionDTO(
@@ -84,20 +98,7 @@ namespace BreadApp_BL
             var dto = TransactionsData.GetTransactionBy(TransactionID: TransactionID);
             if (dto == null) return null;
            
-            return new Transactions(
-                dto.TransactionID!.Value,
-                dto.PublicID!.Value,
-                dto.SenderUserID!.Value,
-                dto.ReceiverUserID,
-                dto.BreadPointID,
-                dto.QRCodeID,
-                dto.Amount!.Value,
-                (enTransactionType)dto.TransactionType,
-                (enStatus)dto.Status,
-                dto.CreatedAt!.Value,
-                dto.ConfirmedAt,
-                dto.Notes
-            );
+            return new Transactions(dto);
         }
 
         private bool _AddTransaction()
@@ -117,16 +118,21 @@ namespace BreadApp_BL
 
         public bool Save()
         {
-            if (_Mode == enMode.Add)
-                if (_AddTransaction())
-                {
-                    _Mode = enMode.Update;
-                    return true;
-                }
-            else if (_Mode == enMode.Update)
-                return _UpdateTransaction();
-
-            return false;
+            switch (_Mode)
+            {
+                case enMode.Add:
+                    if (_AddTransaction())
+                    {
+                        _Mode = enMode.Update;
+                        return true;
+                    }
+                    return false;
+                case enMode.Update:
+                    return _UpdateTransaction();
+                default:
+                    return false;
+            }
+      
         }
 
         public bool Confirm()
@@ -165,52 +171,16 @@ namespace BreadApp_BL
                 BreadPointID, QRCodeID, TransactionType, Status);
         }
 
-        public static TransactionModel.TransactionDTO? GetTransactionByID(int TransactionID)
-        {
-            return TransactionsData.GetTransactionBy(TransactionID: TransactionID);
-        }
-
-        public static TransactionModel.TransactionDTO? GetTransactionByPublicID(Guid PublicID)
-        {
-            return TransactionsData.GetTransactionBy(PublicID: PublicID);
-        }
-
-        public static TransactionModel.TransactionDTO? GetTransactionByQRCode(int QRCodeID)
-        {
-            return TransactionsData.GetTransactionBy(QRCodeID: QRCodeID);
-        }
-
         public static List<TransactionModel.TransactionDTO> GetAllTransactions(
             int? SenderUserID = null, int? BreadPointID = null,
-            string? TransactionType = null, string? Status = null,
+            int? TransactionType = null, int? Status = null,
             int PageNumber = 1, int PageSize = 10)
         {
             return TransactionsData.GetTransactions(
                 SenderUserID, BreadPointID, TransactionType, Status, PageNumber, PageSize);
         }
 
-        public static List<TransactionModel.TransactionDTO> GetTransactionsByUser(
-            int SenderUserID, int PageNumber = 1, int PageSize = 10)
-        {
-            return TransactionsData.GetTransactions(
-                SenderUserID: SenderUserID, pageNumber: PageNumber, pageSize: PageSize);
-        }
 
-        public static List<TransactionModel.TransactionDTO> GetPendingTransactions(
-            int PageNumber = 1, int PageSize = 10)
-        {
-            return TransactionsData.GetTransactions(
-                Status: "Pending", pageNumber: PageNumber, pageSize: PageSize);
-        }
-
-        public static List<TransactionModel.TransactionDTO> GetTransactionsByBreadPoint(
-            int BreadPointID, int PageNumber = 1, int PageSize = 10)
-        {
-            return TransactionsData.GetTransactions(
-                BreadPointID: BreadPointID, pageNumber: PageNumber, pageSize: PageSize);
-        }
-
-        
 
       
     }

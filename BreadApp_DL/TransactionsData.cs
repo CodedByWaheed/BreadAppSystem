@@ -39,6 +39,26 @@ namespace BreadApp_DL
             public DateTime? ConfirmedAt { get; set; }
             public string? Notes { get; set; }
         }
+        public class CreateTransactionDTO 
+        {
+            public CreateTransactionDTO(int? SenderUserID, int? ReceiverUserID, int? BreadPointID, int? QRCodeID, decimal? Amount, int? TransactionType, string? Notes)
+            {
+                this.SenderUserID = SenderUserID;
+                this.ReceiverUserID = ReceiverUserID;
+                this.BreadPointID = BreadPointID;
+                this.QRCodeID = QRCodeID;
+                this.Amount = Amount;
+                this.TransactionType = TransactionType;
+                this.Notes = Notes;
+            }
+            public int? SenderUserID { get; set; }
+            public int? ReceiverUserID { get; set; }
+            public int? BreadPointID { get; set; }
+            public int? QRCodeID { get; set; }
+            public decimal? Amount { get; set; }
+            public int? TransactionType { get; set; }
+            public string? Notes { get; set; }
+        }
     }
 
     public class TransactionsData
@@ -103,8 +123,8 @@ namespace BreadApp_DL
         public static List<TransactionModel.TransactionDTO> GetTransactions(
             int? SenderUserID = null,
             int? BreadPointID = null,
-            string? TransactionType = null,
-            string? Status = null,
+            int? TransactionType = null,
+            int? Status = null,
             int pageNumber = 1,
             int pageSize = 10)
         {
@@ -149,9 +169,14 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@Amount", transaction.Amount ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@TransactionType", transaction.TransactionType ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Notes", transaction.Notes ?? (object)DBNull.Value);
-
+                    var OutputParam = new SqlParameter("@NewID", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
                     conn.Open();
-                    return Convert.ToInt32(cmd.ExecuteScalar());
+                    cmd.ExecuteNonQuery();
+                    return (int)OutputParam.Value;
                 }
             }
         }
@@ -166,9 +191,15 @@ namespace BreadApp_DL
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@TransactionID", TransactionID);
+                    var OutputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
 
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return (int)OutputParam.Value > 0;
                 }
             }
         }
@@ -185,9 +216,14 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@TransactionID", TransactionID);
                     cmd.Parameters.AddWithValue("@Status", Status ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Notes", Notes ?? (object)DBNull.Value);
-
+                    var OutputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return (int)OutputParam.Value > 0;
                 }
             }
         }
@@ -203,9 +239,15 @@ namespace BreadApp_DL
 
                     cmd.Parameters.AddWithValue("@TransactionID", TransactionID);
                     cmd.Parameters.AddWithValue("@HardDelete", HardDelete);
+                    var OutputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
 
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return  (int)OutputParam.Value> 0;
                 }
             }
         }
