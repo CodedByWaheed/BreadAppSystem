@@ -8,7 +8,7 @@ namespace BreadApp_DL
         public class BreadPointDTO
         {
             public BreadPointDTO(int? BreadPointID, Guid? PublicID, string? Name, string? Address,
-                string? PhoneNumber, int? AvailablePortions, double? WalletBalance,
+                string? PhoneNumber, int? AvailablePortions, Decimal? WalletBalance,
                 double? Latitude, double? Longitude, bool? IsActive, DateTime? CreatedAt)
             {
                 this.BreadPointID = BreadPointID;
@@ -30,7 +30,7 @@ namespace BreadApp_DL
             public string? Address { get; set; }
             public string? PhoneNumber { get; set; }
             public int? AvailablePortions { get; set; }
-            public double? WalletBalance { get; set; }
+            public Decimal? WalletBalance { get; set; }
             public double? Latitude { get; set; }
             public double? Longitude { get; set; }
             public bool? IsActive { get; set; }
@@ -51,7 +51,7 @@ namespace BreadApp_DL
                 reader.IsDBNull(reader.GetOrdinal("Address")) ? null : reader.GetString(reader.GetOrdinal("Address")),
                 reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? null : reader.GetString(reader.GetOrdinal("PhoneNumber")),
                 reader.IsDBNull(reader.GetOrdinal("AvailablePortions")) ? null : reader.GetInt32(reader.GetOrdinal("AvailablePortions")),
-                reader.IsDBNull(reader.GetOrdinal("WalletBalance")) ? null : reader.GetDouble(reader.GetOrdinal("WalletBalance")),
+                reader.IsDBNull(reader.GetOrdinal("WalletBalance")) ? null : reader.GetDecimal(reader.GetOrdinal("WalletBalance")),
                 reader.IsDBNull(reader.GetOrdinal("Latitude")) ? null : reader.GetDouble(reader.GetOrdinal("Latitude")),
                 reader.IsDBNull(reader.GetOrdinal("Longitude")) ? null : reader.GetDouble(reader.GetOrdinal("Longitude")),
                 reader.IsDBNull(reader.GetOrdinal("IsActive")) ? null : reader.GetBoolean(reader.GetOrdinal("IsActive")),
@@ -131,9 +131,15 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@Latitude", breadPoint.Latitude ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Longitude", breadPoint.Longitude ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsActive", true);
+                    var OutputParam = new SqlParameter("@NewID", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
 
+                    cmd.Parameters.Add(OutputParam);
                     conn.Open();
-                    return Convert.ToInt32(cmd.ExecuteScalar());
+                    cmd.ExecuteNonQuery();
+                    return (int)OutputParam.Value;
                 }
             }
         }
@@ -156,9 +162,14 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@Latitude", breadPoint.Latitude ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Longitude", breadPoint.Longitude ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsActive", breadPoint.IsActive ?? (object)DBNull.Value);
-
+                    var OutputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return (int)OutputParam.Value > 0;
                 }
             }
         }
@@ -174,9 +185,14 @@ namespace BreadApp_DL
 
                     cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
                     cmd.Parameters.AddWithValue("@HardDelete", HardDelete);
-
+                    var OutputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
                     conn.Open();
-                    return cmd.ExecuteNonQuery() > 0;
+                    cmd.ExecuteNonQuery();
+                    return (int)OutputParam.Value > 0;
                 }
             }
         }

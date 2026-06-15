@@ -4,7 +4,7 @@ namespace BreadApp_BL
 {
     public class BreadPoints
     {
-        enum enMode { Add = 1, Update = 2 }
+        public enum enMode { Add = 1, Update = 2 }
         enMode _Mode;
 
         public int? BreadPointID { get; set; }
@@ -13,7 +13,7 @@ namespace BreadApp_BL
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
         public int? AvailablePortions { get; set; }
-        public double? WalletBalance { get; set; }
+        public Decimal? WalletBalance { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public bool? IsActive { get; set; }
@@ -35,25 +35,23 @@ namespace BreadApp_BL
             _Mode = enMode.Add;
         }
 
-        private BreadPoints(int BreadPointID, Guid PublicID, string Name, string Address,
-            string PhoneNumber, int AvailablePortions, double WalletBalance,
-            double? Latitude, double? Longitude, bool IsActive, DateTime CreatedAt)
+        public BreadPoints(BreadPointModel.BreadPointDTO BreadPointDTO , enMode Mode = enMode.Update)
         {
-            this.BreadPointID = BreadPointID;
-            this.PublicID = PublicID;
-            this.Name = Name;
-            this.Address = Address;
-            this.PhoneNumber = PhoneNumber;
-            this.AvailablePortions = AvailablePortions;
-            this.WalletBalance = WalletBalance;
-            this.Latitude = Latitude;
-            this.Longitude = Longitude;
-            this.IsActive = IsActive;
-            this.CreatedAt = CreatedAt;
-            _Mode = enMode.Update;
+            this.BreadPointID = BreadPointDTO.BreadPointID;
+            this.PublicID = BreadPointDTO.PublicID;
+            this.Name = BreadPointDTO.Name;
+            this.Address = BreadPointDTO.Address;
+            this.PhoneNumber = BreadPointDTO.PhoneNumber;
+            this.AvailablePortions = BreadPointDTO.AvailablePortions;
+            this.WalletBalance = BreadPointDTO.WalletBalance;
+            this.Latitude = BreadPointDTO.Latitude;
+            this.Longitude = BreadPointDTO.Longitude;
+            this.IsActive = BreadPointDTO.IsActive;
+            this.CreatedAt = BreadPointDTO.CreatedAt;
+            _Mode = Mode;
         }
 
-        // Convert the current instance to a DTO for data operations
+       
         private BreadPointModel.BreadPointDTO _ToDTO()
         {
             return new BreadPointModel.BreadPointDTO(
@@ -86,17 +84,22 @@ namespace BreadApp_BL
 
         public bool Save()
         {
-            if (_Mode == enMode.Add)
-               if(_AddBreadPoint())
-                {
-                    _Mode = enMode.Update;
-                    return true;
-                }
-               
-            else if (_Mode == enMode.Update)
-                return _UpdateBreadPoint();
-
-            return false;
+            switch (_Mode)
+            {
+                case enMode.Add:
+                    if (_AddBreadPoint())
+                    {
+                        _Mode = enMode.Update;
+                        return true;
+                    }
+                    else
+                        return false;
+                case enMode.Update:
+                    return _UpdateBreadPoint();
+                default:
+                    return false;
+            }
+              
         }
 
         public bool Delete(bool HardDelete = false)
@@ -121,47 +124,12 @@ namespace BreadApp_BL
             return BreadPointsData.GetBreadPointBy(BreadPointID, PublicID, Name, IsActive);
         }
 
-        public static BreadPointModel.BreadPointDTO? GetBreadPointByID(int BreadPointID)
-        {
-            return BreadPointsData.GetBreadPointBy(BreadPointID: BreadPointID);
-        }
-
-        public static BreadPointModel.BreadPointDTO? GetBreadPointByPublicID(Guid PublicID)
-        {
-            return BreadPointsData.GetBreadPointBy(PublicID: PublicID);
-        }
-
-        public static BreadPointModel.BreadPointDTO? GetBreadPointByName(string Name)
-        {
-            return BreadPointsData.GetBreadPointBy(Name: Name);
-        }
-
-        public static List<BreadPointModel.BreadPointDTO> GetActiveBreadPoints(
-            int PageNumber = 1, int PageSize = 10)
-        {
-            return BreadPointsData.GetBreadPoints(IsActive: true, pageNumber: PageNumber, pageSize: PageSize);
-        }
-
-
-        // This method retrieves a BreadPoint by its ID and converts it to a BreadPoints instance
         public static BreadPoints? Find(int BreadPointID)
         {
             var dto = BreadPointsData.GetBreadPointBy(BreadPointID: BreadPointID);
             if (dto == null) return null;
 
-            return new BreadPoints(
-                dto.BreadPointID!.Value,
-                dto.PublicID!.Value,
-                dto.Name!,
-                dto.Address!,
-                dto.PhoneNumber!,
-                dto.AvailablePortions!.Value,
-                dto.WalletBalance!.Value,
-                dto.Latitude,
-                dto.Longitude,
-                dto.IsActive!.Value,
-                dto.CreatedAt!.Value
-            );
+            return new BreadPoints(dto);
         }
     }
 }

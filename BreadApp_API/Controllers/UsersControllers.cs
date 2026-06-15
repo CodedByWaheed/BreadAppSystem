@@ -124,27 +124,17 @@ namespace BreadApp_API.Controllers
             Users User = Users.Find(UserDTO.UserID);
             if(User == null)
                 return NotFound($"User with id {UserDTO.UserID} not found.");
-          
-            if (!string.IsNullOrEmpty(UserDTO.FirstName))
-                User.FirstName = UserDTO.FirstName;
-            if (!string.IsNullOrEmpty(UserDTO.SecondName))
-                User.SecondName = UserDTO.SecondName;
-            if (!string.IsNullOrEmpty(UserDTO.LastName))
-                User.LastName = UserDTO.LastName;
-            if (UserDTO.DateOfBirth.HasValue)
-                User.DateOfBirth = UserDTO.DateOfBirth.Value;
-            if (UserDTO.MaritalStatus.HasValue)
-                User.MaritalStatus = UserDTO.MaritalStatus.Value;
-            if (UserDTO.FamilyNumber.HasValue)
-                User.FamilyNumber = UserDTO.FamilyNumber.Value;
-            if (!string.IsNullOrEmpty(UserDTO.Phone))
-                User.Phone = UserDTO.Phone;
-            if (!string.IsNullOrEmpty(UserDTO.PasswordHash))
-                User.PasswordHash = UserDTO.PasswordHash;
-            if (!string.IsNullOrEmpty(UserDTO.WifeHusbNational))
-                User.WifeHusbNational = UserDTO.WifeHusbNational;
-            if (UserDTO.IsActive.HasValue)
-                User.IsActive = UserDTO.IsActive.Value;
+
+            User.FirstName = string.IsNullOrEmpty(UserDTO.FirstName) ? User.FirstName : UserDTO.FirstName;
+            User.SecondName = string.IsNullOrEmpty(UserDTO.SecondName) ? User.SecondName : UserDTO.SecondName;
+            User.LastName = string.IsNullOrEmpty(UserDTO.LastName) ? User.LastName : UserDTO.LastName;
+            User.DateOfBirth = UserDTO.DateOfBirth ?? User.DateOfBirth;
+            User.MaritalStatus = UserDTO.MaritalStatus ?? User.MaritalStatus;
+            User.FamilyNumber = UserDTO.FamilyNumber ?? User.FamilyNumber;
+            User.Phone = string.IsNullOrEmpty(UserDTO.Phone) ? User.Phone : UserDTO.Phone;
+            User.PasswordHash = string.IsNullOrEmpty(UserDTO.PasswordHash) ? User.PasswordHash : UserDTO.PasswordHash;
+            User.WifeHusbNational = string.IsNullOrEmpty(UserDTO.WifeHusbNational) ? User.WifeHusbNational : UserDTO.WifeHusbNational;
+            User.IsActive = UserDTO.IsActive ?? User.IsActive;
 
 
             if (User.Save())
