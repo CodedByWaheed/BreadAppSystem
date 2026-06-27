@@ -6,8 +6,8 @@ using static BreadApp_DL.BreadPointModel;
 
 namespace BreadApp_API.Controllers
 {
-    [Route("api/BreadPoints")]
     [ApiController]
+    [Route("api/BreadPoints")]
     public class BreadPointsControllers : ControllerBase
     {
 
