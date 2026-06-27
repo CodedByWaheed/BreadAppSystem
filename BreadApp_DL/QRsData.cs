@@ -109,7 +109,7 @@ namespace BreadApp_DL
          
             )
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Get", conn))
                 {
@@ -141,7 +141,7 @@ namespace BreadApp_DL
         {
             var QRList = new List<QRCodeModel.QRCodeDTO>();
 
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Get", conn))
                 {
@@ -166,7 +166,7 @@ namespace BreadApp_DL
 
         public static int CreateQRCode(QRCodeModel.CreateQRDTO ctreatQrDTO)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Create", conn))
                 {
@@ -190,7 +190,7 @@ namespace BreadApp_DL
 
         public static bool UpdateQRCode(QRCodeModel.QRCodeDTO qrCode)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Update", conn))
                 {
@@ -217,7 +217,7 @@ namespace BreadApp_DL
        
         public static QRCodeModel.QRScanResultDTO? ScanQRCode(string Token, int BreadPointID)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Scan", conn))
                 {
@@ -249,7 +249,7 @@ namespace BreadApp_DL
 
         public static bool DeleteQRCode(int QRCodeID, bool HardDelete = false)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Delete", conn))
                 {

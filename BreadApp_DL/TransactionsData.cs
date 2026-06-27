@@ -94,7 +94,7 @@ namespace BreadApp_DL
             string? TransactionType = null,
             string? Status = null)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Transactions_Get", conn))
                 {
@@ -130,7 +130,7 @@ namespace BreadApp_DL
         {
             var TransactionList = new List<TransactionModel.TransactionDTO>();
 
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Transactions_Get", conn))
                 {
@@ -156,7 +156,7 @@ namespace BreadApp_DL
         
         public static int CreateTransaction(TransactionModel.TransactionDTO transaction)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Transactions_Create", conn))
                 {
@@ -184,7 +184,7 @@ namespace BreadApp_DL
      
         public static bool ConfirmTransaction(int TransactionID)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Transactions_Confirm", conn))
                 {
@@ -207,7 +207,7 @@ namespace BreadApp_DL
       
         public static bool UpdateTransaction(int TransactionID, int? Status = null, string? Notes = null)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Transactions_Update", conn))
                 {
@@ -231,7 +231,7 @@ namespace BreadApp_DL
        
         public static bool DeleteTransaction(int TransactionID, bool HardDelete = false)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Transactions_Delete", conn))
                 {
