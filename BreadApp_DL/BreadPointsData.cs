@@ -65,7 +65,7 @@ namespace BreadApp_DL
             string? Name = null,
             bool? IsActive = null)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Get", conn))
                 {
@@ -94,7 +94,7 @@ namespace BreadApp_DL
         {
             var BreadPointList = new List<BreadPointModel.BreadPointDTO>();
 
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Get", conn))
                 {
@@ -117,7 +117,7 @@ namespace BreadApp_DL
        
         public static int CreateBreadPoint(BreadPointModel.BreadPointDTO breadPoint)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Create", conn))
                 {
@@ -147,7 +147,7 @@ namespace BreadApp_DL
       
         public static bool UpdateBreadPoint(BreadPointModel.BreadPointDTO breadPoint)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Update", conn))
                 {
@@ -177,7 +177,7 @@ namespace BreadApp_DL
       
         public static bool DeleteBreadPoint(int BreadPointID, bool HardDelete = false)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Delete", conn))
                 {

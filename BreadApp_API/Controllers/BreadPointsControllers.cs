@@ -11,6 +11,8 @@ namespace BreadApp_API.Controllers
     public class BreadPointsControllers : ControllerBase
     {
 
+       
+
 
         [HttpGet("GetAll", Name = "GetAllBreadPoints")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -20,6 +22,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<BreadPointDTO>> GetAllBreadPoints(bool? IsActive = true, int PageNumber = 1, int PageSize = 10)
         {
+
             return Ok(BreadPoints.GetAllBreadPoints(IsActive, PageNumber, PageSize));
         }
 

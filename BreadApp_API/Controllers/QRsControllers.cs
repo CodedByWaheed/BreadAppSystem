@@ -10,7 +10,7 @@ namespace BreadApp_API.Controllers
     [ApiController]
     public class QRsControllers : ControllerBase
     {
-
+       
 
         [HttpGet("GetAll", Name = "GetAllQRs")]
         [ProducesResponseType(StatusCodes.Status200OK)]

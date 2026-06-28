@@ -130,7 +130,7 @@ namespace BreadApp_DL
             bool? IsActive = null)
         {
           
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Get", conn))
                 {
@@ -160,7 +160,7 @@ namespace BreadApp_DL
            
             var UserList = new List<UserInfoDTO>();
 
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting. ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Get", conn))
                 {
@@ -185,7 +185,7 @@ namespace BreadApp_DL
 
         public static int CreateUser(UserModel.UserDTO user)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Create", conn))
                 {
@@ -217,7 +217,7 @@ namespace BreadApp_DL
 
         public static bool UpdateUser(UserModel.UserDTO user)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString ()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Update", conn))
                 {
@@ -250,7 +250,7 @@ namespace BreadApp_DL
 
         public static bool DeleteUser(int UserID, bool HardDelete = false)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Delete", conn))
                 {
@@ -275,7 +275,7 @@ namespace BreadApp_DL
 
         public static UserModel.UserInfoDTO? Authenticate(UserModel.LoginDTO login)
         {
-            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString()))
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("sp_Users_Authenticate", conn))
                 {

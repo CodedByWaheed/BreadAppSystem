@@ -12,6 +12,8 @@ namespace BreadApp_API.Controllers
     [ApiController]
     public class UsersControllers : ControllerBase
     {
+        
+
         [HttpGet("GetAll", Name = "GetAllUsers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
