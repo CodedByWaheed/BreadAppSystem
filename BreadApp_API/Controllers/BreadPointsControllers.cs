@@ -1,11 +1,15 @@
 ﻿using BreadApp_BL;
 using BreadApp_DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static BreadApp_DL.BreadPointModel;
+using Microsoft.OpenApi.Models;
+using static BreadApp_DL.UserModel;
 
 namespace BreadApp_API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/BreadPoints")]
     public class BreadPointsControllers : ControllerBase
@@ -22,7 +26,6 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<BreadPointDTO>> GetAllBreadPoints(bool? IsActive = true, int PageNumber = 1, int PageSize = 10)
         {
-
             return Ok(BreadPoints.GetAllBreadPoints(IsActive, PageNumber, PageSize));
         }
 
@@ -52,7 +55,7 @@ namespace BreadApp_API.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("Add", Name = "AddNewBreadPoint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -91,7 +94,7 @@ namespace BreadApp_API.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{BreadPointID}", Name = "DeleteBreadPoint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -122,7 +125,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<BreadPointDTO> UpdateBreadPoint(BreadPointDTO breadPointDTO)
+        public async Task< ActionResult<BreadPointDTO>> UpdateBreadPoint(BreadPointDTO breadPointDTO , [FromServices] IAuthorizationService authorizationService)
         {
             if (!breadPointDTO.BreadPointID.HasValue)
                 return BadRequest("BreadPointID is required.");
@@ -130,6 +133,14 @@ namespace BreadApp_API.Controllers
             BreadPoints? breadPoint = BreadPoints.Find(breadPointDTO.BreadPointID.Value);
             if (breadPoint == null)
                 return NotFound($"BreadPoint with id {breadPointDTO.BreadPointID} not found.");
+
+            var authResult = await authorizationService.AuthorizeAsync(
+            User,
+            breadPointDTO.BreadPointID,
+            "UserOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
 
             breadPoint.AvailablePortions = breadPointDTO.AvailablePortions ?? breadPoint.AvailablePortions;
             breadPoint.WalletBalance = breadPointDTO.WalletBalance ?? breadPoint.WalletBalance;

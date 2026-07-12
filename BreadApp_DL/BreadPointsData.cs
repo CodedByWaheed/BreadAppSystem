@@ -101,8 +101,8 @@ namespace BreadApp_DL
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
-                    cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
+                    //cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
+                    //cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
 
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();

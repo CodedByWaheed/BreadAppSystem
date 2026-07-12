@@ -1,11 +1,15 @@
 ﻿using BreadApp_BL;
 using BreadApp_DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static BreadApp_DL.BreadPointModel;
+using static BreadApp_DL.UserModel;
 
 namespace BreadApp_API.Controllers
 {
+    [Authorize]
     [Route("api/QRs")]
     [ApiController]
     public class QRsControllers : ControllerBase
@@ -18,11 +22,28 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<IEnumerable<QRCodeModel.QRCodeDTO>> GetAllQRs(int? UserID = null, int? BreadPointID = null,
+        public async Task<ActionResult<IEnumerable<QRCodeModel.QRCodeDTO>>> GetAllQRs([FromServices] IAuthorizationService authorizationService ,int? UserID = null, int? BreadPointID = null,
             string? Status = null, bool? IsScanned = null,
             int PageNumber = 1, int PageSize = 10)
         {
-            return Ok(QRs.GetAllQRCodes(UserID:UserID, BreadPointID:BreadPointID, Status:Status, IsScanned:IsScanned, PageNumber:PageNumber, PageSize:PageSize));
+
+            var QRsList = QRs.GetAllQRCodes(UserID: UserID, BreadPointID: BreadPointID, Status: Status
+                , IsScanned: IsScanned, PageNumber: PageNumber, PageSize: PageSize);
+            int? ID = null;
+            if (UserID.HasValue)
+                ID = QRsList.FirstOrDefault(qr => qr.UserID == UserID)?.UserID;
+            else if (BreadPointID.HasValue) 
+                ID = QRsList.FirstOrDefault(qr => qr.BreadPointID == BreadPointID)?.UserID;
+
+            var authResult = await authorizationService.AuthorizeAsync(
+            User,
+            ID,
+            "UserOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
+
+            return Ok(QRsList);
         }
 
 
@@ -35,12 +56,25 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<QRCodeModel.QRScanResultDTO> Scan(string?Token  , int? BreadPointID)
+        public async Task<ActionResult<QRCodeModel.QRScanResultDTO>> Scan(string?Token  , int? BreadPointID , [FromServices] IAuthorizationService authorizationService)
         {
             if (string.IsNullOrWhiteSpace(Token))
                 return BadRequest("Token is Invalied.");
             if (BreadPointID.HasValue && BreadPointID < 1)
                 return BadRequest("Bread Point ID is Invalied");
+            
+            QRCodeModel.QRCodeDTO qr = QRs.GetOneQRCodeBy(Token:Token);
+            if (qr == null)
+                return BadRequest("Qr is not Exist.");
+
+            var authResult = await authorizationService.AuthorizeAsync(
+            User,
+            qr.BreadPointID,
+            "UserOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
+
             return Ok(QRs.Scan(Token: Token!, BreadPointID: BreadPointID!.Value));
         }
 
@@ -53,7 +87,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<QRCodeModel.QRCodeDTO> GetOneQrBy(int? QRCodeID = null, Guid? PublicID = null,
+        public async Task<ActionResult<QRCodeModel.QRCodeDTO>> GetOneQrBy([FromServices] IAuthorizationService authorizationService , int? QRCodeID = null, Guid? PublicID = null,
             string? Token = null)
         {
             if (QRCodeID.HasValue && QRCodeID < 1)
@@ -63,6 +97,15 @@ namespace BreadApp_API.Controllers
 
             var qrCode = QRs.GetOneQRCodeBy(QRCodeID: QRCodeID ?? null, PublicID:PublicID ?? null, Token:Token ?? null);
 
+            if (qrCode == null)
+                return NotFound("QR Code Not Found");
+            var authResult = await authorizationService.AuthorizeAsync(
+            User,
+            qrCode.UserID,
+            "UserOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
             if (qrCode == null)
                 return NotFound("QR Code Not Found");
 
@@ -101,7 +144,7 @@ namespace BreadApp_API.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("Delete/{QrID}", Name = "DeleteQr")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -125,7 +168,7 @@ namespace BreadApp_API.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("Update", Name = "UpdateQr")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

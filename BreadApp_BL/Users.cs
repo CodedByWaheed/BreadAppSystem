@@ -1,5 +1,6 @@
 ﻿using BreadApp_DL;
 using System.Net.Http.Headers;
+using static BreadApp_DL.UserModel;
 
 namespace BreadApp_BL
 {
@@ -22,8 +23,14 @@ namespace BreadApp_BL
         public string? WifeHusbNational { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public string? Role { get; set; }
 
-       
+        public string RefreshTokenHash { get; set; }
+        public DateTime? RefreshTokenExpiresAt { get; set; }
+        public DateTime? RefreshTokenRevokedAt { get; set; }
+
+
+
         public Users ()
         {
             UserID = null;
@@ -59,6 +66,10 @@ namespace BreadApp_BL
             this.WifeHusbNational = UserDTO.WifeHusbNational;
             this.IsActive = UserDTO.IsActive;
             this.CreatedAt = UserDTO.CreatedAt;
+            this.Role = UserDTO.Role;
+            this.RefreshTokenHash = UserDTO.RefreshTokenHash;
+            this.RefreshTokenExpiresAt = UserDTO.RefreshTokenExpiresAt;
+            this.RefreshTokenRevokedAt = UserDTO.RefreshTokenRevokedAt;
             this._Mode = Mode;
         }
         private Users(UserModel.UserInfoDTO UserDTO, enMode Mode = enMode.Update)
@@ -80,26 +91,40 @@ namespace BreadApp_BL
             this._Mode = Mode;
         }
 
+        //private UserModel.UserDTO _ToDTO()
+        //{
+        //    return new UserDTO(
+        //       this.UserID, PublicID,
+        //       NationalNumber, FirstName, SecondName, LastName, DateOfBirth
+        //       , MaritalStatus, FamilyNumber, Phone, PasswordHash, WalletBalance,
+        //       WifeHusbNational, IsActive, CreatedAt, Role
+        //    );
+        //}
+
         private bool _AddUser()
         {
-           this.UserID = UsersData.CreateUser(new UserModel.UserDTO
-            (
-                this.UserID,
-                this.PublicID,
-                this.NationalNumber,
-                this.FirstName,
-                this.SecondName,
-                this.LastName,
-                this.DateOfBirth,
-                this.MaritalStatus,
-                this.FamilyNumber,
-                this.Phone,
-                this.PasswordHash,
-                this.WalletBalance,
-                this.WifeHusbNational,
-                this.IsActive,
-                this.CreatedAt
-            ));
+            this.UserID = UsersData.CreateUser(new UserModel.UserDTO
+             (
+                 this.UserID,
+                 this.PublicID,
+                 this.NationalNumber,
+                 this.FirstName,
+                 this.SecondName,
+                 this.LastName,
+                 this.DateOfBirth,
+                 this.MaritalStatus,
+                 this.FamilyNumber,
+                 this.Phone,
+                 this.PasswordHash,
+                 this.WalletBalance,
+                 this.WifeHusbNational,
+                 this.IsActive,
+                 this.CreatedAt,
+                 this.Role,
+                 this.RefreshTokenHash,
+                 this.RefreshTokenExpiresAt,
+                 this.RefreshTokenRevokedAt
+             ));
             return UserID.Value > 0;
         }
         private bool _UpdateUser()
@@ -120,7 +145,12 @@ namespace BreadApp_BL
                 this.WalletBalance,
                 this.WifeHusbNational,
                 this.IsActive,
-                this.CreatedAt));
+                this.CreatedAt,
+                this.Role,
+                this.RefreshTokenHash,
+                this.RefreshTokenExpiresAt,
+                this.RefreshTokenRevokedAt
+                ));
             
         }  
         public bool Save()
@@ -160,11 +190,11 @@ namespace BreadApp_BL
 
             return false;
         }
-        public static List<UserModel.UserInfoDTO> GetAllUsers(bool? IsActive = true , int PageNumber = 1, int PageSize = 10)
+        public static List<UserModel.UserDTO> GetAllUsers(bool? IsActive = true , int PageNumber = 1, int PageSize = 10)
         {
             return UsersData.GetUsers(IsActive ,PageNumber, PageSize);
         }
-        public static UserModel.UserInfoDTO? GetUserBy(int? UserID = null, Guid? PublicID = null, String? NationalNumber = null, string? Phone = null, bool? IsActive = null)
+        public static UserModel.UserDTO? GetUserBy(int? UserID = null, Guid? PublicID = null, String? NationalNumber = null, string? Phone = null, bool? IsActive = null)
         {
             if(UserID.HasValue)
                 return UsersData.GetUserBy(UserID : UserID);
@@ -179,12 +209,17 @@ namespace BreadApp_BL
             return null;
 
         }
-        public static UserModel.UserInfoDTO Login(string? NationalNumber, string? PsswordHash)
+        public static UserDTO? Authenticate(string? NationalNumber, string? Password)
         {
-            return UsersData.Authenticate(new UserModel.LoginDTO(
-                NationalNumber,
-                PsswordHash
-            ));
+            UserModel.UserDTO User = Users.GetUserBy(NationalNumber: NationalNumber);
+                                     //Users.GetAllUsers(PageNumber:1 , PageSize: 1).FirstOrDefault(Users => Users.NationalNumber == NationalNumber);
+            if (User == null)
+                return null;
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(Password, User.PasswordHash);
+            if(!isValidPassword)
+                return null;
+
+            return User;
         }
 
         public static Users? Find(int? UserID)

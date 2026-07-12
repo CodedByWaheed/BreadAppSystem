@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BCrypt.Net;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,6 +10,6 @@ namespace BreadApp_API.Controllers
     public class TestController : ControllerBase
     {
         [HttpGet]
-        public string Get() => "API working this from Controller";
+        public string Get() => BCrypt.Net.BCrypt.HashPassword("123456");
     }
 }
