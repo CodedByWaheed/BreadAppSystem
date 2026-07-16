@@ -80,10 +80,10 @@ namespace BreadApp_API.Controllers
         //        return BadRequest("Error in Phone ,Number must be 10 number.");
         //    return Ok(Users.GetUserBy(UserID ?? null, PublicID ?? null, NationalNumber ?? null, Phone ?? null, IsActive ?? null));
         //}
-       
-        
-        
-        
+
+
+
+        [AllowAnonymous]
         [HttpPost("Add", Name = "AddNewUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -91,40 +91,47 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public ActionResult<UserModel.UserInfoDTO> AddNewUser(UserModel.UserDTO userDTO)
+        public ActionResult<UserModel.UserInfoDTO> AddNewUser(UserModel.UserInfoDTO userInfoDTO)
         {
 
             
 
-            if (userDTO == null)
+            if (userInfoDTO == null)
                 return BadRequest("There is no Data Come");
-            if (string.IsNullOrEmpty(userDTO.NationalNumber))
+            if (string.IsNullOrEmpty(userInfoDTO.NationalNumber))
                 return BadRequest("National Number Cant be emapty");
-            if (userDTO.NationalNumber.Length < 9)
+            if (userInfoDTO.NationalNumber.Length < 9)
                 return BadRequest("National Number Cant be less than 9 char");
-            if (string.IsNullOrEmpty(userDTO.FirstName) && string.IsNullOrEmpty(userDTO.LastName))
+            if (string.IsNullOrEmpty(userInfoDTO.FirstName) && string.IsNullOrEmpty(userInfoDTO.LastName))
                 return BadRequest("First and Last Name cant be empty");
-            if (string.IsNullOrEmpty(userDTO.Phone))
+            if (string.IsNullOrEmpty(userInfoDTO.Phone))
                 return BadRequest("Phone cant be empty");
-            if (string.IsNullOrEmpty(userDTO.PasswordHash))
+            if (string.IsNullOrEmpty(userInfoDTO.Password))
                 return BadRequest("Password cant be empty");
-            if (!userDTO.DateOfBirth.HasValue)
+            if (!userInfoDTO.DateOfBirth.HasValue)
                 return BadRequest("DateOfBirth cant be empty");
-            if (userDTO.FamilyNumber.HasValue && userDTO.FamilyNumber.Value < 0)
+            if (userInfoDTO.FamilyNumber.HasValue && userInfoDTO.FamilyNumber.Value < 0)
                 return BadRequest("Family number must be greater than 0.");
-            if (string.IsNullOrEmpty(userDTO.WifeHusbNational))
-                userDTO.WifeHusbNational = null;
+            if (string.IsNullOrEmpty(userInfoDTO.WifeHusbNational))
+                userInfoDTO.WifeHusbNational = null;
 
-            userDTO.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDTO.PasswordHash);
-
-            Users User = new Users(userDTO, Users.enMode.Add);
-
-            if (User.Save())
+            userInfoDTO.Password = BCrypt.Net.BCrypt.HashPassword(userInfoDTO.Password);
+            try
             {
-                userDTO.UserID = User.UserID;
-                return CreatedAtRoute("GetUserBy", new { UserID = User.UserID }, userDTO);
+                Users User = new Users(userInfoDTO, Users.enMode.Add);
+
+                if (User.Save())
+                {
+                    userInfoDTO.UserID = User.UserID;
+                    return CreatedAtRoute("GetUserBy", new { UserID = User.UserID }, userInfoDTO);
+                }
+                return BadRequest("Falied to Add User.");
             }
-            return BadRequest("Falied to Add User.");
+            catch (Exception ex)
+            {
+                // log ex.Message / ex.InnerException
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
+            }
 
         }
 
@@ -184,7 +191,7 @@ namespace BreadApp_API.Controllers
             user.MaritalStatus = UserDTO.MaritalStatus ?? user.MaritalStatus;
             user.FamilyNumber = UserDTO.FamilyNumber ?? user.FamilyNumber;
             user.Phone = string.IsNullOrEmpty(UserDTO.Phone) ? user.Phone : UserDTO.Phone;
-            user.PasswordHash = string.IsNullOrEmpty(UserDTO.PasswordHash)? user.PasswordHash : UserDTO.PasswordHash;
+            user.PasswordHash = string.IsNullOrEmpty(UserDTO.PasswordHash)? user.PasswordHash : BCrypt.Net.BCrypt.HashPassword(UserDTO.PasswordHash); ;
             user.WifeHusbNational = string.IsNullOrEmpty(UserDTO.WifeHusbNational) ? user.WifeHusbNational : UserDTO.WifeHusbNational;
             user.IsActive = UserDTO.IsActive ?? user.IsActive;
 

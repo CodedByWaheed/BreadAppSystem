@@ -10,6 +10,6 @@ namespace BreadApp_API.Controllers
     public class TestController : ControllerBase
     {
         [HttpGet]
-        public string Get() => BCrypt.Net.BCrypt.HashPassword("123456");
+        public string Get() => "Work Successfully";// BCrypt.Net.BCrypt.HashPassword("123456");
     }
 }

@@ -72,7 +72,7 @@ namespace BreadApp_BL
             this.RefreshTokenRevokedAt = UserDTO.RefreshTokenRevokedAt;
             this._Mode = Mode;
         }
-        private Users(UserModel.UserInfoDTO UserDTO, enMode Mode = enMode.Update)
+        public Users(UserModel.UserInfoDTO UserDTO, enMode Mode = enMode.Update)
         {
             this.UserID = UserDTO.UserID;
             this.PublicID = UserDTO.PublicID;
@@ -85,9 +85,11 @@ namespace BreadApp_BL
             this.FamilyNumber = UserDTO.FamilyNumber;
             this.Phone = UserDTO.Phone;
             this.WalletBalance = UserDTO.WalletBalance;
+            this.PasswordHash = UserDTO.Password;
             this.WifeHusbNational = UserDTO.WifeHusbNational;
             this.IsActive = UserDTO.IsActive;
             this.CreatedAt = UserDTO.CreatedAt;
+            this.Role = UserDTO.Role;
             this._Mode = Mode;
         }
 

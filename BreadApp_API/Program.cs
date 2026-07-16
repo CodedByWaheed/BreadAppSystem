@@ -189,6 +189,7 @@ if (app.Environment.IsProduction() || app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();

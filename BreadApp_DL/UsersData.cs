@@ -65,7 +65,8 @@ namespace BreadApp_DL
             public UserInfoDTO(int? UserID, Guid? PublicID, string? NationalNumber,
                 string? FirstName, string? SecondName, string? LastName, DateTime? DateOfBirth,
                 bool? MaritalStatus, int? FamilyNumber, string? Phone, Decimal? WalletBalance,
-                string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt , string? Role)
+                string? WifeHusbNational, bool? IsActive, DateTime? CreatedAt , /*string? Role,*/
+                string? Password)
             {
                 this.UserID = UserID;
                 this.PublicID = PublicID;
@@ -81,7 +82,8 @@ namespace BreadApp_DL
                 this.WifeHusbNational = WifeHusbNational;
                 this.IsActive = IsActive;
                 this.CreatedAt = CreatedAt;
-                this.Role = Role;
+                //this.Role = Role;
+                this.Password = Password;
             }
             public int? UserID { get; set; }
             public Guid? PublicID { get; set; }
@@ -90,6 +92,7 @@ namespace BreadApp_DL
             public string? SecondName { get; set; }
             public string? LastName { get; set; }
             public DateTime? DateOfBirth { get; set; }
+            public string? Password {  get; set; }
             public bool? MaritalStatus { get; set; }
             public int? FamilyNumber { get; set; }
             public string? Phone { get; set; }
@@ -97,7 +100,7 @@ namespace BreadApp_DL
             public string? WifeHusbNational { get; set; }
             public bool? IsActive { get; set; }
             public DateTime? CreatedAt { get; set; }
-            public string? Role {  get; set; }
+            //public string? Role {  get; set; }
         }
         public class LoginRequest
         {
