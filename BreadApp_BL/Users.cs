@@ -1,4 +1,6 @@
 ﻿using BreadApp_DL;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using System.Net.Http.Headers;
 using static BreadApp_DL.UserModel;
 
@@ -8,48 +10,67 @@ namespace BreadApp_BL
     {
         public enum enMode { Add = 1 , Update =2 }
         enMode _Mode;
-        public int? UserID { get; set; }
-        public Guid? PublicID { get; set; }
-        public string? NationalNumber { get; set; }
-        public string? FirstName { get; set; }
-        public string? SecondName { get; set; }
-        public string? LastName { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-        public bool? MaritalStatus { get; set; }
-        public int? FamilyNumber { get; set; }
-        public string? Phone { get; set; }
-        public string? PasswordHash { get; set; }
-        public Decimal? WalletBalance { get; set; }
-        public string? WifeHusbNational { get; set; }
-        public bool? IsActive { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public string? Role { get; set; }
+        public int UserID { get; set; } = -1;
+        public Guid PublicID { get; set; } = Guid.NewGuid();
+        public string NationalNumber { get; set; } = "";
+        public string FirstName { get; set; } = "";
+        public string SecondName { get; set; } = "";
+        public string LastName { get; set; } = "";
+        public DateTime DateOfBirth { get; set; } = DateTime.MinValue;
+        public bool MaritalStatus { get; set; } = false;
+        public int? FamilyNumber { get; set; } = null;
+        public string Phone { get; set; } = "";
+        public string PasswordHash { get; set; } = "";
+        public decimal WalletBalance { get; set; } = 0;
+        public string? WifeNational { get; set; } = string.Empty;
+        public string? HusbNational { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = false;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public string Role { get; set; } = "User";
+        public string? RefreshTokenHash { get; set; } = string.Empty;
+        public DateTime? RefreshTokenExpiresAt { get; set; } = DateTime.Now;
+        public DateTime? RefreshTokenRevokedAt { get; set; } = DateTime.Now;
 
-        public string RefreshTokenHash { get; set; }
-        public DateTime? RefreshTokenExpiresAt { get; set; }
-        public DateTime? RefreshTokenRevokedAt { get; set; }
-
-
+        
 
         public Users ()
         {
-            UserID = null;
-            PublicID = null;
-            FirstName = null;
-            SecondName = null;
-            LastName = null;
-            DateOfBirth = null;
-            MaritalStatus = null;
-            FamilyNumber = null;
-            Phone = null;
-            PasswordHash = null;
-            WalletBalance = null;
-            WifeHusbNational = null;
+            UserID = -1;
+            PublicID = Guid.NewGuid() ;
+            FirstName = "";
+            SecondName = "";
+            LastName = "";
+            DateOfBirth = DateTime.MinValue;
+            MaritalStatus = false;
+            FamilyNumber = 0;
+            Phone = "";
+            PasswordHash = "";
+            WalletBalance = 0;
+            WifeNational = "";
+            HusbNational = "";
             IsActive = false;
-            CreatedAt = null;
+            CreatedAt = DateTime.MinValue;
+            Role = "User";
             _Mode = enMode.Add;
         }
-        public Users(UserModel.UserDTO UserDTO ,enMode Mode = enMode.Update )
+        public Users(UserDataDTO UserDTO, enMode Mode = enMode.Update)
+        {
+           
+            this.NationalNumber = UserDTO.NationalNumber;
+            this.FirstName = UserDTO.FirstName;
+            this.SecondName = UserDTO.SecondName;
+            this.LastName = UserDTO.LastName;
+            this.DateOfBirth = UserDTO.DateOfBirth;
+            this.MaritalStatus = UserDTO.MaritalStatus;
+            this.FamilyNumber = UserDTO.FamilyNumber;
+            this.Phone = UserDTO.Phone;
+            this.PasswordHash = UserDTO.PasswordHash;
+            this.WifeNational = UserDTO.WifeNational;
+            this.HusbNational = UserDTO.HusbNational;
+            this._Mode = Mode;
+        }
+
+        public Users(UserObjDTO UserDTO, enMode Mode = enMode.Update)
         {
             this.UserID = UserDTO.UserID;
             this.PublicID = UserDTO.PublicID;
@@ -63,7 +84,8 @@ namespace BreadApp_BL
             this.Phone = UserDTO.Phone;
             this.WalletBalance = UserDTO.WalletBalance;
             this.PasswordHash = UserDTO.PasswordHash;
-            this.WifeHusbNational = UserDTO.WifeHusbNational;
+            this.WifeNational = UserDTO.WifeNational;
+            this.HusbNational= UserDTO.HusbNational;
             this.IsActive = UserDTO.IsActive;
             this.CreatedAt = UserDTO.CreatedAt;
             this.Role = UserDTO.Role;
@@ -72,88 +94,33 @@ namespace BreadApp_BL
             this.RefreshTokenRevokedAt = UserDTO.RefreshTokenRevokedAt;
             this._Mode = Mode;
         }
-        public Users(UserModel.UserInfoDTO UserDTO, enMode Mode = enMode.Update)
-        {
-            this.UserID = UserDTO.UserID;
-            this.PublicID = UserDTO.PublicID;
-            this.NationalNumber = UserDTO.NationalNumber;
-            this.FirstName = UserDTO.FirstName;
-            this.SecondName = UserDTO.SecondName;
-            this.LastName = UserDTO.LastName;
-            this.DateOfBirth = UserDTO.DateOfBirth;
-            this.MaritalStatus = UserDTO.MaritalStatus;
-            this.FamilyNumber = UserDTO.FamilyNumber;
-            this.Phone = UserDTO.Phone;
-            this.WalletBalance = UserDTO.WalletBalance;
-            this.PasswordHash = UserDTO.Password;
-            this.WifeHusbNational = UserDTO.WifeHusbNational;
-            this.IsActive = UserDTO.IsActive;
-            this.CreatedAt = UserDTO.CreatedAt;
-            this.Role = UserDTO.Role;
-            this._Mode = Mode;
-        }
 
-        //private UserModel.UserDTO _ToDTO()
-        //{
-        //    return new UserDTO(
-        //       this.UserID, PublicID,
-        //       NationalNumber, FirstName, SecondName, LastName, DateOfBirth
-        //       , MaritalStatus, FamilyNumber, Phone, PasswordHash, WalletBalance,
-        //       WifeHusbNational, IsActive, CreatedAt, Role
-        //    );
-        //}
+        private UserModel.UserObjDTO _ToObjDTO()
+        {
+            return new UserObjDTO(this.UserID, this.PublicID, this.FirstName,
+                this.SecondName, this.LastName, this.DateOfBirth, this.MaritalStatus,
+                this.FamilyNumber, this.Phone, this.WalletBalance, this.WifeNational,
+                this.HusbNational, this.IsActive, this.CreatedAt, this.NationalNumber,
+                this.PasswordHash, this.Role, this.RefreshTokenHash, this.RefreshTokenExpiresAt,
+                this.RefreshTokenRevokedAt);
+        }
+        public UserInfoDTO ToInfoDTO()
+        {
+            return new UserInfoDTO(UserID: this.UserID, PublicID: this.PublicID , FirstName: this.FirstName,
+               SecondName: this.SecondName, LastName:this.LastName, DateOfBirth:this.DateOfBirth,MaritalStatus:this.MaritalStatus,
+               FamilyNumber: this.FamilyNumber, Phone:this.Phone, WalletBalance: this.WalletBalance,WifeNational: this.WifeNational,
+               HusbNational: this.HusbNational,IsActive: this.IsActive,CreatedAt: this.CreatedAt,NationalNumber: this.NationalNumber,
+               Role: this.Role);
+        }
 
         private bool _AddUser()
         {
-            this.UserID = UsersData.CreateUser(new UserModel.UserDTO
-             (
-                 this.UserID,
-                 this.PublicID,
-                 this.NationalNumber,
-                 this.FirstName,
-                 this.SecondName,
-                 this.LastName,
-                 this.DateOfBirth,
-                 this.MaritalStatus,
-                 this.FamilyNumber,
-                 this.Phone,
-                 this.PasswordHash,
-                 this.WalletBalance,
-                 this.WifeHusbNational,
-                 this.IsActive,
-                 this.CreatedAt,
-                 this.Role,
-                 this.RefreshTokenHash,
-                 this.RefreshTokenExpiresAt,
-                 this.RefreshTokenRevokedAt
-             ));
-            return UserID.Value > 0;
+            this.UserID = UsersData.CreateUser(_ToObjDTO());
+            return UserID > 0;
         }
         private bool _UpdateUser()
         {
-            return UsersData.UpdateUser(new UserModel.UserDTO
-            (
-                this.UserID,
-                this.PublicID,
-                this.NationalNumber,
-                this.FirstName,
-                this.SecondName,
-                this.LastName,
-                this.DateOfBirth,
-                this.MaritalStatus,
-                this.FamilyNumber,
-                this.Phone,
-                this.PasswordHash,
-                this.WalletBalance,
-                this.WifeHusbNational,
-                this.IsActive,
-                this.CreatedAt,
-                this.Role,
-                this.RefreshTokenHash,
-                this.RefreshTokenExpiresAt,
-                this.RefreshTokenRevokedAt
-                ));
-            
+            return UsersData.UpdateUser(_ToObjDTO());  
         }  
         public bool Save()
         {
@@ -178,25 +145,20 @@ namespace BreadApp_BL
            
 
         }
+
         public bool DeleteUser(bool HardDelete = false)
         {
-            if(this.UserID.HasValue)
-                return UsersData.DeleteUser(this.UserID.Value, HardDelete);
-
-            return false;
+            return UsersData.DeleteUser(this.UserID, HardDelete);
         }
-        public static bool DeleteUser(int? UserID ,bool HardDelete = false)
+        public static bool DeleteUser(int UserID ,bool HardDelete = false)
         {
-            if (UserID.HasValue)
-                return UsersData.DeleteUser(UserID.Value, HardDelete);
-
-            return false;
+            return UsersData.DeleteUser(UserID, HardDelete);
         }
-        public static List<UserModel.UserDTO> GetAllUsers(bool? IsActive = true , int PageNumber = 1, int PageSize = 10)
+        public static List<UserModel.UserInfoDTO> GetAllUsers(int? BreadPointID, bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
         {
-            return UsersData.GetUsers(IsActive ,PageNumber, PageSize);
+            return UsersData.GetUsers(BreadPointID, IsActive, PageNumber, PageSize, true);
         }
-        public static UserModel.UserDTO? GetUserBy(int? UserID = null, Guid? PublicID = null, String? NationalNumber = null, string? Phone = null, bool? IsActive = null)
+        public static UserModel.UserObjDTO? GetUserBy(int? UserID = null, Guid? PublicID = null, String? NationalNumber = null, string? Phone = null)
         {
             if(UserID.HasValue)
                 return UsersData.GetUserBy(UserID : UserID);
@@ -206,15 +168,16 @@ namespace BreadApp_BL
                 return UsersData.GetUserBy(NationalNumber: NationalNumber);
             if (!string.IsNullOrEmpty(Phone))
                 return UsersData.GetUserBy(Phone: Phone);
-            if (IsActive.HasValue)
-                return UsersData.GetUserBy(IsActive: IsActive);
+            
             return null;
 
         }
-        public static UserDTO? Authenticate(string? NationalNumber, string? Password)
+        public static UserObjDTO? Authenticate(string? NationalNumber, string? Password)
         {
-            UserModel.UserDTO User = Users.GetUserBy(NationalNumber: NationalNumber);
-                                     //Users.GetAllUsers(PageNumber:1 , PageSize: 1).FirstOrDefault(Users => Users.NationalNumber == NationalNumber);
+            if (string.IsNullOrEmpty(NationalNumber) || string.IsNullOrEmpty(Password))
+                return null;
+            UserObjDTO User = Users.GetUserBy(NationalNumber: NationalNumber)!;
+                                     
             if (User == null)
                 return null;
             bool isValidPassword = BCrypt.Net.BCrypt.Verify(Password, User.PasswordHash);
@@ -226,10 +189,12 @@ namespace BreadApp_BL
 
         public static Users? Find(int? UserID)
         {
-            var dto = UsersData.GetUserBy(UserID:UserID);
+            if (!UserID.HasValue)
+                return null;
+            UserObjDTO dto = UsersData.GetUserBy(UserID: UserID)!;
 
-           
-            if (dto == null) return null;
+            if (dto == null) 
+                return null;
 
             return new Users(dto);
         }
