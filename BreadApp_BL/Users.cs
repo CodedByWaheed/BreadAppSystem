@@ -64,7 +64,7 @@ namespace BreadApp_BL
             this.MaritalStatus = UserDTO.MaritalStatus;
             this.FamilyNumber = UserDTO.FamilyNumber;
             this.Phone = UserDTO.Phone;
-            this.PasswordHash = UserDTO.PasswordHash;
+            this.PasswordHash = UserDTO.Password;
             this.WifeNational = UserDTO.WifeNational;
             this.HusbNational = UserDTO.HusbNational;
             this._Mode = Mode;
