@@ -154,7 +154,7 @@ namespace BreadApp_BL
 
         // ---- BreadPoint's own data (kept separate from the inherited User's data) ----
         public int BreadPointID { get; set; } = -1;
-        public Guid BPPublicID { get; set; } = Guid.NewGuid();
+        public Guid BPPublicID { get; set; } = Guid.Empty;
         public string Name { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
