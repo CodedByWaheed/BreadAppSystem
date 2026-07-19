@@ -11,7 +11,7 @@ namespace BreadApp_BL
         public enum enMode { Add = 1 , Update =2 }
         enMode _Mode;
         public int UserID { get; set; } = -1;
-        public Guid PublicID { get; set; } = Guid.NewGuid();
+        public Guid PublicID { get; set; } = Guid.Empty;
         public string NationalNumber { get; set; } = "";
         public string FirstName { get; set; } = "";
         public string SecondName { get; set; } = "";
