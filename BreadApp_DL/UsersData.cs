@@ -11,33 +11,18 @@ namespace BreadApp_DL
         // this is what i get from the Front
         public class UserDataDTO
         {
-          public UserDataDTO(string NationalNumber, string FirstName
-                , string SecondName, string LastName, DateTime DateOfBirth, bool MaritalStatus
-                , int? FamilyNumber, string Phone , string Password, string? WifeNational , string? HusbNational)
-            {  
-                this.NationalNumber = NationalNumber;
-                this.FirstName = FirstName;
-                this.SecondName = SecondName;
-                this.LastName = LastName;
-                this.DateOfBirth = DateOfBirth;
-                this.MaritalStatus = MaritalStatus;
-                this.FamilyNumber = FamilyNumber;
-                this.Phone = Phone;
-                this.Password = Password;
-                this.WifeNational = WifeNational;
-                this.HusbNational = HusbNational;
-            }
-            public string NationalNumber { get; set; }
-            public string FirstName { get; set; }
-            public string SecondName { get; set; }
-            public string LastName { get; set; }
-            public DateTime DateOfBirth { get; set; }
-            public bool MaritalStatus { get; set; }
-            public int? FamilyNumber { get; set; }
-            public string Phone { get; set; }
-            public string Password { get; set; } 
-            public string? WifeNational { get; set; }
-            public string? HusbNational { get; set; }
+
+            public string? NationalNumber { get; set; } = null;
+            public string? FirstName { get; set; } = null;
+            public string? SecondName { get; set; } = null;
+            public string? LastName { get; set; } = null;
+            public DateTime? DateOfBirth { get; set; } = null;
+            public bool? MaritalStatus { get; set; } = null;
+            public int? FamilyNumber { get; set; } = null;
+            public string? Phone { get; set; } = null;
+            public string? Password { get; set; } = null;
+            public string? WifeNational { get; set; } = null;
+            public string? HusbNational { get; set; } = null;
         }
         // this is what i gave for the front
         public class UserInfoDTO
@@ -158,8 +143,8 @@ namespace BreadApp_DL
                 FamilyNumber: reader.IsDBNull(reader.GetOrdinal("FamilyNumber")) ? null : reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
                 Phone: reader.GetString(reader.GetOrdinal("PhoneNumber")),
                 WalletBalance: reader.GetDecimal(reader.GetOrdinal("WalletBalance")),
-                WifeNational: reader.IsDBNull(reader.GetOrdinal("WifeNational")) ? null : reader.GetString(reader.GetOrdinal("WifeNational")),
-                HusbNational: reader.IsDBNull(reader.GetOrdinal("HusbNational")) ? null : reader.GetString(reader.GetOrdinal("HusbNational")),
+                WifeNational: reader.IsDBNull(reader.GetOrdinal("WifeNationalNum")) ? null : reader.GetString(reader.GetOrdinal("WifeNationalNum")),
+                HusbNational: reader.IsDBNull(reader.GetOrdinal("HusbNationalNum")) ? null : reader.GetString(reader.GetOrdinal("HusbNationalNum")),
                 IsActive: reader.GetBoolean(reader.GetOrdinal("IsActive")),
                 CreatedAt:reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                 Role: reader.GetString(reader.GetOrdinal("Role")),
@@ -186,8 +171,8 @@ namespace BreadApp_DL
                     FamilyNumber: reader.IsDBNull(reader.GetOrdinal("FamilyNumber")) ? null : reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
                     Phone: reader.GetString(reader.GetOrdinal("PhoneNumber")),
                     WalletBalance: reader.GetDecimal(reader.GetOrdinal("WalletBalance")),
-                    WifeNational: reader.IsDBNull(reader.GetOrdinal("WifeNational")) ? null : reader.GetString(reader.GetOrdinal("WifeNational")),
-                    HusbNational: reader.IsDBNull(reader.GetOrdinal("HusbNational")) ? null : reader.GetString(reader.GetOrdinal("HusbNational")),
+                    WifeNational: reader.IsDBNull(reader.GetOrdinal("WifeNationalNum")) ? null : reader.GetString(reader.GetOrdinal("WifeNationalNum")),
+                    HusbNational: reader.IsDBNull(reader.GetOrdinal("HusbNationalNum")) ? null : reader.GetString(reader.GetOrdinal("HusbNationalNum")),
                     IsActive: reader.GetBoolean(reader.GetOrdinal("IsActive")),
                     CreatedAt: reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                     Role: reader.GetString(reader.GetOrdinal("Role"))
@@ -208,7 +193,13 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@NationalNumber", NationalNumber ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@PhoneNumber", Phone ?? (object)DBNull.Value);
 
-                    
+                    var outputParam = new SqlParameter("@RecordCount", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(outputParam);
+
+
 
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -265,7 +256,11 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
                     cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
                     cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
-
+                    var OutputParam = new SqlParameter("@RecordCount", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -296,8 +291,8 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@FamilyNumber", user.FamilyNumber < 1 ? (object)DBNull.Value : user.FamilyNumber);
                     cmd.Parameters.AddWithValue("@PhoneNumber", user.Phone);
                     cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash );
-                    cmd.Parameters.AddWithValue("@WifeNational", user.WifeNational??(object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@HusbNational", user.HusbNational ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@WifeNationalNum", user.WifeNational??(object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@HusbNationalNum", user.HusbNational ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsActive", true);
                     var outputParam = new SqlParameter("@NewUserID", SqlDbType.Int)
                     {
@@ -329,8 +324,8 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@FamilyNumber", user.FamilyNumber);
                     cmd.Parameters.AddWithValue("@PhoneNumber", user.Phone);
                     cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-                    cmd.Parameters.AddWithValue("@WifeNational", user.WifeNational ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@HusbNational",user.HusbNational ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@WifeNationalNum", user.WifeNational ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@HusbNationalNum",user.HusbNational ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsActive", user.IsActive);
                     cmd.Parameters.AddWithValue("@Role" , user.Role);
                     cmd.Parameters.AddWithValue("@RefreshTokenHash", user.RefreshTokenHash);
@@ -338,9 +333,9 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@RefreshTokenRevokedAt", user.RefreshTokenRevokedAt);
 
 
-                    var outputParam = new SqlParameter("@OutputStatus", SqlDbType.Int)
+                    var outputParam = new SqlParameter()
                     {
-                        Direction = ParameterDirection.Output
+                        Direction = ParameterDirection.ReturnValue
                     };
                     cmd.Parameters.Add(outputParam);
 
@@ -361,9 +356,9 @@ namespace BreadApp_DL
 
                     cmd.Parameters.AddWithValue("@UserID", UserID);
                     cmd.Parameters.AddWithValue("@HardDelete", HardDelete);
-                    var outputParam = new SqlParameter("@OutputStatus", SqlDbType.Int)
+                    var outputParam = new SqlParameter()
                     {
-                        Direction = ParameterDirection.Output
+                        Direction = ParameterDirection.ReturnValue
                     };
                     cmd.Parameters.Add(outputParam);
 

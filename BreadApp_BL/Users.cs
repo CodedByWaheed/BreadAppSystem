@@ -60,8 +60,8 @@ namespace BreadApp_BL
             this.FirstName = UserDTO.FirstName;
             this.SecondName = UserDTO.SecondName;
             this.LastName = UserDTO.LastName;
-            this.DateOfBirth = UserDTO.DateOfBirth;
-            this.MaritalStatus = UserDTO.MaritalStatus;
+            this.DateOfBirth = UserDTO.DateOfBirth.HasValue ? UserDTO.DateOfBirth.Value : DateTime.MinValue ;
+            this.MaritalStatus = UserDTO.MaritalStatus.HasValue ? UserDTO.MaritalStatus.Value : false;
             this.FamilyNumber = UserDTO.FamilyNumber;
             this.Phone = UserDTO.Phone;
             this.PasswordHash = UserDTO.Password;
@@ -115,6 +115,8 @@ namespace BreadApp_BL
 
         private bool _AddUser()
         {
+            if (string.IsNullOrEmpty(NationalNumber))
+                return false;
             this.UserID = UsersData.CreateUser(_ToObjDTO());
             return UserID > 0;
         }

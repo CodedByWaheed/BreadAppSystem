@@ -1,279 +1,4 @@
-﻿//using Microsoft.AspNetCore.Identity;
-//using Microsoft.Data.SqlClient;
-//using System.Data;
-
-//namespace BreadApp_DL
-//{
-//    public class BreadPointModel
-//    {
-//        public class BreadPointDataDTO : UserModel.UserDataDTO
-//        {
-//            public BreadPointDataDTO(string NationalNumber, string FirstName
-//                , string SecondName, string LastName, DateTime DateOfBirth, bool MaritalStatus
-//                , int? FamilyNumber, string UserPhone, string Password, string? WifeNational
-//                , string? HusbNational,int UserID , string Name, string Address,string BreadPointPhone
-//                , int AvailablePortions, decimal WalletBalance,double? Latitude, double? Longitude, DateTime CreatedAt)
-//                : base(NationalNumber , FirstName , SecondName , LastName , DateOfBirth , MaritalStatus 
-//                      ,FamilyNumber , UserPhone ,Password , WifeNational , HusbNational)
-//            {
-
-//                this.Name = Name;
-//                this.Address = Address;
-//                this.PhoneNumber = BreadPointPhone;
-//                this.AvailablePortions = AvailablePortions;
-//                this.WalletBalance = WalletBalance;
-//                this.Latitude = Latitude;
-//                this.Longitude = Longitude;
-//                this.CreatedAt = CreatedAt;
-//            }
-
-//            public int BreadPointID { get; set; }
-//            public Guid PublicID { get; set; }
-//            public int UserID { get; set; }
-//            public string Name { get; set; }
-//            public string Address { get; set; }
-//            public string PhoneNumber { get; set; }
-//            public int AvailablePortions { get; set; }
-//            public decimal WalletBalance { get; set; }
-//            public double? Latitude { get; set; }
-//            public double? Longitude { get; set; }
-//            public bool IsActive { get; set; }
-//            public DateTime CreatedAt { get; set; }
-//        }
-//        public class BreadPointInfoDTO
-//        {
-//            public BreadPointInfoDTO(int BreadPointID, Guid PublicID, string Name, string Address,
-//                string PhoneNumber, int AvailablePortions, decimal WalletBalance,
-//                double? Latitude, double? Longitude, bool IsActive, DateTime CreatedAt)
-//            {
-//                this.BreadPointID = BreadPointID;
-//                this.PublicID = PublicID;
-//                this.Name = Name;
-//                this.Address = Address;
-//                this.PhoneNumber = PhoneNumber;
-//                this.AvailablePortions = AvailablePortions;
-//                this.WalletBalance = WalletBalance;
-//                this.Latitude = Latitude;
-//                this.Longitude = Longitude;
-//                this.IsActive = IsActive;
-//                this.CreatedAt = CreatedAt;
-//            }
-
-//            public int BreadPointID { get; set; }
-//            public Guid PublicID { get; set; }
-//            public int UserID { get; set; }
-//            public string Name { get; set; }
-//            public string Address { get; set; }
-//            public string PhoneNumber { get; set; }
-//            public int AvailablePortions { get; set; }
-//            public decimal WalletBalance { get; set; }
-//            public double? Latitude { get; set; }
-//            public double? Longitude { get; set; }
-//            public bool IsActive { get; set; }
-//            public DateTime CreatedAt { get; set; }
-//        }
-//        public class BreadPointObjDTO : UserModel.UserObjDTO
-//        {
-//            public BreadPointObjDTO(int breadPointID, Guid BPpublicID, int userID
-//                , string name, string address, string phoneNumber, int availablePortions
-//                , decimal BPwalletBalance, double? latitude, double? longitude, bool BPisActive
-//                , DateTime BPcreatedAt, int UserID, Guid PublicID, string FirstName, string SecondName,
-//                string LastName, DateTime DateOfBirth, bool MaritalStatus, int? FamilyNumber,
-//                string Phone, decimal WalletBalance, string? WifeNational, string? HusbNational,
-//                bool IsActive, DateTime CreatedAt, string NationalNumber, string PasswordHash,
-//                string Role, string? RefreshTokenHash, DateTime? RefreshTokenExpiresAt,
-//                DateTime? RefreshTokenRevokedAt): base(UserID , PublicID ,FirstName , SecondName , LastName ,
-//                DateOfBirth , MaritalStatus , FamilyNumber , Phone , WalletBalance ,WifeNational,
-//                HusbNational , IsActive , CreatedAt , NationalNumber , PasswordHash , Role ,
-//                RefreshTokenHash , RefreshTokenExpiresAt , RefreshTokenRevokedAt)
-//            {
-//                this.BreadPointID = breadPointID;
-//                this.BPPublicID = BPpublicID;
-//                this.Name = name;
-//                this.Address = address;
-//                this.PhoneNumber = phoneNumber;
-//                this.AvailablePortions = availablePortions;
-//                this.BPWalletBalance = BPwalletBalance;
-//                this.Latitude = latitude;
-//                this.Longitude = longitude;
-//                this.BPIsActive =  BPisActive;
-//                this.BPCreatedAt = BPcreatedAt;
-//            }
-//            public int BreadPointID { get; set; }
-//            public Guid BPPublicID { get; set; }
-//            public string Name { get; set; }
-//            public string Address { get; set; }
-//            public string PhoneNumber { get; set; }
-//            public int AvailablePortions { get; set; }
-//            public decimal BPWalletBalance { get; set; }
-//            public double? Latitude { get; set; }
-//            public double? Longitude { get; set; }
-//            public bool BPIsActive { get; set; }
-//            public DateTime BPCreatedAt { get; set; }
-//        }
-//    }
-
-//    public class BreadPointsData
-//    {
-
-//        private static BreadPointModel.BreadPointInfoDTO MapRow(SqlDataReader reader)
-//        {
-//            return new BreadPointModel.BreadPointInfoDTO
-//            (
-//                BreadPointID: reader.GetInt32(reader.GetOrdinal("BreadPointID")),
-//                PublicID:reader.GetGuid(reader.GetOrdinal("PublicID")),
-//                Name:reader.GetString(reader.GetOrdinal("Name")),
-//                Address:reader.GetString(reader.GetOrdinal("Address")),
-//                PhoneNumber:reader.GetString(reader.GetOrdinal("PhoneNumber")),
-//                AvailablePortions:reader.GetInt32(reader.GetOrdinal("AvailablePortions")),
-//                WalletBalance:reader.GetDecimal(reader.GetOrdinal("WalletBalance")),
-//                Latitude:reader.IsDBNull(reader.GetOrdinal("Latitude")) ? null : reader.GetDouble(reader.GetOrdinal("Latitude")),
-//                Longitude:reader.IsDBNull(reader.GetOrdinal("Longitude")) ? null : reader.GetDouble(reader.GetOrdinal("Longitude")),
-//                IsActive:reader.GetBoolean(reader.GetOrdinal("IsActive")),
-//                CreatedAt:reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
-//            );
-//        }
-
-//        public static BreadPointModel.BreadPointDTO? GetBreadPointBy(
-//            int? BreadPointID = null,
-//            Guid? PublicID = null,
-//            string? Name = null,
-//            bool? IsActive = null)
-//        {
-//            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
-//            {
-//                using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Get", conn))
-//                {
-//                    cmd.CommandType = CommandType.StoredProcedure;
-
-//                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@PublicID", PublicID ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@Name", Name ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
-
-//                    conn.Open();
-//                    SqlDataReader reader = cmd.ExecuteReader();
-
-//                    if (reader.Read())
-//                        return MapRow(reader);
-//                }
-//            }
-//            return null;
-//        }
-
-
-//        public static List<BreadPointModel.BreadPointDTO> GetBreadPoints(
-//            bool? IsActive = null,
-//            int pageNumber = 1,
-//            int pageSize = 10)
-//        {
-//            var BreadPointList = new List<BreadPointModel.BreadPointDTO>();
-
-//            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
-//            {
-//                using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Get", conn))
-//                {
-//                    cmd.CommandType = CommandType.StoredProcedure;
-
-//                    cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
-//                    //cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
-//                    //cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
-
-//                    conn.Open();
-//                    SqlDataReader reader = cmd.ExecuteReader();
-
-//                    while (reader.Read())
-//                        BreadPointList.Add(MapRow(reader));
-//                }
-//            }
-//            return BreadPointList;
-//        }
-
-
-//        public static int CreateBreadPoint(BreadPointModel.BreadPointDTO breadPoint)
-//        {
-//            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
-//            {
-//                using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Create", conn))
-//                {
-//                    cmd.CommandType = CommandType.StoredProcedure;
-
-//                    cmd.Parameters.AddWithValue("@Name", breadPoint.Name ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@Address", breadPoint.Address ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@PhoneNumber", breadPoint.PhoneNumber ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@AvailablePortions", breadPoint.AvailablePortions ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@WalletBalance", breadPoint.WalletBalance ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@Latitude", breadPoint.Latitude ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@Longitude", breadPoint.Longitude ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@IsActive", true);
-//                    var OutputParam = new SqlParameter("@NewID", SqlDbType.Int)
-//                    {
-//                        Direction = ParameterDirection.Output
-//                    };
-
-//                    cmd.Parameters.Add(OutputParam);
-//                    conn.Open();
-//                    cmd.ExecuteNonQuery();
-//                    return (int)OutputParam.Value;
-//                }
-//            }
-//        }
-
-
-//        public static bool UpdateBreadPoint(BreadPointModel.BreadPointDTO breadPoint)
-//        {
-//            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
-//            {
-//                using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Update", conn))
-//                {
-//                    cmd.CommandType = CommandType.StoredProcedure;
-
-//                    cmd.Parameters.AddWithValue("@BreadPointID", breadPoint.BreadPointID < 1 ? (object)DBNull.Value : breadPoint.BreadPointID);
-//                    cmd.Parameters.AddWithValue("@Name", breadPoint.Name ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@Address", breadPoint.Address ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@PhoneNumber", breadPoint.PhoneNumber ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@AvailablePortions", breadPoint.AvailablePortions ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@WalletBalance", breadPoint.WalletBalance ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@Latitude", breadPoint.Latitude ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@Longitude", breadPoint.Longitude ?? (object)DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@IsActive", breadPoint.IsActive ?? (object)DBNull.Value);
-//                    var OutputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
-//                    {
-//                        Direction = ParameterDirection.Output
-//                    };
-//                    cmd.Parameters.Add(OutputParam);
-//                    conn.Open();
-//                    cmd.ExecuteNonQuery();
-//                    return (int)OutputParam.Value > 0;
-//                }
-//            }
-//        }
-
-
-//        public static bool DeleteBreadPoint(int BreadPointID, bool HardDelete = false)
-//        {
-//            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
-//            {
-//                using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Delete", conn))
-//                {
-//                    cmd.CommandType = CommandType.StoredProcedure;
-
-//                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
-//                    cmd.Parameters.AddWithValue("@HardDelete", HardDelete);
-//                    var OutputParam = new SqlParameter("@StatusCode", SqlDbType.Int)
-//                    {
-//                        Direction = ParameterDirection.Output
-//                    };
-//                    cmd.Parameters.Add(OutputParam);
-//                    conn.Open();
-//                    cmd.ExecuteNonQuery();
-//                    return (int)OutputParam.Value > 0;
-//                }
-//            }
-//        }
-//    }
-//}
-
+﻿
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -287,38 +12,20 @@ namespace BreadApp_DL
         /// </summary>
         public class BreadPointDataDTO : UserModel.UserDataDTO
         {
-            public BreadPointDataDTO(string NationalNumber, string FirstName
-                , string SecondName, string LastName, DateTime DateOfBirth, bool MaritalStatus
-                , int? FamilyNumber, string UserPhone, string Password, string? WifeNational
-                , string? HusbNational, int UserID, string Name, string Address, string BreadPointPhone
-                , int AvailablePortions, decimal WalletBalance, double? Latitude, double? Longitude, DateTime CreatedAt)
-                : base(NationalNumber, FirstName, SecondName, LastName, DateOfBirth, MaritalStatus
-                      , FamilyNumber, UserPhone, Password, WifeNational, HusbNational)
-            {
-                this.UserID = UserID;
-                this.Name = Name;
-                this.Address = Address;
-                this.PhoneNumber = BreadPointPhone;
-                this.AvailablePortions = AvailablePortions;
-                this.WalletBalance = WalletBalance;
-                this.Latitude = Latitude;
-                this.Longitude = Longitude;
-                this.CreatedAt = CreatedAt;
-            }
 
-            // Settable separately (e.g. bound from an update payload that includes the identifiers)
-            public int BreadPointID { get; set; }
-            public Guid PublicID { get; set; }
-            public int UserID { get; set; }
-            public string Name { get; set; }
-            public string Address { get; set; }
-            public string PhoneNumber { get; set; }
-            public int? AvailablePortions { get; set; }
-            public decimal? WalletBalance { get; set; }
-            public double? Latitude { get; set; }
-            public double? Longitude { get; set; }
-            public bool? IsActive { get; set; }
-            public DateTime CreatedAt { get; set; }
+
+            public int? BreadPointID { get; set; } = null;
+            //public Guid PublicID { get; set; }
+            public int? UserID { get; set; } = null;
+            public string? Name { get; set; } = null;
+            public string? Address { get; set; } = null;
+            public string? PhoneNumber { get; set; } = null;
+            public int? AvailablePortions { get; set; } = null;
+            //public decimal? WalletBalance { get; set; }
+            //public double? Latitude { get; set; } = null;
+            //public double? Longitude { get; set; } = null;
+            //public bool? IsActive { get; set; }
+            //public DateTime CreatedAt { get; set; }
         }
 
         /// <summary>
@@ -367,17 +74,12 @@ namespace BreadApp_DL
             public BreadPointObjDTO(int breadPointID, Guid BPpublicID, int userID
                 , string name, string address, string phoneNumber, int availablePortions
                 , decimal BPwalletBalance, double? latitude, double? longitude, bool BPisActive
-                , DateTime BPcreatedAt, int UserID, Guid PublicID, string FirstName, string SecondName,
-                string LastName, DateTime DateOfBirth, bool MaritalStatus, int? FamilyNumber,
-                string Phone, decimal WalletBalance, string? WifeNational, string? HusbNational,
-                bool IsActive, DateTime CreatedAt, string NationalNumber, string PasswordHash,
-                string Role, string? RefreshTokenHash, DateTime? RefreshTokenExpiresAt,
-                DateTime? RefreshTokenRevokedAt) : base(UserID, PublicID, FirstName, SecondName, LastName,
-                DateOfBirth, MaritalStatus, FamilyNumber, Phone, WalletBalance, WifeNational,
-                HusbNational, IsActive, CreatedAt, NationalNumber, PasswordHash, Role,
-                RefreshTokenHash, RefreshTokenExpiresAt, RefreshTokenRevokedAt)
+                , DateTime BPcreatedAt) : base(userID , Guid.Empty , string.Empty , string.Empty , string.Empty ,
+                    DateTime.MinValue , false , null , string.Empty , 0M , null , null , false , DateTime.Now ,
+                    string.Empty , string.Empty , string.Empty , null , null ,null)
             {
                 this.BreadPointID = breadPointID;
+                this.UserID = userID;
                 this.BPPublicID = BPpublicID;
                 this.Name = name;
                 this.Address = address;
@@ -440,38 +142,18 @@ namespace BreadApp_DL
             return new BreadPointModel.BreadPointObjDTO
             (
                 breadPointID: reader.GetInt32(reader.GetOrdinal("BreadPointID")),
-                BPpublicID: reader.GetGuid(reader.GetOrdinal("BPPublicID")),
+                BPpublicID: reader.GetGuid(reader.GetOrdinal("PublicID")),
                 userID: reader.GetInt32(reader.GetOrdinal("UserID")),
                 name: reader.GetString(reader.GetOrdinal("Name")),
                 address: reader.GetString(reader.GetOrdinal("Address")),
                 phoneNumber: reader.GetString(reader.GetOrdinal("PhoneNumber")),
                 availablePortions: reader.GetInt32(reader.GetOrdinal("AvailablePortions")),
-                BPwalletBalance: reader.GetDecimal(reader.GetOrdinal("BPWalletBalance")),
+                BPwalletBalance: reader.GetDecimal(reader.GetOrdinal("WalletBalance")),
                 latitude: reader.IsDBNull(reader.GetOrdinal("Latitude")) ? null : reader.GetDouble(reader.GetOrdinal("Latitude")),
                 longitude: reader.IsDBNull(reader.GetOrdinal("Longitude")) ? null : reader.GetDouble(reader.GetOrdinal("Longitude")),
-                BPisActive: reader.GetBoolean(reader.GetOrdinal("BPIsActive")),
-                BPcreatedAt: reader.GetDateTime(reader.GetOrdinal("BPCreatedAt")),
-                UserID: reader.GetInt32(reader.GetOrdinal("UserID")),
-                PublicID: reader.GetGuid(reader.GetOrdinal("PublicID")),
-                FirstName: reader.GetString(reader.GetOrdinal("FirstName")),
-                SecondName: reader.GetString(reader.GetOrdinal("SecondName")),
-                LastName: reader.GetString(reader.GetOrdinal("LastName")),
-                DateOfBirth: reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
-                MaritalStatus: reader.GetBoolean(reader.GetOrdinal("MaritalStatus")),
-                FamilyNumber: reader.IsDBNull(reader.GetOrdinal("FamilyNumber")) ? null : reader.GetInt32(reader.GetOrdinal("FamilyNumber")),
-                Phone: reader.GetString(reader.GetOrdinal("UserPhone")),
-                WalletBalance: reader.GetDecimal(reader.GetOrdinal("UserWalletBalance")),
-                WifeNational: reader.IsDBNull(reader.GetOrdinal("WifeNational")) ? null : reader.GetString(reader.GetOrdinal("WifeNational")),
-                HusbNational: reader.IsDBNull(reader.GetOrdinal("HusbNational")) ? null : reader.GetString(reader.GetOrdinal("HusbNational")),
-                IsActive: reader.GetBoolean(reader.GetOrdinal("UserIsActive")),
-                CreatedAt: reader.GetDateTime(reader.GetOrdinal("UserCreatedAt")),
-                NationalNumber: reader.GetString(reader.GetOrdinal("NationalNumber")),
-                PasswordHash: reader.GetString(reader.GetOrdinal("PasswordHash")),
-                Role: reader.GetString(reader.GetOrdinal("Role")),
-                RefreshTokenHash: reader.IsDBNull(reader.GetOrdinal("RefreshTokenHash")) ? null : reader.GetString(reader.GetOrdinal("RefreshTokenHash")),
-                RefreshTokenExpiresAt: reader.IsDBNull(reader.GetOrdinal("RefreshTokenExpiresAt")) ? null : reader.GetDateTime(reader.GetOrdinal("RefreshTokenExpiresAt")),
-                RefreshTokenRevokedAt: reader.IsDBNull(reader.GetOrdinal("RefreshTokenRevokedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("RefreshTokenRevokedAt"))
-            );
+                BPisActive: reader.GetBoolean(reader.GetOrdinal("IsActive")),
+                BPcreatedAt: reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+                );
         }
 
         // ---------- Front-facing reads (return InfoDTO) ----------
@@ -491,7 +173,11 @@ namespace BreadApp_DL
                 cmd.Parameters.AddWithValue("@PublicID", PublicID ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Name", Name ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
-
+                var outputParam = new SqlParameter("@RecordsCount", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outputParam);
                 conn.Open();
                 using SqlDataReader reader = cmd.ExecuteReader();
 
@@ -515,7 +201,11 @@ namespace BreadApp_DL
                 cmd.Parameters.AddWithValue("@IsActive", IsActive);
                 cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
                 cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
-
+                var outputParam = new SqlParameter("@RecordsCount", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outputParam);
                 conn.Open();
                 using SqlDataReader reader = cmd.ExecuteReader();
 
@@ -538,14 +228,18 @@ namespace BreadApp_DL
             string? Name = null)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
-            using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_GetFull", conn))
+            using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Get", conn))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@PublicID", PublicID ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Name" , Name?? (object) DBNull.Value);
-
+                var outputParam = new SqlParameter("@RecordsCount", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outputParam);
                 conn.Open();
                 using SqlDataReader reader = cmd.ExecuteReader();
 
@@ -573,7 +267,7 @@ namespace BreadApp_DL
                 cmd.Parameters.AddWithValue("@WalletBalance", breadPoint.WalletBalance);
                 cmd.Parameters.AddWithValue("@Latitude", breadPoint.Latitude ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Longitude", breadPoint.Longitude ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@IsActive", true);
+                cmd.Parameters.AddWithValue("@IsActive", breadPoint.IsActive);
 
                 var outputParam = new SqlParameter("@NewID", SqlDbType.Int)
                 {

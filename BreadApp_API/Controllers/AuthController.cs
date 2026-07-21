@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace StudentApi.Controllers
 {
 
-   
+
     // This controller is responsible for authentication-related actions,
     // such as logging in and issuing JWT tokens.
     [ApiController]
@@ -35,44 +35,44 @@ namespace StudentApi.Controllers
         [EnableRateLimiting("AuthLimiter")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            string x = "";
-            var UserDto = Users.Authenticate(request.NationalNo, request.Password);
-            x += "1";
-
+            
+            var UserObjDTO = Users.Authenticate(request.NaionalNumber, request.Password);
 
             // return 401 Unauthorized.
-            if (UserDto == null)
+            if (UserObjDTO == null)
                 return Unauthorized("Invalid credentials");
-             x += "2";
-            Users User = new Users(UserDto);
-            x += "3";
+
+            
+            Users User = new Users(UserObjDTO);
+
             // Step 3: Create claims that represent the authenticated user's identity.
             // These claims will be embedded inside the JWT.
             var claims = new[]
             {
                 // Unique identifier for the User
-                new Claim(ClaimTypes.NameIdentifier, UserDto.UserID.ToString()!),
+                new Claim(ClaimTypes.NameIdentifier, UserObjDTO.UserID.ToString()!),
 
 
                 // User National number 
-                new Claim(ClaimTypes.Email, UserDto.NationalNumber!),
+                new Claim(ClaimTypes.Name, UserObjDTO.NationalNumber!),
 
 
                 // Role (admin , user , breadPoint) used later for authorization
-                new Claim(ClaimTypes.Role, UserDto.Role!)
+                new Claim(ClaimTypes.Role, UserObjDTO.Role!)
             };
-            
+
 
             // Step 4: Create the symmetric security key used to sign the JWT.
             // This key must match the key used in JWT validation middleware.
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"));
 
-            
+
             // Step 5: Define the signing credentials.
             // This specifies the algorithm used to sign the token.
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            
+
+
 
             // Step 6: Create the JWT token.
             // The token includes issuer, audience, claims, expiration, and signature.
@@ -83,21 +83,21 @@ namespace StudentApi.Controllers
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds
             );
-            
+
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-            
+
             // Create refresh token (random)
             var refreshToken = GenerateRefreshToken();
-           
+
             // Store refresh token securely (hash + expiry + not revoked)
             User.RefreshTokenHash = BCrypt.Net.BCrypt.HashPassword(refreshToken);
             User.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
             User.RefreshTokenRevokedAt = null;
-           
-           
+
+    
             User.Save();
-             
+
 
             return Ok(new TokenResponse
             {
@@ -112,7 +112,7 @@ namespace StudentApi.Controllers
         public IActionResult Refresh([FromBody] RefreshRequest request)
         {
             var userDto = Users.GetUserBy(NationalNumber: request.NationalNum);
-                
+
             if (userDto == null)
                 return Unauthorized("Invalid refresh request");
 
@@ -125,7 +125,7 @@ namespace StudentApi.Controllers
                 return Unauthorized("Refresh token expired");
 
             bool refreshValid = BCrypt.Net.BCrypt.Verify(request.RefreshToken, user.RefreshTokenHash);
-            
+
             if (!refreshValid)
                 return Unauthorized("Invalid refresh token");
 
@@ -173,7 +173,7 @@ namespace StudentApi.Controllers
         public IActionResult Logout([FromBody] LogoutRequest request)
         {
             var userDto = Users.GetUserBy(NationalNumber: request.NationalNum);
-              
+
 
             if (userDto == null)
                 return Ok(); // Do not reveal if user exists
@@ -185,7 +185,7 @@ namespace StudentApi.Controllers
                 return Ok();
 
             user.RefreshTokenRevokedAt = DateTime.UtcNow;
-            user.Save();    
+            user.Save();
             return Ok("Logged out successfully");
         }
     }

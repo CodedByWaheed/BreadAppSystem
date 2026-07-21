@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 BreadApp_DL.clsConnectionSetting.SetConnection(connectionString!);
 
 // ===============================
@@ -163,7 +164,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Configuration.GetConnectionString("DefaultConnection");
+//builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddCors(options =>
 {
