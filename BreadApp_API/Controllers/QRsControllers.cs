@@ -14,7 +14,7 @@ namespace BreadApp_API.Controllers
     [ApiController]
     public class QRsControllers : ControllerBase
     {
-        [HttpGet("GetAll", Name = "GetAllQRs")]
+        [HttpGet("All", Name = "GetAllQRs")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -49,44 +49,8 @@ namespace BreadApp_API.Controllers
             return Ok(QRsList);
         }
 
-      
-        [HttpGet("Scan/{Token}", Name = "Scan")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<QrInfoDTO>> Scan(string? Token, int? BreadPointID, [FromServices] IAuthorizationService authorizationService)
-        {
-            if (Token == null || Token.Length == 0)
-                return BadRequest("Token is Invalid.");
-            if (!BreadPointID.HasValue || BreadPointID < 1)
-                return BadRequest("Bread Point ID is Invalid");
 
-            byte[] PlainToken = Convert.FromBase64String(Token);
-
-            var qr = QRs.GetOneQRCodeBy(Token: PlainToken);
-
-            if (qr == null)
-                return BadRequest("Qr does not Exist.");
-            var authResult = await authorizationService.AuthorizeAsync(
-                User,
-                qr.UserID,
-                "UserOwnerOrAdmin");
-            if (!authResult.Succeeded)
-                return Forbid(); // 403
-          
-            var scanned = QRs.Scan(Token: PlainToken, BreadPointID: BreadPointID.Value);
-            if (scanned == null)
-                return BadRequest("Failed to scan QR.");
-
-            return Ok(scanned.ToInfoDTO());
-        }
-
-
-
-
-        [HttpGet("GetOneQRBy", Name = "GetQr")]
+        [HttpGet("By", Name = "GetQr")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -121,7 +85,44 @@ namespace BreadApp_API.Controllers
 
 
 
-        [HttpPost("Add", Name = "AddNewQR")]
+
+
+
+        [HttpPut("Scan/{Token}", Name = "Scan")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<QrInfoDTO>> Scan(string? Token, int? BreadPointID, [FromServices] IAuthorizationService authorizationService)
+        {
+            if (Token == null || Token.Length == 0)
+                return BadRequest("Token is Invalid.");
+            if (!BreadPointID.HasValue || BreadPointID < 1)
+                return BadRequest("Bread Point ID is Invalid");
+
+            byte[] PlainToken = Convert.FromBase64String(Token);
+
+            var qr = QRs.GetOneQRCodeBy(Token: PlainToken);
+
+            if (qr == null)
+                return BadRequest("Qr does not Exist.");
+            var authResult = await authorizationService.AuthorizeAsync(
+                User,
+                qr.UserID,
+                "UserOwnerOrAdmin");
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
+
+            var scanned = QRs.Scan(Token: PlainToken, BreadPointID: BreadPointID.Value);
+            if (scanned == null)
+                return BadRequest("Failed to scan QR.");
+
+            return Ok(scanned.ToInfoDTO());
+        }
+
+
+        [HttpPost("", Name = "AddNewQR")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -158,59 +159,6 @@ namespace BreadApp_API.Controllers
             return BadRequest("Failed to Add Qr.");
         }
 
-       
-        
-        //[Authorize(Roles = "Admin")]
-        //[HttpDelete("Delete/{QrID}", Name = "DeleteQr")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public ActionResult DeleteQr(int QrID, bool HardDelete = false)
-        //{
-        //    if (QrID < 1)
-        //        return BadRequest("Qr ID Can't Be Less than 1");
-
-        //    QRs? Qr = QRs.Find(QrID);
-        //    if (Qr == null)
-        //        return NotFound("Qr Not found");
-
-        //    if (Qr.Delete(false))
-        //        return Ok("Qr Deleted Successfully");
-
-        //    return BadRequest("Some error Occured.");
-        //}
-
-        //[Authorize(Roles = "Admin")]
-        //[HttpPut("Update", Name = "UpdateQr")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //public ActionResult<QrInfoDTO> UpdateQr(int QRCodeID, int? BreadPointID = null, int? PortionCount = null,
-        //    int? Status = null, DateTime? ExpiresAt = null)
-        //{
-           
-        //    if (QRCodeID < 1)
-        //        return BadRequest("Qr ID is required.");
-
-        //    QRs? qr = QRs.Find(QRCodeID);
-        //    if (qr == null)
-        //        return NotFound($"Qr with id {QRCodeID} not found.");
-
-        //    qr.BreadPointID = BreadPointID ?? qr.BreadPointID;
-        //    qr.PortionCount = PortionCount ?? qr.PortionCount;
-        //    qr.Status = Status.HasValue ? (QRs.enStatus)Status.Value : qr.Status;
-        //    qr.ExpiresAt = ExpiresAt ?? qr.ExpiresAt;
-
-        //    if (qr.Save())
-        //    {
-        //        return CreatedAtRoute("GetQr", new { QRCodeID = qr.QRCodeID }, qr.ToInfoDTO());
-        //    }
-        //    return BadRequest("Failed to Update Qr.");
-        //}
+      
     }
 }

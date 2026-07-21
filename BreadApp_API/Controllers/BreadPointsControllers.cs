@@ -16,7 +16,7 @@ namespace BreadApp_API.Controllers
     public class BreadPointsControllers : ControllerBase
     {
         [AllowAnonymous]
-        [HttpGet("GetAll", Name = "GetAllBreadPoints")]
+        [HttpGet("All", Name = "GetAllBreadPoints")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -29,7 +29,7 @@ namespace BreadApp_API.Controllers
 
 
         [AllowAnonymous]
-        [HttpGet("GetBy", Name = "GetBreadPointBy")]
+        [HttpGet("By", Name = "GetBreadPointBy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,7 +52,7 @@ namespace BreadApp_API.Controllers
 
 
         [AllowAnonymous]
-        [HttpPost("Add", Name = "AddNewBreadPoint")]
+        [HttpPost("", Name = "AddNewBreadPoint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,8 +71,7 @@ namespace BreadApp_API.Controllers
                 return BadRequest("Address Cant be empty");
             if (breadPointDTO.AvailablePortions < 0)
                 return BadRequest("AvailablePortions must be greater than or equal 0.");
-            //if (breadPointDTO.WalletBalance < 0)
-            //    return BadRequest("WalletBalance must be greater than or equal 0.");
+           
             if (!string.IsNullOrEmpty(breadPointDTO.PhoneNumber) && breadPointDTO.PhoneNumber.Length < 10)
                 return BadRequest("Error in Phone, Number must be at least 10 digits.");
 
@@ -89,7 +88,7 @@ namespace BreadApp_API.Controllers
 
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("Activate", Name = "ActivateBreadPoint")]
+        [HttpPut("Activate", Name = "ActivateBreadPoint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -143,7 +142,7 @@ namespace BreadApp_API.Controllers
         }
 
 
-        [HttpPut("Update", Name = "UpdateBreadPoint")]
+        [HttpPut("", Name = "UpdateBreadPoint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -169,10 +168,6 @@ namespace BreadApp_API.Controllers
 
             
             breadPoint.AvailablePortions = breadPointDTO.AvailablePortions?? breadPoint.AvailablePortions;
-            //breadPoint.BPWalletBalance = breadPointDTO.WalletBalance?? breadPoint.BPWalletBalance;
-            //breadPoint.Latitude = breadPointDTO.Latitude ?? breadPoint.Latitude;
-            //breadPoint.Longitude = breadPointDTO.Longitude ?? breadPoint.Longitude;
-            //breadPoint.BPIsActive = breadPointDTO.IsActive ?? breadPoint.BPIsActive;
             breadPoint.Name = string.IsNullOrEmpty(breadPointDTO.Name) ? breadPoint.Name : breadPointDTO.Name;
             breadPoint.Address = string.IsNullOrEmpty(breadPointDTO.Address) ? breadPoint.Address : breadPointDTO.Address;
             breadPoint.PhoneNumber = string.IsNullOrEmpty(breadPointDTO.PhoneNumber) ? breadPoint.PhoneNumber : breadPointDTO.PhoneNumber;

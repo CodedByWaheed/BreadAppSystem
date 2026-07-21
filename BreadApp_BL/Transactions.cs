@@ -16,8 +16,6 @@ namespace BreadApp_BL
         public int SenderUserID { get; set; } = -1;
         public int? ReceiverUserID { get; set; } = null;
         public int? BreadPointID { get; set; } = null;
-        // NOTE: this doubles as "QRToken" on create (what the front sends) and "QRCodeID"
-        // (the resolved internal id) once the record is loaded back from the DB.
         public int? QRCodeID { get; set; } = null;
         public decimal Amount { get; set; } = 0;
         public enTransactionType TransactionType { get; set; } = enTransactionType.BreadBuying;

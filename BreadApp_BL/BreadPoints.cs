@@ -36,17 +36,11 @@ namespace BreadApp_BL
         {
             
             this.BreadPointID = BreadPointDTO.BreadPointID.HasValue ? BreadPointDTO.BreadPointID.Value : -1;
-           // this.BPPublicID = BreadPointDTO.PublicID;
             this.UserID = BreadPointDTO.UserID.HasValue? BreadPointDTO.UserID.Value : -1;
             this.Name = BreadPointDTO.Name;
             this.Address = BreadPointDTO.Address;
             this.PhoneNumber = BreadPointDTO.PhoneNumber;
             this.AvailablePortions = BreadPointDTO.AvailablePortions?? this.AvailablePortions;
-            //this.BPWalletBalance = BreadPointDTO.WalletBalance?? this.BPWalletBalance;
-            //this.Latitude = BreadPointDTO.Latitude;
-            //this.Longitude = BreadPointDTO.Longitude;
-           // this.BPIsActive = BreadPointDTO.IsActive??this.BPIsActive;
-            //this.BPCreatedAt = BreadPointDTO.CreatedAt ?? this.BPCreatedAt;
             _Mode = Mode;
         }
 

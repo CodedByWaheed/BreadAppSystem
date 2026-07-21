@@ -8,6 +8,7 @@ namespace BreadApp_BL
 {
     public class Users
     {
+        public enum enRole { User , BreadPoint , Admin }
         public enum enMode { Add = 1 , Update =2 }
         enMode _Mode;
         public int UserID { get; set; } = -1;

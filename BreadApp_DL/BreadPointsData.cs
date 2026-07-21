@@ -15,17 +15,12 @@ namespace BreadApp_DL
 
 
             public int? BreadPointID { get; set; } = null;
-            //public Guid PublicID { get; set; }
             public int? UserID { get; set; } = null;
             public string? Name { get; set; } = null;
             public string? Address { get; set; } = null;
             public string? PhoneNumber { get; set; } = null;
             public int? AvailablePortions { get; set; } = null;
-            //public decimal? WalletBalance { get; set; }
-            //public double? Latitude { get; set; } = null;
-            //public double? Longitude { get; set; } = null;
-            //public bool? IsActive { get; set; }
-            //public DateTime CreatedAt { get; set; }
+            
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace BreadApp_API.Controllers
     public class UsersControllers : ControllerBase
     {
 
-        [HttpGet("GetAll", Name = "GetAllUsers")]
+        [HttpGet("All", Name = "GetAllUsers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -45,7 +45,7 @@ namespace BreadApp_API.Controllers
 
 
         
-        [HttpGet("GetBy", Name = "GetUserBy")]
+        [HttpGet("By", Name = "GetUserBy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -83,7 +83,7 @@ namespace BreadApp_API.Controllers
 
 
         [AllowAnonymous]
-        [HttpPost("Add", Name = "AddNewUser")]
+        [HttpPost("", Name = "AddNewUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -126,33 +126,7 @@ namespace BreadApp_API.Controllers
 
 
 
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{UserID}", Name = "DeleteUser")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult DeleteUser(int UserID , bool HardDelete = false)
-        {
-            if (UserID < 0)
-                return BadRequest("User ID Can't Be Less than 0");
-
-            Users user = Users.Find(UserID);
-            if (user == null) 
-                return BadRequest("User Not found");
-            
-            if (user.DeleteUser(false))
-                return Ok("User Deleted Successfully");
-
-           return BadRequest("Some error Occured .");
-
-        }
-
-
-
-
-        [HttpPut("Update", Name = "UpdateUser")]
+        [HttpPut("", Name = "UpdateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -197,8 +171,59 @@ namespace BreadApp_API.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPut("Promotion/{UserID}", Name = "PromotionUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<UserInfoDTO> PromotinoUSer(int UserID , Users.enRole Role = Users.enRole.User)
+        {
+            if (UserID <= 0)
+                return BadRequest("Invalid User ID");
 
-     
+            Users user = new Users(Users.GetUserBy(UserID: UserID)!);
+
+            if (user == null)
+                return NotFound($"User not found.");
+
+
+            user.Role = Role.ToString();
+
+
+            if (user.Save())
+            {
+                return CreatedAtRoute("GetUserBy", new { UserID = user.UserID }, user.ToInfoDTO());
+            }
+            return BadRequest("Falied to Update User.");
+
+        }
+
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{UserID}", Name = "DeleteUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult DeleteUser(int UserID, bool HardDelete = false)
+        {
+            if (UserID < 0)
+                return BadRequest("User ID Can't Be Less than 0");
+
+            Users user = Users.Find(UserID);
+            if (user == null)
+                return BadRequest("User Not found");
+
+            if (user.DeleteUser(false))
+                return Ok("User Deleted Successfully");
+
+            return BadRequest("Some error Occured .");
+
+        }
 
 
     }

@@ -87,18 +87,6 @@ namespace BreadApp_BL
             );
         }
 
-        /// <summary>
-        /// What we send to the DL layer for the create-only path.
-        /// </summary>
-        /// 
-        //private QRModel.QrDataDTO _ToDataDTO()
-        //{
-        //    return new QRModel.QrDataDTO(
-        //        this.UserID ,
-        //        this.BreadPointID ,
-        //        this.PortionCount 
-        //    );
-        //}
 
         /// <summary>
         /// Full internal object, used for partial updates — only the fields that matter for
