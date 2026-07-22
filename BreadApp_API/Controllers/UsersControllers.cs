@@ -202,6 +202,33 @@ namespace BreadApp_API.Controllers
 
 
 
+
+        [HttpPut("Charge", Name = "ChargeUserWallet")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserInfoDTO>> ChargeUserWallet([FromServices] IAuthorizationService authorizationService)
+        {
+            
+
+            //var authResult = await authorizationService.AuthorizeAsync(
+            //    User,
+            //    user.UserID,
+            //    "UserOwnerOrAdmin");
+
+            //if (!authResult.Succeeded)
+            //    return Forbid(); // 403
+
+
+            return Ok();
+        }
+
+
+
+
+
         [Authorize(Roles = "Admin")]
         [HttpDelete("{UserID}", Name = "DeleteUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
