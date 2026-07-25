@@ -1,5 +1,6 @@
 ﻿using BreadApp_BL;
 using BreadApp_DL;
+using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +83,37 @@ namespace BreadApp_API.Controllers
             return Ok(transaction);
         }
 
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("Confirm/{TransactionID}", Name = "ConfirmTransaction")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult ConfirmTransaction(int TransactionID , [FromServices] SessionContextInfo sessionInfo)
+        {
+            Access.Insert(sessionInfo);
+            if (TransactionID < 1)
+                return BadRequest("ID Can't be less than 1");
+
+            Transactions? Trans = Transactions.Find(TransactionID);
+            if (Trans == null)
+                return BadRequest("Transaction not found");
+
+            Trans.Status = Transactions.enStatus.Confirmed;
+
+
+            if (Trans.Confirm(sessionInfo))
+                return Ok(new
+                {
+                    Confirmed = true
+                });
+
+            return BadRequest("Transaction Confirm Failed");
+
+        }
 
     }
 }
