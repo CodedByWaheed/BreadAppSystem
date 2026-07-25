@@ -1,4 +1,5 @@
 ﻿using BreadApp_DL;
+using BreadApp_Struct.Common;
 
 namespace BreadApp_BL
 {
@@ -108,51 +109,52 @@ namespace BreadApp_BL
             );
         }
 
-        private bool _AddBreadPoint()
+        private bool _AddBreadPoint(SessionContextInfo sessionInfo)
         {
-            this.BreadPointID = BreadPointsData.CreateBreadPoint(_ToObjDTO());
+            this.BreadPointID = BreadPointsData.CreateBreadPoint(_ToObjDTO(), sessionInfo);
             return this.BreadPointID > 0;
         }
 
-        private bool _UpdateBreadPoint()
+        private bool _UpdateBreadPoint(SessionContextInfo sessionInfo)
         {
-            return BreadPointsData.UpdateBreadPoint(_ToObjDTO());
+            return BreadPointsData.UpdateBreadPoint(_ToObjDTO(), sessionInfo);
         }
 
-        public bool Save()
+        public bool Save(SessionContextInfo sessionInfo)
         {
             if(_Mode == enMode.Add)
-                base.Save(); // Save the inherited User fields first, then handle the BreadPoint-specific fields.
+                base.Save(sessionInfo); // Save the inherited User fields first, then handle the BreadPoint-specific fields.
 
             switch (_Mode)
             {
                 case enMode.Add:
                    
-                    if (_AddBreadPoint())
+                    if (_AddBreadPoint(sessionInfo))
                     {
                         _Mode = enMode.Update;
                         return true;
                     }
                     return false;
                 case enMode.Update:
-                    return _UpdateBreadPoint();
+                    return _UpdateBreadPoint(sessionInfo);
                 default:
                     return false;
             }
+            return false;
         }
 
-        public bool Delete(bool HardDelete = false)
+        public bool Delete(SessionContextInfo sessionInfo,bool HardDelete = false)
         {
             if (this.BreadPointID > 0)
-                return BreadPointsData.DeleteBreadPoint(this.BreadPointID, HardDelete);
+                return BreadPointsData.DeleteBreadPoint(this.BreadPointID, sessionInfo, HardDelete);
 
             return false;
         }
 
-        public static bool Delete( int BreadPointID , bool HardDelete = false)
+        public static bool Delete(SessionContextInfo sessionInfo, int BreadPointID , bool HardDelete = false)
         {
             if (BreadPointID > 0)
-                return BreadPointsData.DeleteBreadPoint(BreadPointID, HardDelete);
+                return BreadPointsData.DeleteBreadPoint(BreadPointID, sessionInfo, HardDelete);
 
             return false;
         }

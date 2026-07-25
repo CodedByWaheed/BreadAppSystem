@@ -1,5 +1,6 @@
 ﻿using BreadApp_BL;
 using BreadApp_DL;
+using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -79,7 +80,7 @@ namespace BreadApp_API.Controllers
 
             return Ok(user.ToInfoDTO());
         }
-        
+
 
 
         [AllowAnonymous]
@@ -90,7 +91,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public ActionResult<UserModel.UserInfoDTO> AddNewUser(UserModel.UserDataDTO userDataDTO)
+        public ActionResult<UserModel.UserInfoDTO> AddNewUser([FromBody]UserModel.UserDataDTO userDataDTO, [FromServices] SessionContextInfo sessionInfo)
         {
 
             
@@ -116,7 +117,7 @@ namespace BreadApp_API.Controllers
             
             Users User = new Users(userDataDTO, Users.enMode.Add);
 
-            if (User.Save())
+            if (User.Save(sessionInfo))
             {
                 return CreatedAtRoute("GetUserBy", new { UserID = User.UserID }, User.ToInfoDTO());
             }
@@ -132,7 +133,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserInfoDTO>> UpdateUser(UserModel.UserDataDTO UserDTO, [FromServices] IAuthorizationService authorizationService)
+        public async Task<ActionResult<UserInfoDTO>> UpdateUser(UserModel.UserDataDTO UserDTO, [FromServices] IAuthorizationService authorizationService , [FromServices] SessionContextInfo sessionInfo)
         {
             if (UserDTO.NationalNumber == null)
                 return BadRequest("National Number Cant be null");
@@ -163,7 +164,7 @@ namespace BreadApp_API.Controllers
             user.HusbNational = string.IsNullOrEmpty(UserDTO.HusbNational) ? user.HusbNational : UserDTO.HusbNational;
 
 
-            if (user.Save())
+            if (user.Save(sessionInfo))
             {
                 return CreatedAtRoute("GetUserBy", new { UserID = user.UserID }, user.ToInfoDTO());
             }
@@ -178,7 +179,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<UserInfoDTO> PromotinoUSer(int UserID , Users.enRole Role = Users.enRole.User)
+        public ActionResult<UserInfoDTO> PromotinoUSer(int UserID , [FromServices] SessionContextInfo sessionInfo, Users.enRole Role = Users.enRole.User )
         {
             if (UserID <= 0)
                 return BadRequest("Invalid User ID");
@@ -192,7 +193,7 @@ namespace BreadApp_API.Controllers
             user.Role = Role.ToString();
 
 
-            if (user.Save())
+            if (user.Save(sessionInfo))
             {
                 return CreatedAtRoute("GetUserBy", new { UserID = user.UserID }, user.ToInfoDTO());
             }
@@ -209,7 +210,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserInfoDTO>> ChargeUserWallet([FromServices] IAuthorizationService authorizationService)
+        public async Task<ActionResult<UserInfoDTO>> ChargeUserWallet([FromServices] IAuthorizationService authorizationService , [FromServices] SessionContextInfo sessionInfo)
         {
             
 
@@ -236,7 +237,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult DeleteUser(int UserID, bool HardDelete = false)
+        public ActionResult DeleteUser(int UserID, [FromServices] SessionContextInfo sessionInfo, bool HardDelete = false)
         {
             if (UserID < 0)
                 return BadRequest("User ID Can't Be Less than 0");
@@ -245,7 +246,7 @@ namespace BreadApp_API.Controllers
             if (user == null)
                 return BadRequest("User Not found");
 
-            if (user.DeleteUser(false))
+            if (user.DeleteUser(HardDelete: false , sessionInfo:sessionInfo))
                 return Ok("User Deleted Successfully");
 
             return BadRequest("Some error Occured .");

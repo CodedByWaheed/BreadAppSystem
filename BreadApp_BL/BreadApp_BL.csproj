@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BreadApp_DL\BreadApp_DL.csproj" />
+    <ProjectReference Include="..\BreadApp_Struct\BreadApp_Struct.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using static BreadApp_DL.UserModel;
-using System.Linq;
-using System.Security.Claims;
+﻿using BreadApp_API.DTOs.Auth;
+using BreadApp_BL;
+using BreadApp_Struct.Common;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using BreadApp_BL;
-using BreadApp_API.DTOs.Auth;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.RateLimiting;
+using System.Text;
+using static BreadApp_DL.UserModel;
 
 
 namespace StudentApi.Controllers
@@ -33,7 +34,7 @@ namespace StudentApi.Controllers
         // It verifies credentials and returns a JWT token if login succeeds.
         [HttpPost("login")]
         [EnableRateLimiting("AuthLimiter")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public IActionResult Login([FromBody] LoginRequest request , [FromServices] SessionContextInfo sessionInfo)
         {
             
             var UserObjDTO = Users.Authenticate(request.NaionalNumber, request.Password);
@@ -96,7 +97,7 @@ namespace StudentApi.Controllers
             User.RefreshTokenRevokedAt = null;
 
     
-            User.Save();
+            User.Save(sessionInfo);
 
 
             return Ok(new TokenResponse
@@ -109,7 +110,7 @@ namespace StudentApi.Controllers
 
         [HttpPost("refresh")]
         [EnableRateLimiting("AuthLimiter")]
-        public IActionResult Refresh([FromBody] RefreshRequest request)
+        public IActionResult Refresh([FromBody] RefreshRequest request , [FromServices] SessionContextInfo sessionInfo)
         {
             var userDto = Users.GetUserBy(NationalNumber: request.NationalNum);
 
@@ -158,7 +159,7 @@ namespace StudentApi.Controllers
             user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
             user.RefreshTokenRevokedAt = null;
 
-            user.Save();
+            user.Save(sessionInfo);
 
             return Ok(new TokenResponse
             {
@@ -170,7 +171,7 @@ namespace StudentApi.Controllers
 
 
         [HttpPost("logout")]
-        public IActionResult Logout([FromBody] LogoutRequest request)
+        public IActionResult Logout([FromBody] LogoutRequest request, [FromServices] SessionContextInfo sessionInfo)
         {
             var userDto = Users.GetUserBy(NationalNumber: request.NationalNum);
 
@@ -185,7 +186,7 @@ namespace StudentApi.Controllers
                 return Ok();
 
             user.RefreshTokenRevokedAt = DateTime.UtcNow;
-            user.Save();
+            user.Save(sessionInfo);
             return Ok("Logged out successfully");
         }
     }

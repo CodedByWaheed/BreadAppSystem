@@ -1,5 +1,6 @@
 ﻿
 using BreadApp_DL;
+using BreadApp_Struct.Common;
 using static BreadApp_DL.TransactionModel;
 
 namespace BreadApp_BL
@@ -122,54 +123,54 @@ namespace BreadApp_BL
             return new Transactions(dto);
         }
 
-        private bool _AddTransaction()
+        private bool _AddTransaction(SessionContextInfo sessionInfo)
         {
-            this.TransactionID = TransactionsData.CreateTransaction(_ToObjDTO());
+            this.TransactionID = TransactionsData.CreateTransaction(_ToObjDTO(), sessionInfo);
             return this.TransactionID > 0;
         }
 
-        private bool _UpdateTransaction()
+        private bool _UpdateTransaction(SessionContextInfo sessionInfo)
         {
             if (this.TransactionID < 1 )
                 return false;
 
-            return TransactionsData.UpdateTransaction(
-                this.TransactionID,
-                (int)this.Status,
-                this.Notes
+            return TransactionsData.UpdateTransaction(sessionInfo: sessionInfo,
+                TransactionID: this.TransactionID,
+                Status: (int)this.Status,
+                Notes: this.Notes
             );
         }
 
-        public bool Save()
+        public bool Save(SessionContextInfo sessionInfo)
         {
             switch (_Mode)
             {
                 case enMode.Add:
-                    if (_AddTransaction())
+                    if (_AddTransaction(sessionInfo))
                     {
                         _Mode = enMode.Update;
                         return true;
                     }
                     return false;
                 case enMode.Update:
-                    return _UpdateTransaction();
+                    return _UpdateTransaction(sessionInfo);
                 default:
                     return false;
             }
         }
 
-        public bool Confirm()
+        public bool Confirm(SessionContextInfo sessionInfo)
         {
             if (this.TransactionID > 0)
-                return TransactionsData.ConfirmTransaction(this.TransactionID);
+                return TransactionsData.ConfirmTransaction(sessionInfo:sessionInfo, TransactionID:this.TransactionID);
 
             return false;
         }
 
-        public bool Delete(bool HardDelete = false)
+        public bool Delete(SessionContextInfo sessionInfo, bool HardDelete = false)
         {
             if (this.TransactionID > 0)
-                return TransactionsData.DeleteTransaction(this.TransactionID, HardDelete);
+                return TransactionsData.DeleteTransaction(sessionInfo: sessionInfo, TransactionID: this.TransactionID, HardDelete: HardDelete);
 
             return false;
         }

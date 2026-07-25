@@ -1,4 +1,5 @@
 ﻿
+using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -252,7 +253,7 @@ namespace BreadApp_DL
         /// Takes what the front end sent to request a new QR code. Token/expiry/status are
         /// generated server-side (by the stored procedure), so they aren't accepted here.
         /// </summary>
-        public static byte[] CreateQRCode(QRModel.QrObjDTO qrDTO)
+        public static byte[] CreateQRCode(QRModel.QrObjDTO qrDTO, SessionContextInfo sessionInfo)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Create", conn))
@@ -270,6 +271,7 @@ namespace BreadApp_DL
                 cmd.Parameters.Add(outputParam);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 cmd.ExecuteNonQuery();
                 return (byte[])outputParam.Value;
             }
@@ -279,7 +281,7 @@ namespace BreadApp_DL
         /// Internal-only partial update — takes the ObjDTO so callers can update just the
         /// fields they touched (e.g. Status/PortionCount/ExpiresAt) and leave the rest null.
         /// </summary>
-        public static bool UpdateQRCode(QRModel.QrObjDTO qrCode)
+        public static bool UpdateQRCode(QRModel.QrObjDTO qrCode, SessionContextInfo sessionInfo)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Update", conn))
@@ -299,6 +301,7 @@ namespace BreadApp_DL
                 cmd.Parameters.Add(outputParam);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 cmd.ExecuteNonQuery();
                 return (int)outputParam.Value > 0;
             }
@@ -309,7 +312,7 @@ namespace BreadApp_DL
         /// portion counts / status and react (e.g. adjust wallet balances) before deciding what,
         /// if anything, to hand back to the front end.
         /// </summary>
-        public static QRModel.QrObjDTO? ScanQRCode(byte[] Token, int BreadPointID)
+        public static QRModel.QrObjDTO? ScanQRCode(byte[] Token, SessionContextInfo sessionInfo, int BreadPointID)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Scan", conn))
@@ -320,6 +323,7 @@ namespace BreadApp_DL
                 cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 using SqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read())
@@ -328,7 +332,7 @@ namespace BreadApp_DL
             return null;
         }
 
-        public static bool DeleteQRCode(int QRCodeID, bool HardDelete = false)
+        public static bool DeleteQRCode(int QRCodeID, SessionContextInfo sessionInfo, bool HardDelete = false)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Delete", conn))
@@ -345,9 +349,26 @@ namespace BreadApp_DL
                 cmd.Parameters.Add(outputParam);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 cmd.ExecuteNonQuery();
                 return (int)outputParam.Value > 0;
             }
+        }
+        //-----------------------------//////////////////////////------------------------------
+        public static void SetSessionContext(SqlConnection conn, SessionContextInfo sessionInfo)
+        {
+            using var cmd = new SqlCommand(@"
+                 EXEC sp_set_session_context @key = N'UserID', @value = @UserID;
+                 EXEC sp_set_session_context @key = N'Role', @value = @Role;
+                 EXEC sp_set_session_context @key = N'IPAddress', @value = @IPAddress;
+                 EXEC sp_set_session_context @key = N'RequestID', @value = @RequestID;", conn);
+
+            cmd.Parameters.AddWithValue("@UserID", (object?)sessionInfo.UserID ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Role", (object?)sessionInfo.Role ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@IPAddress", (object?)sessionInfo.IPAddress ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@RequestID", (object?)sessionInfo.RequestID ?? DBNull.Value);
+
+            cmd.ExecuteNonQuery();
         }
     }
 }

@@ -1,12 +1,14 @@
 
+using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi;
-using System.Text;
-using Microsoft.AspNetCore.RateLimiting;
-using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args); 
 
@@ -181,6 +183,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddScoped<SessionContextInfo>();
+
 
 
 var app = builder.Build();
@@ -215,6 +219,20 @@ app.Use(async (context, next) =>
 // Authorization decides what the user is allowed to do.
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    var info = context.RequestServices.GetRequiredService<SessionContextInfo>();
+
+    var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    info.UserID = int.TryParse(userIdClaim, out var uid) ? uid : (int?)null;
+    info.Role = context.User.FindFirst(ClaimTypes.Role)?.Value;
+    info.IPAddress = context.Connection.RemoteIpAddress?.ToString();
+    info.RequestID = Guid.NewGuid(); // one ID for this entire request, nested calls included
+
+
+    await next();
+});
 
 app.MapControllers();
 

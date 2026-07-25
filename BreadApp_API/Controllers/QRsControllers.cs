@@ -1,6 +1,7 @@
 ﻿
 using BreadApp_BL;
 using BreadApp_DL;
+using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -86,7 +87,24 @@ namespace BreadApp_API.Controllers
 
 
 
+        private static byte[] FromBase64Url(string input)
+        {
+            input = input
+                .Replace("-", "+")
+                .Replace("_", "/");
 
+            switch (input.Length % 4)
+            {
+                case 2:
+                    input += "==";
+                    break;
+                case 3:
+                    input += "=";
+                    break;
+            }
+
+            return Convert.FromBase64String(input);
+        }
 
         [HttpPut("Scan/{Token}", Name = "Scan")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -94,14 +112,14 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<QrInfoDTO>> Scan(string? Token, int? BreadPointID, [FromServices] IAuthorizationService authorizationService)
+        public async Task<ActionResult<QrInfoDTO>> Scan(string? Token, int? BreadPointID, [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo)
         {
             if (Token == null || Token.Length == 0)
                 return BadRequest("Token is Invalid.");
             if (!BreadPointID.HasValue || BreadPointID < 1)
                 return BadRequest("Bread Point ID is Invalid");
 
-            byte[] PlainToken = Convert.FromBase64String(Token);
+            byte[] PlainToken = FromBase64Url(Token);
 
             var qr = QRs.GetOneQRCodeBy(Token: PlainToken);
 
@@ -114,7 +132,7 @@ namespace BreadApp_API.Controllers
             if (!authResult.Succeeded)
                 return Forbid(); // 403
 
-            var scanned = QRs.Scan(Token: PlainToken, BreadPointID: BreadPointID.Value);
+            var scanned = QRs.Scan(sessionInfo: sessionInfo, Token: PlainToken, BreadPointID: BreadPointID.Value );
             if (scanned == null)
                 return BadRequest("Failed to scan QR.");
 
@@ -129,7 +147,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<byte[]>> AddNewQR(QrDataDTO cQrDTO , [FromServices] IAuthorizationService authorizationService)
+        public async Task<ActionResult<byte[]>> AddNewQR(QrDataDTO cQrDTO , [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo)
         {
             if (cQrDTO == null)
                 return BadRequest("There is no Data Came");
@@ -148,12 +166,13 @@ namespace BreadApp_API.Controllers
 
             QRs Qr = new QRs(cQrDTO);
 
-            if (Qr.Save())
+            if (Qr.Save(sessionInfo))
             {
                 return Ok(new
                 {
-                    Token = Convert.ToBase64String(Qr.Token)
-                });
+                    Token = Convert.ToBase64String(Qr.Token).Replace("+", "-").Replace("/", "_").TrimEnd('=')
+                }
+                );
 
             }
             return BadRequest("Failed to Add Qr.");

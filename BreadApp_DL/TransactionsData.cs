@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using BreadApp_Struct.Common;
+using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace BreadApp_DL
@@ -245,7 +246,7 @@ namespace BreadApp_DL
         /// Takes what the front sent to create a transaction. QRToken is passed through as-is;
         /// the stored procedure is expected to resolve it to the actual QRCodeID.
         /// </summary>
-        public static int CreateTransaction(TransactionModel.TransactionObjDTO transaction)
+        public static int CreateTransaction(TransactionModel.TransactionObjDTO transaction, SessionContextInfo sessionInfo)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_Transactions_Create", conn))
@@ -267,12 +268,13 @@ namespace BreadApp_DL
                 cmd.Parameters.Add(outputParam);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 cmd.ExecuteNonQuery();
                 return (int)outputParam.Value; ;
             }
         }
 
-        public static bool ConfirmTransaction(int TransactionID)
+        public static bool ConfirmTransaction(int TransactionID, SessionContextInfo sessionInfo)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_Transactions_Confirm", conn))
@@ -288,12 +290,13 @@ namespace BreadApp_DL
                 cmd.Parameters.Add(outputParam);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 cmd.ExecuteNonQuery();
                 return (int)outputParam.Value > 0;
             }
         }
 
-        public static bool UpdateTransaction(int TransactionID, int? Status = null, string? Notes = null)
+        public static bool UpdateTransaction(int TransactionID, SessionContextInfo sessionInfo, int? Status = null, string? Notes = null)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_Transactions_Update", conn))
@@ -311,12 +314,13 @@ namespace BreadApp_DL
                 cmd.Parameters.Add(outputParam);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 cmd.ExecuteNonQuery();
                 return (int)outputParam.Value > 0;
             }
         }
 
-        public static bool DeleteTransaction(int TransactionID, bool HardDelete = false)
+        public static bool DeleteTransaction(int TransactionID, SessionContextInfo sessionInfo, bool HardDelete = false)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_Transactions_Delete", conn))
@@ -333,9 +337,26 @@ namespace BreadApp_DL
                 cmd.Parameters.Add(outputParam);
 
                 conn.Open();
+                SetSessionContext(conn, sessionInfo);
                 cmd.ExecuteNonQuery();
                 return (int)outputParam.Value > 0;
             }
+        }
+        //-----------------------------//////////////////////////------------------------------
+        public static void SetSessionContext(SqlConnection conn, SessionContextInfo sessionInfo)
+        {
+            using var cmd = new SqlCommand(@"
+         EXEC sp_set_session_context @key = N'UserID', @value = @UserID;
+         EXEC sp_set_session_context @key = N'Role', @value = @Role;
+         EXEC sp_set_session_context @key = N'IPAddress', @value = @IPAddress;
+         EXEC sp_set_session_context @key = N'RequestID', @value = @RequestID;", conn);
+
+            cmd.Parameters.AddWithValue("@UserID", (object?)sessionInfo.UserID ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Role", (object?)sessionInfo.Role ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@IPAddress", (object?)sessionInfo.IPAddress ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@RequestID", (object?)sessionInfo.RequestID ?? DBNull.Value);
+
+            cmd.ExecuteNonQuery();
         }
     }
 }

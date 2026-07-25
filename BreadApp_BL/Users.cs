@@ -1,6 +1,8 @@
 ﻿using BreadApp_DL;
+using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using static BreadApp_DL.UserModel;
 
@@ -114,23 +116,23 @@ namespace BreadApp_BL
                Role: this.Role);
         }
 
-        private bool _AddUser()
+        private bool _AddUser(SessionContextInfo sessionInfo)
         {
             if (string.IsNullOrEmpty(NationalNumber))
                 return false;
-            this.UserID = UsersData.CreateUser(_ToObjDTO());
+            this.UserID = UsersData.CreateUser(_ToObjDTO(), sessionInfo);
             return UserID > 0;
         }
-        private bool _UpdateUser()
+        private bool _UpdateUser(SessionContextInfo sessionInfo)
         {
-            return UsersData.UpdateUser(_ToObjDTO());  
+            return UsersData.UpdateUser(_ToObjDTO() , sessionInfo);  
         }  
-        public bool Save()
+        public bool Save(SessionContextInfo sessionInfo)
         {
             switch (_Mode)
             {
                 case  enMode.Add:
-                    if(_AddUser())
+                    if(_AddUser(sessionInfo))
                     {
                         _Mode = enMode.Update;
                         return true;
@@ -139,7 +141,7 @@ namespace BreadApp_BL
                         return false;
                     
                 case enMode.Update:
-                    return _UpdateUser();
+                    return _UpdateUser(sessionInfo);
                     
                 default:
                     return false;
@@ -149,13 +151,13 @@ namespace BreadApp_BL
 
         }
 
-        public bool DeleteUser(bool HardDelete = false)
+        public bool DeleteUser(SessionContextInfo sessionInfo ,bool HardDelete = false)
         {
-            return UsersData.DeleteUser(this.UserID, HardDelete);
+            return UsersData.DeleteUser(this.UserID,sessionInfo, HardDelete);
         }
-        public static bool DeleteUser(int UserID ,bool HardDelete = false)
+        public static bool DeleteUser(int UserID,SessionContextInfo sessionInfo , bool HardDelete = false)
         {
-            return UsersData.DeleteUser(UserID, HardDelete);
+            return UsersData.DeleteUser(UserID,sessionInfo, HardDelete);
         }
         public static List<UserModel.UserInfoDTO> GetAllUsers(int? BreadPointID, bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
         {

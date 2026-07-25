@@ -1,11 +1,12 @@
 ﻿
 using BreadApp_BL;
 using BreadApp_DL;
+using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static BreadApp_DL.BreadPointModel;
 using Microsoft.OpenApi.Models;
+using static BreadApp_DL.BreadPointModel;
 using static BreadApp_DL.UserModel;
 
 namespace BreadApp_API.Controllers
@@ -59,7 +60,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public ActionResult<BreadPointInfoDTO> AddNewBreadPoint(BreadPointDataDTO breadPointDTO)
+        public ActionResult<BreadPointInfoDTO> AddNewBreadPoint(BreadPointDataDTO breadPointDTO, [FromServices] SessionContextInfo sessionInfo)
         {
             if (breadPointDTO == null)
                 return BadRequest("There is no Data Come");
@@ -78,7 +79,7 @@ namespace BreadApp_API.Controllers
             BreadPoints breadPoint = new BreadPoints(breadPointDTO, BreadPoints.enMode.Add);
             breadPoint.IsActive = false;
 
-            if (breadPoint.Save())
+            if (breadPoint.Save(sessionInfo))
             {
                 var createdDTO = breadPoint.ToInfoDTO();
                 return CreatedAtRoute("GetBreadPointBy", new { BreadPointID = breadPoint.BreadPointID }, createdDTO);
@@ -95,7 +96,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public ActionResult<BreadPointInfoDTO> ActivateBreadPoint(int? BreadPointID, Guid? PublicID, string? Name , bool? Activate = true)
+        public ActionResult<BreadPointInfoDTO> ActivateBreadPoint(int? BreadPointID, Guid? PublicID, string? Name, [FromServices] SessionContextInfo sessionInfo, bool? Activate = true)
         {
             if (BreadPointID.HasValue && BreadPointID < 1)
                 return BadRequest("BreadPoint ID Cannot be less than 1");
@@ -109,7 +110,7 @@ namespace BreadApp_API.Controllers
 
             BP.IsActive = Activate!.Value;
 
-            if (BP.Save())
+            if (BP.Save(sessionInfo))
             {
                 return Ok("Bread Point Activated Successfully");
             }
@@ -126,7 +127,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult DeleteBreadPoint(int BreadPointID, bool HardDelete = false)
+        public ActionResult DeleteBreadPoint(int BreadPointID, [FromServices] SessionContextInfo sessionInfo, bool HardDelete = false)
         {
             if (BreadPointID < 1)
                 return BadRequest("BreadPoint ID Can't Be Less than 1");
@@ -135,7 +136,7 @@ namespace BreadApp_API.Controllers
             if (breadPoint == null)
                 return NotFound("BreadPoint Not found");
 
-            if (breadPoint.Delete(HardDelete))
+            if (breadPoint.Delete(sessionInfo, HardDelete))
                 return Ok("BreadPoint Deleted Successfully");
 
             return BadRequest("Some error Occured.");
@@ -148,7 +149,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BreadPointInfoDTO>> UpdateBreadPoint(BreadPointDataDTO breadPointDTO, [FromServices] IAuthorizationService authorizationService)
+        public async Task<ActionResult<BreadPointInfoDTO>> UpdateBreadPoint(BreadPointDataDTO breadPointDTO, [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo)
         {
 
             if (breadPointDTO.BreadPointID < 1)
@@ -172,7 +173,7 @@ namespace BreadApp_API.Controllers
             breadPoint.Address = string.IsNullOrEmpty(breadPointDTO.Address) ? breadPoint.Address : breadPointDTO.Address;
             breadPoint.PhoneNumber = string.IsNullOrEmpty(breadPointDTO.PhoneNumber) ? breadPoint.PhoneNumber : breadPointDTO.PhoneNumber;
 
-            if (breadPoint.Save())
+            if (breadPoint.Save(sessionInfo))
             {
                 return CreatedAtRoute("GetBreadPointBy", new { BreadPointID = breadPoint.BreadPointID }, breadPoint.ToInfoDTO());
             }

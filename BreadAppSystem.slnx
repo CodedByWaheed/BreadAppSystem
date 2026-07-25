@@ -2,4 +2,5 @@
   <Project Path="BreadApp_API/BreadApp_API.csproj" />
   <Project Path="BreadApp_BL/BreadApp_BL.csproj" />
   <Project Path="BreadApp_DL/BreadApp_DL.csproj" />
+  <Project Path="BreadApp_Struct/BreadApp_Struct.csproj" Id="36b4a313-cf70-44c5-8e0a-6e489d819dbe" />
 </Solution>

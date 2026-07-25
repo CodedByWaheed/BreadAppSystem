@@ -1,8 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using BreadApp_Struct.Common;
+using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Protocols;
+using System.Configuration;
 using System.Data;
 using static BreadApp_DL.UserModel;
-using System.Configuration;
-using Microsoft.IdentityModel.Protocols;
 
 namespace BreadApp_DL
 {
@@ -274,7 +275,7 @@ namespace BreadApp_DL
 
             return UserList;
         }
-        public static int CreateUser(UserModel.UserObjDTO user)
+        public static int CreateUser(UserModel.UserObjDTO user , SessionContextInfo sessionInfo)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
@@ -300,6 +301,8 @@ namespace BreadApp_DL
                     };
                     cmd.Parameters.Add(outputParam);  
                     conn.Open();
+                    SetSessionContext(conn, sessionInfo);
+
                     cmd.ExecuteNonQuery();
                     return (int)outputParam.Value;
                 }
@@ -307,7 +310,7 @@ namespace BreadApp_DL
           
         }
 
-        public static bool UpdateUser(UserModel.UserObjDTO user)
+        public static bool UpdateUser(UserModel.UserObjDTO user , SessionContextInfo sessionInfo)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
@@ -317,7 +320,7 @@ namespace BreadApp_DL
 
                     cmd.Parameters.AddWithValue("@UserID", user.UserID);
                     cmd.Parameters.AddWithValue("@FirstName", user.FirstName);
-                    cmd.Parameters.AddWithValue("@SecondName", user.SecondName );
+                    cmd.Parameters.AddWithValue("@SecondName", user.SecondName);
                     cmd.Parameters.AddWithValue("@LastName", user.LastName);
                     cmd.Parameters.AddWithValue("@DateOfBirth", user.DateOfBirth);
                     cmd.Parameters.AddWithValue("@MaritalStatus", user.MaritalStatus);
@@ -325,9 +328,10 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@PhoneNumber", user.Phone);
                     cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
                     cmd.Parameters.AddWithValue("@WifeNationalNum", user.WifeNational ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@HusbNationalNum",user.HusbNational ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@HusbNationalNum", user.HusbNational ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsActive", user.IsActive);
-                    cmd.Parameters.AddWithValue("@Role" , user.Role);
+                    cmd.Parameters.AddWithValue("@Role", user.Role);
+                    
                     cmd.Parameters.AddWithValue("@RefreshTokenHash", user.RefreshTokenHash);
                     cmd.Parameters.AddWithValue("@RefreshTokenExpiresAt", user.RefreshTokenExpiresAt);
                     cmd.Parameters.AddWithValue("@RefreshTokenRevokedAt", user.RefreshTokenRevokedAt);
@@ -340,13 +344,14 @@ namespace BreadApp_DL
                     cmd.Parameters.Add(outputParam);
 
                     conn.Open();
+                    SetSessionContext(conn, sessionInfo);
                     cmd.ExecuteNonQuery();
                     return (int)outputParam.Value > 0;
                 }
             }
         }
 
-        public static bool DeleteUser(int UserID, bool HardDelete = false)
+        public static bool DeleteUser(int UserID, SessionContextInfo sessionInfo, bool HardDelete = false)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             {
@@ -363,7 +368,7 @@ namespace BreadApp_DL
                     cmd.Parameters.Add(outputParam);
 
                     conn.Open();
-
+                    SetSessionContext(conn, sessionInfo);
                     cmd.ExecuteNonQuery();
                     return (int)outputParam.Value > 0;
                   
@@ -371,6 +376,21 @@ namespace BreadApp_DL
             }
         }
 
+        //-----------------------------//////////////////////////------------------------------
+        public static void SetSessionContext(SqlConnection conn, SessionContextInfo sessionInfo)
+        {
+            using var cmd = new SqlCommand(@"
+                 EXEC sp_set_session_context @key = N'UserID', @value = @UserID;
+                 EXEC sp_set_session_context @key = N'Role', @value = @Role;
+                 EXEC sp_set_session_context @key = N'IPAddress', @value = @IPAddress;
+                 EXEC sp_set_session_context @key = N'RequestID', @value = @RequestID;", conn);
 
+            cmd.Parameters.AddWithValue("@UserID", (object?)sessionInfo.UserID ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Role", (object?)sessionInfo.Role ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@IPAddress", (object?)sessionInfo.IPAddress ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@RequestID", (object?)sessionInfo.RequestID ?? DBNull.Value);
+
+            cmd.ExecuteNonQuery();
+        }
     }
 }

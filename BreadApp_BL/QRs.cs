@@ -1,4 +1,5 @@
 ﻿using BreadApp_DL;
+using BreadApp_Struct.Common;
 
 namespace BreadApp_BL
 {
@@ -111,54 +112,54 @@ namespace BreadApp_BL
             return obj;
         }
 
-        private bool _AddQRCode()
+        private bool _AddQRCode(SessionContextInfo sessionInfo)
         {
 
             
-            this.Token = QRCodesData.CreateQRCode(_ToObjDTO());
+            this.Token = QRCodesData.CreateQRCode(_ToObjDTO(), sessionInfo);
 
             return this.Token != Array.Empty<byte>() ;
         }
 
-        private bool _UpdateQRCode()
+        private bool _UpdateQRCode(SessionContextInfo sessionInfo)
         {
-            return QRCodesData.UpdateQRCode(_ToObjDTO());
+            return QRCodesData.UpdateQRCode(_ToObjDTO(), sessionInfo);
         }
 
-        public bool Save()
+        public bool Save(SessionContextInfo sessionInfo)
         {
             switch (_Mode)
             {
                 case enMode.Add:
-                    if (_AddQRCode())
+                    if (_AddQRCode(sessionInfo))
                     {
                         _Mode = enMode.Update;
                         return true;
                     }
                     return false;
                 case enMode.Update:
-                    return _UpdateQRCode();
+                    return _UpdateQRCode(sessionInfo);
                 default:
                     return false;
             }
         }
 
-        public bool Delete(bool HardDelete = false)
+        public bool Delete(SessionContextInfo sessionInfo, bool HardDelete = false)
         {
-            return QRCodesData.DeleteQRCode(this.QRCodeID, HardDelete);
+            return QRCodesData.DeleteQRCode(this.QRCodeID, sessionInfo, HardDelete);
         }
-        public static bool Delete(int QrID , bool HardDelete = false)
+        public static bool Delete(int QrID , SessionContextInfo sessionInfo, bool HardDelete = false)
         {
-            return QRCodesData.DeleteQRCode(QrID , HardDelete);
+            return QRCodesData.DeleteQRCode(QrID , sessionInfo, HardDelete);
         }
         /// <summary>
         /// Scans a QR code at a bread point. Returns the internal BL object (not an InfoDTO)
         /// so the caller can inspect the result and decide what to expose to the front end,
         /// e.g. via ToInfoDTO() after any business-rule adjustments.
         /// </summary>
-        public static QRs? Scan(byte[] Token, int BreadPointID)
+        public static QRs? Scan(byte[] Token, SessionContextInfo sessionInfo, int BreadPointID)
         {
-            var dto = QRCodesData.ScanQRCode(Token, BreadPointID);
+            var dto = QRCodesData.ScanQRCode(Token, sessionInfo, BreadPointID);
             if (dto == null) return null;
 
             return new QRs(dto);
