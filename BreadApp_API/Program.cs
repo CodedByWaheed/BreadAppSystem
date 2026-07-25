@@ -228,9 +228,10 @@ app.Use(async (context, next) =>
     info.UserID = int.TryParse(userIdClaim, out var uid) ? uid : (int?)null;
     info.Role = context.User.FindFirst(ClaimTypes.Role)?.Value;
     info.IPAddress = context.Connection.RemoteIpAddress?.ToString();
+    info.Action = context.Request.RouteValues["action"]?.ToString();
+    info.Path = context.Request.Path.ToString();
     info.RequestID = Guid.NewGuid(); // one ID for this entire request, nested calls included
-
-
+   
     await next();
 });
 

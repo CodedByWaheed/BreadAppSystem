@@ -114,6 +114,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<QrInfoDTO>> Scan(string? Token, int? BreadPointID, [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo)
         {
+            Access.Insert(sessionInfo);
             if (Token == null || Token.Length == 0)
                 return BadRequest("Token is Invalid.");
             if (!BreadPointID.HasValue || BreadPointID < 1)
@@ -149,6 +150,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<byte[]>> AddNewQR(QrDataDTO cQrDTO , [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo)
         {
+            Access.Insert(sessionInfo);
             if (cQrDTO == null)
                 return BadRequest("There is no Data Came");
             if (cQrDTO.UserID < 1)

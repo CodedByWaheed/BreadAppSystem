@@ -25,6 +25,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<IEnumerable<List<BreadPointInfoDTO>>> GetAllBreadPoints(bool? IsActive = true, int PageNumber = 1, int PageSize = 10)
         {
+
             return Ok(BreadPoints.GetAllBreadPoints(IsActive, PageNumber, PageSize));
         }
 
@@ -38,6 +39,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<BreadPointInfoDTO> GetBreadPointBy(int? BreadPointID, Guid? PublicID, string? Name)
         {
+            
             if (BreadPointID.HasValue && BreadPointID < 1)
                 return BadRequest("BreadPoint ID Cannot be less than 1");
             if (!string.IsNullOrEmpty(Name) && Name.Length < 2)
@@ -62,6 +64,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public ActionResult<BreadPointInfoDTO> AddNewBreadPoint(BreadPointDataDTO breadPointDTO, [FromServices] SessionContextInfo sessionInfo)
         {
+            Access.Insert(sessionInfo);
             if (breadPointDTO == null)
                 return BadRequest("There is no Data Come");
             if (string.IsNullOrEmpty(breadPointDTO.Name))
@@ -98,6 +101,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public ActionResult<BreadPointInfoDTO> ActivateBreadPoint(int? BreadPointID, Guid? PublicID, string? Name, [FromServices] SessionContextInfo sessionInfo, bool? Activate = true)
         {
+            Access.Insert(sessionInfo);
             if (BreadPointID.HasValue && BreadPointID < 1)
                 return BadRequest("BreadPoint ID Cannot be less than 1");
             if (!string.IsNullOrEmpty(Name) && Name.Length < 2)
@@ -129,6 +133,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult DeleteBreadPoint(int BreadPointID, [FromServices] SessionContextInfo sessionInfo, bool HardDelete = false)
         {
+            Access.Insert(sessionInfo);
             if (BreadPointID < 1)
                 return BadRequest("BreadPoint ID Can't Be Less than 1");
 
@@ -151,6 +156,7 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BreadPointInfoDTO>> UpdateBreadPoint(BreadPointDataDTO breadPointDTO, [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo)
         {
+            Access.Insert(sessionInfo);
 
             if (breadPointDTO.BreadPointID < 1)
                 return BadRequest("BreadPointID is required.");

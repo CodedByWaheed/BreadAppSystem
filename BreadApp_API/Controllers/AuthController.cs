@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using static BreadApp_DL.UserModel;
+using BreadApp_Struct.AccessModel;
 
 
 namespace StudentApi.Controllers
@@ -37,6 +38,8 @@ namespace StudentApi.Controllers
         [EnableRateLimiting("AuthLimiter")]
         public IActionResult Login([FromBody] LoginRequest request, [FromServices] SessionContextInfo sessionInfo)
         {
+            
+            Access.Insert(sessionInfo);
 
             var UserObjDTO = Users.Authenticate(request.NaionalNumber, request.Password);
 
@@ -114,12 +117,14 @@ namespace StudentApi.Controllers
                 }, sessionInfo);
             }
 
+            
+
             return Ok(new TokenResponse
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             });
-
+            
         }
 
         [HttpPost("refresh")]
