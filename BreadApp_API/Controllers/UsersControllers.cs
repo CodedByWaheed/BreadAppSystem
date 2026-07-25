@@ -207,26 +207,41 @@ namespace BreadApp_API.Controllers
 
 
 
-        [HttpPut("Charge{NOT IMPLEMNTED}", Name = "ChargeUserWallet")]
+        [HttpPut("Charge", Name = "ChargeUserWallet")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserInfoDTO>> ChargeUserWallet([FromServices] IAuthorizationService authorizationService , [FromServices] SessionContextInfo sessionInfo)
+        public async Task<ActionResult<UserInfoDTO>> ChargeUserWallet(int UserID , decimal Amount ,[FromServices] IAuthorizationService authorizationService , [FromServices] SessionContextInfo sessionInfo , string INFO = "SIMULATION")
         {
-            
+            Access.Insert(sessionInfo);
+            Users? user = Users.Find(UserID: UserID);
+            if(user == null)
+            {
+                return NotFound($"User not found.");
+            }
+            var authResult = await authorizationService.AuthorizeAsync(
+                User,
+                user.UserID,
+                "UserOwnerOrAdmin");
 
-            //var authResult = await authorizationService.AuthorizeAsync(
-            //    User,
-            //    user.UserID,
-            //    "UserOwnerOrAdmin");
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
+            Transactions transactions = new Transactions
+            {
+                SenderUserID = user.UserID,
+                Amount = Amount,
+                TransactionType = Transactions.enTransactionType.TopApp,
+                Status = Transactions.enStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
 
-            //if (!authResult.Succeeded)
-            //    return Forbid(); // 403
-
-
-            return Ok();
+            if(transactions.Save(sessionInfo))
+            {
+                return Ok($"Transaction Waiting for Confirm...TransectionID:{transactions.TransactionID}...");
+            }
+            return BadRequest("Failed to update user wallet.");
         }
 
 
