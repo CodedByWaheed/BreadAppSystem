@@ -1,5 +1,6 @@
 ﻿using BreadApp_API.DTOs.Auth;
 using BreadApp_BL;
+using BreadApp_Struct.AuthModel;
 using BreadApp_Struct.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -34,15 +35,21 @@ namespace StudentApi.Controllers
         // It verifies credentials and returns a JWT token if login succeeds.
         [HttpPost("login")]
         [EnableRateLimiting("AuthLimiter")]
-        public IActionResult Login([FromBody] LoginRequest request , [FromServices] SessionContextInfo sessionInfo)
+        public IActionResult Login([FromBody] LoginRequest request, [FromServices] SessionContextInfo sessionInfo)
         {
-            
+
             var UserObjDTO = Users.Authenticate(request.NaionalNumber, request.Password);
 
             // return 401 Unauthorized.
-            if (UserObjDTO == null)
-                return Unauthorized("Invalid credentials");
+            if (UserObjDTO == null) { 
 
+                Auth.InsertAuthAction(new
+                AuthModel.AuthDTO{
+                    UsernameAttempted = request.NaionalNumber ,
+                    Action = false
+                }, sessionInfo);
+                return Unauthorized("Invalid credentials");
+            }
             
             Users User = new Users(UserObjDTO);
 
@@ -97,8 +104,15 @@ namespace StudentApi.Controllers
             User.RefreshTokenRevokedAt = null;
 
     
-            User.Save(sessionInfo);
-
+            if(User.Save(sessionInfo))
+            {
+                Auth.InsertAuthAction(new
+                 AuthModel.AuthDTO
+                {
+                    UsernameAttempted = request.NaionalNumber,
+                    Action = true
+                }, sessionInfo);
+            }
 
             return Ok(new TokenResponse
             {
