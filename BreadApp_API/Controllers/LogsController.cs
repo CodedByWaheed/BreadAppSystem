@@ -15,32 +15,8 @@ namespace BreadApp_API.Controllers
     public class LogsController : Controller
     {
 
-        //[Authorize(Roles = "Admin")]
-        //[HttpGet("AllAccess", Name = "GetAccessData")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public ActionResult<IEnumerable<List<AccessModel.AccessObjDTO>>> GetAllAccess(int? pageNumber = 1 , int? PageSize = 20)
-        //{
-        //    AccessModel.AccessDTO dto = new AccessModel.AccessDTO()
-        //    {
-        //        UserID = null,
-        //        DateFrom = null,
-        //        DateTo = null,
-        //        HttpMethod = null,
-        //        EndPoint = null,
-        //        IPAddress = null,
-        //        PageNumber = pageNumber,
-        //        PageRow = PageSize,
-        //        RequestedID = null
-        //    };
-
-        //    return Ok(Access.GetAccessData(dto));
-        //}
         [Authorize(Roles = "Admin")]
-        [HttpGet("AllAccess", Name = "GetAccess")]
+        [HttpGet("Access", Name = "GetAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -74,7 +50,7 @@ namespace BreadApp_API.Controllers
 
 
         [Authorize(Roles = "Admin")]
-        [HttpGet("AllAuth", Name = "GetAuth")]
+        [HttpGet("Auth", Name = "GetAuth")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -104,10 +80,9 @@ namespace BreadApp_API.Controllers
 
 
 
-        enum enAction { Update , Add , Delete}
 
         [Authorize(Roles = "Admin")]
-        [HttpGet("AllAudit", Name = "GetAudit")]
+        [HttpGet("Audit", Name = "GetAudit")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -137,34 +112,6 @@ namespace BreadApp_API.Controllers
                 return NotFound("Data Not Found");
             return Ok(data);
         }
-
-
-
-
-        //[Authorize(Roles = "Admin")]
-        //[HttpGet("By", Name = "GetBreadPointBy")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public ActionResult<BreadPointInfoDTO> GetBreadPointBy(int? BreadPointID, Guid? PublicID, string? Name)
-        //{
-
-        //    if (BreadPointID.HasValue && BreadPointID < 1)
-        //        return BadRequest("BreadPoint ID Cannot be less than 1");
-        //    if (!string.IsNullOrEmpty(Name) && Name.Length < 2)
-        //        return BadRequest("Name Can't be less than 2 characters.");
-
-        //    var breadPoint = BreadPoints.GetBreadPointBy(BreadPointID: BreadPointID ?? null, PublicID: PublicID ?? null, Name: Name ?? null);
-
-        //    if (breadPoint == null)
-        //        return NotFound("BreadPoint Not Found");
-
-        //    return Ok(breadPoint);
-        //}
-
-
 
     }
 }

@@ -54,6 +54,8 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@RequestedID", (object?)dto.RequestedId ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@DateFrom", (object?)dto.DateFrom ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@DateTo", (object?)dto.DateTo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@PageNumber", (object?)dto.PageNumber ?? 1);
+                    cmd.Parameters.AddWithValue("@PageRow", (object?)dto.PageRow ?? 20);
                     var outputParam = new SqlParameter("@RecordCount", SqlDbType.Int)
                     {
                         Direction = ParameterDirection.Output
