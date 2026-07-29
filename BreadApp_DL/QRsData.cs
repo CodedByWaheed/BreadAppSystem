@@ -354,6 +354,28 @@ namespace BreadApp_DL
                 return (int)outputParam.Value > 0;
             }
         }
+
+        public static bool CancelQrCode(int QrCodeID, SessionContextInfo sessionInfo)
+        {
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlCommand cmd = new SqlCommand("sp_QRCodes_Cancel", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@QRCodeID",QrCodeID);
+                
+                var outputParam = new SqlParameter()
+                {
+                    Direction = ParameterDirection.ReturnValue
+                };
+                cmd.Parameters.Add(outputParam);
+
+                conn.Open();
+                SetSessionContext(conn, sessionInfo);
+                cmd.ExecuteNonQuery();
+                return (int)outputParam.Value > 0;
+            }
+        }
         //-----------------------------//////////////////////////------------------------------
         public static void SetSessionContext(SqlConnection conn, SessionContextInfo sessionInfo)
         {

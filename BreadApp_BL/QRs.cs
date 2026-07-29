@@ -1,5 +1,6 @@
 ﻿using BreadApp_DL;
 using BreadApp_Struct.Common;
+using System.Runtime.CompilerServices;
 
 namespace BreadApp_BL
 {
@@ -196,6 +197,14 @@ namespace BreadApp_BL
             if (dto == null) return null;
 
             return new QRs(dto);
+        }
+        public bool Cancel( SessionContextInfo sessionInfo)
+        {
+            return QRCodesData.CancelQrCode(this.QRCodeID, sessionInfo);
+        }
+        public static bool Cancel(int QrCodeID, SessionContextInfo sessionInfo)
+        {
+            return QRCodesData.CancelQrCode(QrCodeID, sessionInfo);
         }
     }
 }

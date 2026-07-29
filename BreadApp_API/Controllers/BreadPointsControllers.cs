@@ -91,6 +91,8 @@ namespace BreadApp_API.Controllers
         }
 
 
+
+
         [Authorize(Roles = "Admin")]
         [HttpPut("Activate", Name = "ActivateBreadPoint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -121,31 +123,6 @@ namespace BreadApp_API.Controllers
             return BadRequest("Bread Point Failed to Activate.");
         }
 
-
-
-
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{BreadPointID}", Name = "DeleteBreadPoint")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult DeleteBreadPoint(int BreadPointID, [FromServices] SessionContextInfo sessionInfo, bool HardDelete = false)
-        {
-            Access.Insert(sessionInfo);
-            if (BreadPointID < 1)
-                return BadRequest("BreadPoint ID Can't Be Less than 1");
-
-            BreadPoints? breadPoint = BreadPoints.Find(BreadPointID:BreadPointID);
-            if (breadPoint == null)
-                return NotFound("BreadPoint Not found");
-
-            if (breadPoint.Delete(sessionInfo, HardDelete))
-                return Ok("BreadPoint Deleted Successfully");
-
-            return BadRequest("Some error Occured.");
-        }
 
 
         [HttpPut("", Name = "UpdateBreadPoint")]
@@ -185,5 +162,80 @@ namespace BreadApp_API.Controllers
             }
             return BadRequest("Failed to Update BreadPoint.");
         }
+
+        
+        
+        
+        [HttpPut("Deposit", Name = "DepositBreadPointWallet")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserInfoDTO>> DepositBreadPointWallet(int BreadPointID, decimal Amount, [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo, string INFO = "SIMULATION")
+        {
+            Access.Insert(sessionInfo);
+            BreadPoints? BreadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
+
+            if (BreadPoint == null)
+            {
+                return NotFound($"Bread Point not found.");
+            }
+            var authResult = await authorizationService.AuthorizeAsync(
+                User,
+                BreadPoint.UserID,
+                "UserOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
+
+            Transactions transactions = new Transactions
+            {
+                SenderUserID = BreadPoint.BreadPointID,
+                Amount = Amount,
+                TransactionType = Transactions.enTransactionType.Withdraw,
+                Status = Transactions.enStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            if (transactions.Save(sessionInfo))
+            {
+                return Ok(new
+                {
+                    TransactionID = transactions.TransactionID,
+                    Status = "Pending"
+                });
+            }
+            return BadRequest("Failed to save transaction.");
+        }
+
+     
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{BreadPointID}", Name = "DeleteBreadPoint")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult DeleteBreadPoint(int BreadPointID, [FromServices] SessionContextInfo sessionInfo, bool HardDelete = false)
+        {
+            Access.Insert(sessionInfo);
+            if (BreadPointID < 1)
+                return BadRequest("BreadPoint ID Can't Be Less than 1");
+
+            BreadPoints? breadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
+            if (breadPoint == null)
+                return NotFound("BreadPoint Not found");
+
+            if (breadPoint.Delete(sessionInfo, HardDelete))
+                return Ok("BreadPoint Deleted Successfully");
+
+            return BadRequest("Some error Occured.");
+        }
+
+
+
     }
 }
