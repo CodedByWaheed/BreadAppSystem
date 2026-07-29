@@ -8,7 +8,7 @@ namespace BreadApp_BL
     public class Transactions
     {
         public enum enStatus { Pending = 1, Confirmed = 2, Canceled = 3 }
-        public enum enTransactionType { BreadBuying = 1, Payment = 2, Refund = 3, TopApp = 4 }
+        public enum enTransactionType { BreadBuying = 1, Payment = 2, Refund = 3, TopApp = 4 ,Withdraw = 5}
         public enum enMode { Add = 1, Update = 2 }
         enMode _Mode;
 

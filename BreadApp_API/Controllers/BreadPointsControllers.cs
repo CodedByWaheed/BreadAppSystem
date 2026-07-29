@@ -185,5 +185,52 @@ namespace BreadApp_API.Controllers
             }
             return BadRequest("Failed to Update BreadPoint.");
         }
+
+
+
+        [HttpPut("Deposit", Name = "DepositBreadPointWallet")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserInfoDTO>> DepositBreadPointWallet(int BreadPointID, decimal Amount, [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo, string INFO = "SIMULATION")
+        {
+            Access.Insert(sessionInfo);
+            BreadPoints? BreadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
+
+            if (BreadPoint == null)
+            {
+                return NotFound($"Bread Point not found.");
+            }
+            var authResult = await authorizationService.AuthorizeAsync(
+                User,
+                BreadPoint.UserID,
+                "UserOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
+
+            Transactions transactions = new Transactions
+            {
+                SenderUserID = BreadPoint.BreadPointID,
+                Amount = Amount,
+                TransactionType = Transactions.enTransactionType.Withdraw,
+                Status = Transactions.enStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            if (transactions.Save(sessionInfo))
+            {
+                return Ok(new
+                {
+                    TransactionID = transactions.TransactionID,
+                    Status = "Pending"
+                });
+            }
+            return BadRequest("Failed to save transaction.");
+        }
+
+
     }
 }

@@ -66,7 +66,7 @@ namespace BreadApp_API.Controllers
             if (Token == null || Token.Length < 2)
                 return BadRequest("Token Can't be less than 2 characters.");
 
-            byte[] PlainToken = Convert.FromBase64String(Token);
+            byte[] PlainToken = FromBase64Url(Token);
 
             var qrCode = QRs.GetOneQRCodeBy(QRCodeID: QRCodeID ?? null, PublicID: PublicID ?? null, Token: PlainToken ?? null);
 
@@ -180,6 +180,45 @@ namespace BreadApp_API.Controllers
             return BadRequest("Failed to Add Qr.");
         }
 
-      
+
+
+        [HttpPut("Cancel/{QrCodeID}", Name = "CancelQR")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult> CancelQr(int? QrCodeID, [FromServices] IAuthorizationService authorizationService, [FromServices] SessionContextInfo sessionInfo)
+        {
+            Access.Insert(sessionInfo);
+
+            if (QrCodeID == null || QrCodeID <= 0)
+                return BadRequest("Invalid QR Code ID.");
+
+            var qr = QRs.Find(QRCodeID:QrCodeID.Value);
+            if (qr == null)
+                return BadRequest("QR Code not found.");
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                User,
+                qr.UserID,
+                "UserOwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
+
+            if (qr.Cancel(sessionInfo))
+            {
+                return Ok(new
+                {
+                    Cancelled =  true
+                });
+            }
+            return BadRequest("Failed to cancel QR Code.");
+
+        }
+
+
     }
 }
