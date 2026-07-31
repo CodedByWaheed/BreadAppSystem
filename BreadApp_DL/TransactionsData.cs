@@ -60,6 +60,38 @@ namespace BreadApp_DL
             public string? Notes { get; set; }
         }
 
+        public class TransactionUserInfoDTO
+        {
+            public TransactionUserInfoDTO(int TransactionID, Guid PublicID, string SenderUsername,
+                string? ReceiverUsername, string? BreadPointName, int? QRCodeID,
+                decimal Amount, string TransactionType, string Status, DateTime? ConfirmedAt, string Notes)
+            {
+                this.TransactionID = TransactionID;
+                this.PublicID = PublicID;
+                this.SenderName = SenderUsername;
+                this.ReceiverName = ReceiverUsername;
+                this.BreadPointName = BreadPointName;
+                this.QRCodeID = QRCodeID;
+                this.Amount = Amount;
+                this.TransactionType = TransactionType;
+                this.Status = Status;
+                this.ConfirmedAt = ConfirmedAt;
+                this.Notes = Notes;
+            }
+
+            public int TransactionID { get; set; }
+            public Guid PublicID { get; set; }
+            public string? SenderName { get; set; }
+            public string? ReceiverName { get; set; }
+            public string? BreadPointName { get; set; }
+            public int? QRCodeID { get; set; }
+            public decimal Amount { get; set; }
+            public string TransactionType { get; set; }
+            public string Status { get; set; }
+            public DateTime? ConfirmedAt { get; set; }
+            public string? Notes { get; set; }
+        }
+
         /// <summary>
         /// Full internal object — includes TransactionID/CreatedAt, used for Find/Confirm/Update/Delete.
         /// Never returned from a controller.
@@ -116,6 +148,23 @@ namespace BreadApp_DL
                 Amount: reader.GetDecimal(reader.GetOrdinal("Amount")),
                 TransactionType: reader.GetInt32(reader.GetOrdinal("TransactionType")),
                 Status: reader.GetInt32(reader.GetOrdinal("Status")),
+                ConfirmedAt: reader.IsDBNull(reader.GetOrdinal("ConfirmedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ConfirmedAt")),
+                Notes: reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString(reader.GetOrdinal("Notes"))
+            );
+        }
+        private static TransactionModel.TransactionUserInfoDTO MapToUserInfo(SqlDataReader reader)
+        {
+            return new TransactionModel.TransactionUserInfoDTO
+            (
+                TransactionID: reader.GetInt32(reader.GetOrdinal("TransactionID")),
+                PublicID: reader.GetGuid(reader.GetOrdinal("PublicID")),
+                SenderUsername: reader.GetString(reader.GetOrdinal("SenderName")),
+                ReceiverUsername: reader.IsDBNull(reader.GetOrdinal("ReceiverName")) ? null : reader.GetString(reader.GetOrdinal("ReceiverName")),
+                BreadPointName: reader.IsDBNull(reader.GetOrdinal("BreadPointName")) ? null : reader.GetString(reader.GetOrdinal("BreadPointName")),
+                QRCodeID: reader.IsDBNull(reader.GetOrdinal("QRCodeID")) ? null : reader.GetInt32(reader.GetOrdinal("QRCodeID")),
+                Amount: reader.GetDecimal(reader.GetOrdinal("Amount")),
+                TransactionType: reader.GetString(reader.GetOrdinal("TransactionType")),
+                Status: reader.GetString(reader.GetOrdinal("Status")),
                 ConfirmedAt: reader.IsDBNull(reader.GetOrdinal("ConfirmedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ConfirmedAt")),
                 Notes: reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString(reader.GetOrdinal("Notes"))
             );
@@ -203,6 +252,42 @@ namespace BreadApp_DL
 
                 while (reader.Read())
                     transactionList.Add(MapToInfo(reader));
+            }
+            return transactionList;
+        }
+        public static List<TransactionModel.TransactionUserInfoDTO> GetTransactionsUserInfo(
+           int? SenderUserID = null,
+           int? ReceiverUserID = null,
+           int? BreadPointID = null,
+           int? TransactionType = null,
+           int? Status = null,
+           int pageNumber = 1,
+           int pageSize = 10)
+        {
+            var transactionList = new List<TransactionModel.TransactionUserInfoDTO>();
+
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlCommand cmd = new SqlCommand("sp_Transactions_GetInfo", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@SenderUserID", SenderUserID ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@ReceiverUserID", ReceiverUserID ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@TransactionType", TransactionType ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Status", Status ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
+                cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
+                var outputParam = new SqlParameter("@RecordsCount", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outputParam);
+                conn.Open();
+                using SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                    transactionList.Add(MapToUserInfo(reader));
             }
             return transactionList;
         }

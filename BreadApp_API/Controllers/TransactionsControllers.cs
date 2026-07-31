@@ -17,10 +17,12 @@ namespace BreadApp_API.Controllers
         [HttpGet("AllByUser", Name = "GetAllTransactionsByUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<TransactionInfoDTO>>> GetAllTransactionsByUser(
+        public async Task<ActionResult<IEnumerable<TransactionUserInfoDTO>>> GetAllTransactionsByUser(
             [FromServices] IAuthorizationService authorizationService, int? SenderUserID,
             int? BreadPointID = null,
             Transactions.enTransactionType? TransactionType = null, Transactions.enStatus? Status = null,
@@ -29,12 +31,13 @@ namespace BreadApp_API.Controllers
             if (SenderUserID == null)
                 return BadRequest("The SenderID Cant Be Emptay");
 
-            var transactionList = Transactions.GetAllTransactions(
-                SenderUserID: SenderUserID, BreadPointID: BreadPointID,
-                TransactionType: (int?)TransactionType, Status: (int?)Status,
-                PageNumber: PageNumber, PageSize: PageSize);
+           
+            var transactionList = Transactions.GetAllTransactionsUserInterface(
+               SenderUserID: SenderUserID, BreadPointID: BreadPointID,
+               TransactionType: (int?)TransactionType, Status: (int?)Status,
+               PageNumber: PageNumber, PageSize: PageSize);
 
-            //int? ID = transactionList.FirstOrDefault(T => T.SenderUserID == UserID)?.SenderUserID;
+
 
             var authResult = await authorizationService.AuthorizeAsync(
                 User,
@@ -53,9 +56,11 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<IEnumerable<TransactionInfoDTO>> GetAllTransactions(
+        public ActionResult<IEnumerable<TransactionUserInfoDTO>> GetAllTransactions(
             [FromServices] IAuthorizationService authorizationService, int? SenderUserID,
             int? BreadPointID = null,
             Transactions.enTransactionType? TransactionType = Transactions.enTransactionType.TopApp, 
@@ -63,7 +68,7 @@ namespace BreadApp_API.Controllers
             int PageNumber = 1, int PageSize = 10)
         {
 
-            var transactionList = Transactions.GetAllTransactions(
+            var transactionList = Transactions.GetAllTransactionsUserInterface(
                 SenderUserID: SenderUserID, BreadPointID: BreadPointID,
                 TransactionType: (int?)TransactionType, Status: (int?)Status,
                 PageNumber: PageNumber, PageSize: PageSize);
@@ -77,6 +82,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<TransactionInfoDTO>> GetOneTransactionBy(
             [FromServices] IAuthorizationService authorizationService, int? TransactionID = null, Guid? PublicID = null, int? QRCodeID = null)
@@ -113,6 +120,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult ConfirmTransaction(int TransactionID , [FromServices] SessionContextInfo sessionInfo)
         {

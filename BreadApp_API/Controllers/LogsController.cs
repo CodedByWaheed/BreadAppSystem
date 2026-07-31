@@ -22,6 +22,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<IEnumerable<List<AccessModel.AccessObjDTO>>> GetAccessData(
              DateTime? DateFrom = null, DateTime? DateTo = null  ,int?UserID = null
             ,string? HttpMethod = null, string? EndPoint = null
@@ -56,6 +58,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<IEnumerable<List<AuthModel.AuthObjDTO>>> GetAuthData(int? UserID = null
             , DateTime? DateFrom = null, DateTime? DateTo = null, bool? Success = null
             , string? IPAddress = null, Guid? RequestedID = null, int? pageNumber = 1, int? PageSize = 20)
@@ -88,6 +92,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<IEnumerable<List<AuditModel.AuditObjDTO>>> GetAuditData(int? UserID = null
             , DateTime? DateFrom = null, DateTime? DateTo = null , string? Action = null , int? RecordID = null
             ,string? Role = null, string? IPAddress = null, int? pageNumber = 1, int? PageSize = 20,

@@ -196,6 +196,15 @@ namespace BreadApp_BL
             return TransactionsData.GetTransactions(SenderUserID:SenderUserID,BreadPointID:BreadPointID
                 , TransactionType: TransactionType,Status: Status, pageNumber: PageNumber, pageSize:PageSize);
         }
+
+        public static List<TransactionUserInfoDTO> GetAllTransactionsUserInterface(
+           int? SenderUserID = null, int? BreadPointID = null,
+           int? TransactionType = null, int? Status = null,
+           int PageNumber = 1, int PageSize = 10)
+        {
+            return TransactionsData.GetTransactionsUserInfo(SenderUserID: SenderUserID, BreadPointID: BreadPointID
+                , TransactionType: TransactionType, Status: Status, pageNumber: PageNumber, pageSize: PageSize);
+        }
     }
 }
 

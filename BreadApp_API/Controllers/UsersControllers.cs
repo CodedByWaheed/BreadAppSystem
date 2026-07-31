@@ -23,6 +23,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<UserModel.UserInfoDTO>>> GetAllUsers([FromServices] IAuthorizationService authorizationService,int? BreadPointID = null, bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
         {
             if (BreadPointID.HasValue && BreadPointID < 1) 
@@ -52,6 +54,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<UserInfoDTO>> GetUserBy(int? UserID, Guid? PublicID, string? NationalNumber, string? Phone, [FromServices] IAuthorizationService authorizationService)
         {
             if (UserID.HasValue && UserID < 1)
@@ -91,6 +95,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<UserModel.UserInfoDTO> AddNewUser([FromBody]UserModel.UserDataDTO userDataDTO, [FromServices] SessionContextInfo sessionInfo)
         {
 
@@ -133,6 +139,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<UserInfoDTO>> UpdateUser(UserModel.UserDataDTO UserDTO, [FromServices] IAuthorizationService authorizationService , [FromServices] SessionContextInfo sessionInfo)
         {
             Access.Insert(sessionInfo);
@@ -181,6 +189,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult<UserInfoDTO> PromotinoUser(int UserID , [FromServices] SessionContextInfo sessionInfo, Users.enRole Role = Users.enRole.User )
         {
             Access.Insert(sessionInfo);
@@ -213,6 +223,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<UserInfoDTO>> ChargeUserWallet(int UserID , decimal Amount ,[FromServices] IAuthorizationService authorizationService , [FromServices] SessionContextInfo sessionInfo , string INFO = "SIMULATION")
         {
             Access.Insert(sessionInfo);
@@ -259,6 +271,8 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public ActionResult DeleteUser(int UserID, [FromServices] SessionContextInfo sessionInfo, bool HardDelete = false)
         {
             Access.Insert(sessionInfo);
