@@ -14,7 +14,7 @@ namespace BreadApp_BL
 
         public int TransactionID { get; set; } = -1;
         public Guid PublicID { get; set; } = Guid.Empty;
-        public int SenderUserID { get; set; } = -1;
+        public int? SenderUserID { get; set; } = null;
         public int? ReceiverUserID { get; set; } = null;
         public int? BreadPointID { get; set; } = null;
         public int? QRCodeID { get; set; } = null;

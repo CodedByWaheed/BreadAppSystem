@@ -30,7 +30,7 @@ namespace BreadApp_DL
         /// </summary>
         public class TransactionInfoDTO
         {
-            public TransactionInfoDTO(int TransactionID ,Guid PublicID, int SenderUserID,
+            public TransactionInfoDTO(int TransactionID ,Guid PublicID, int? SenderUserID,
                 int? ReceiverUserID, int? BreadPointID, int? QRCodeID,
                 decimal Amount, int TransactionType, int Status, DateTime? ConfirmedAt, string Notes)
             {
@@ -49,7 +49,7 @@ namespace BreadApp_DL
 
             public int TransactionID { get; set; }
             public Guid PublicID { get; set; }
-            public int SenderUserID { get; set; }
+            public int? SenderUserID { get; set; }
             public int? ReceiverUserID { get; set; }
             public int? BreadPointID { get; set; }
             public int? QRCodeID { get; set; }
@@ -98,7 +98,7 @@ namespace BreadApp_DL
         /// </summary>
         public class TransactionObjDTO
         {
-            public TransactionObjDTO(int TransactionID, Guid PublicID, int SenderUserID,
+            public TransactionObjDTO(int TransactionID, Guid PublicID, int? SenderUserID,
                 int? ReceiverUserID, int? BreadPointID, int? QRCodeID,
                 decimal Amount, int TransactionType, int Status, DateTime CreatedAt, DateTime? ConfirmedAt, string Notes)
             {
@@ -118,7 +118,7 @@ namespace BreadApp_DL
 
             public int TransactionID { get; set; }
             public Guid PublicID { get; set; }
-            public int SenderUserID { get; set; }
+            public int? SenderUserID { get; set; }
             public int? ReceiverUserID { get; set; }
             public int? BreadPointID { get; set; }
             public int? QRCodeID { get; set; }

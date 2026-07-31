@@ -180,7 +180,7 @@ namespace BreadApp_API.Controllers
         
         
         
-        [HttpPut("Deposit", Name = "DepositBreadPointWallet")]
+        [HttpPut("Withdraw", Name = "DepositBreadPointWallet")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -207,7 +207,7 @@ namespace BreadApp_API.Controllers
 
             Transactions transactions = new Transactions
             {
-                SenderUserID = BreadPoint.BreadPointID,
+                BreadPointID = BreadPoint.BreadPointID,
                 Amount = Amount,
                 TransactionType = Transactions.enTransactionType.Withdraw,
                 Status = Transactions.enStatus.Pending,
