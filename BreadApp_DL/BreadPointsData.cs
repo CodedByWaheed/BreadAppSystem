@@ -290,10 +290,10 @@ namespace BreadApp_DL
                 cmd.Parameters.AddWithValue("@Address", breadPoint.Address ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@PhoneNumber", breadPoint.PhoneNumber ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@AvailablePortions", breadPoint.AvailablePortions);
-                cmd.Parameters.AddWithValue("@WalletBalance", breadPoint.WalletBalance);
+                cmd.Parameters.AddWithValue("@WalletBalance", breadPoint.BPWalletBalance);
                 cmd.Parameters.AddWithValue("@Latitude", breadPoint.Latitude ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Longitude", breadPoint.Longitude ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@IsActive", breadPoint.IsActive);
+                cmd.Parameters.AddWithValue("@IsActive", breadPoint.BPIsActive);
 
                 var outputParam = new SqlParameter()
                 {

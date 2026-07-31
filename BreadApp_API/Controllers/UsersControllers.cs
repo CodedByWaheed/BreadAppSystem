@@ -25,12 +25,12 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<UserModel.UserInfoDTO>>> GetAllUsers([FromServices] IAuthorizationService authorizationService,int? BreadPointID = null, bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
         {
-            if (BreadPointID.HasValue && BreadPointID < 1)
+            if (BreadPointID.HasValue && BreadPointID < 1) 
                 return BadRequest("Invalid Bread Point ID.");
 
             var BreadPoint = BreadPoints.GetBreadPointBy(BreadPointID: BreadPointID);
             if(BreadPoint == null)
-                return NotFound("Bread Point not found.");
+                return NotFound("Bread Point not found.....");
 
             var authResult = await authorizationService.AuthorizeAsync(
                 User,

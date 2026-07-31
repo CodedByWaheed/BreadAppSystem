@@ -140,7 +140,6 @@ namespace BreadApp_BL
                 default:
                     return false;
             }
-            return false;
         }
 
         public bool Delete(SessionContextInfo sessionInfo,bool HardDelete = false)

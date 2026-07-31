@@ -14,16 +14,16 @@ namespace BreadApp_API.Controllers
     [ApiController]
     public class TransactionsControllers : ControllerBase
     {
-        [HttpGet("All", Name = "GetAllTransactions")]
+        [HttpGet("AllByUser", Name = "GetAllTransactionsByUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<TransactionInfoDTO>>> GetAllTransactions(
+        public async Task<ActionResult<IEnumerable<TransactionInfoDTO>>> GetAllTransactionsByUser(
             [FromServices] IAuthorizationService authorizationService, int? SenderUserID,
             int? BreadPointID = null,
-            int? TransactionType = null, int? Status = null,
+            Transactions.enTransactionType? TransactionType = null, Transactions.enStatus? Status = null,
             int PageNumber = 1, int PageSize = 10)
         {
             if (SenderUserID == null)
@@ -31,7 +31,7 @@ namespace BreadApp_API.Controllers
 
             var transactionList = Transactions.GetAllTransactions(
                 SenderUserID: SenderUserID, BreadPointID: BreadPointID,
-                TransactionType: TransactionType, Status: Status,
+                TransactionType: (int?)TransactionType, Status: (int?)Status,
                 PageNumber: PageNumber, PageSize: PageSize);
 
             //int? ID = transactionList.FirstOrDefault(T => T.SenderUserID == UserID)?.SenderUserID;
@@ -48,6 +48,28 @@ namespace BreadApp_API.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("All", Name = "GetAllTransactions")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<IEnumerable<TransactionInfoDTO>> GetAllTransactions(
+            [FromServices] IAuthorizationService authorizationService, int? SenderUserID,
+            int? BreadPointID = null,
+            Transactions.enTransactionType? TransactionType = Transactions.enTransactionType.TopApp, 
+            Transactions.enStatus? Status = Transactions.enStatus.Pending,
+            int PageNumber = 1, int PageSize = 10)
+        {
+
+            var transactionList = Transactions.GetAllTransactions(
+                SenderUserID: SenderUserID, BreadPointID: BreadPointID,
+                TransactionType: (int?)TransactionType, Status: (int?)Status,
+                PageNumber: PageNumber, PageSize: PageSize);
+
+            return Ok(transactionList);
+        }
 
 
         [HttpGet("By", Name = "GetTransaction")]

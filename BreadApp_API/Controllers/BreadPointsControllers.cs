@@ -114,11 +114,14 @@ namespace BreadApp_API.Controllers
             if (BP == null)
                 return NotFound("BreadPoint Not Found");
 
-            BP.IsActive = Activate!.Value;
+            BP.BPIsActive = Activate!.Value;
 
             if (BP.Save(sessionInfo))
             {
-                return Ok("Bread Point Activated Successfully");
+                return Ok(new
+                {
+                    Success = true
+                });
             }
             return BadRequest("Bread Point Failed to Activate.");
         }
