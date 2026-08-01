@@ -1,4 +1,5 @@
 ﻿
+using BCrypt.Net;
 using BreadApp_BL;
 using BreadApp_DL;
 using BreadApp_Struct.Common;
@@ -86,6 +87,7 @@ namespace BreadApp_API.Controllers
                 return BadRequest("Error in Phone, Number must be at least 10 digits.");
 
             BreadPoints breadPoint = new BreadPoints(breadPointDTO, BreadPoints.enMode.Add);
+            breadPoint.PasswordHash = BCrypt.Net.BCrypt.HashPassword(breadPointDTO.Password);
             breadPoint.Role = "BreadPoint";
             breadPoint.IsActive = false;
 
