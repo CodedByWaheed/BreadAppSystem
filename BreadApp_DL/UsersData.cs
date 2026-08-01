@@ -294,6 +294,7 @@ namespace BreadApp_DL
                     cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash );
                     cmd.Parameters.AddWithValue("@WifeNationalNum", user.WifeNational??(object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@HusbNationalNum", user.HusbNational ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Role", user.Role);
                     cmd.Parameters.AddWithValue("@IsActive", true);
                     var outputParam = new SqlParameter("@NewUserID", SqlDbType.Int)
                     {
