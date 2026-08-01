@@ -76,10 +76,13 @@ namespace BreadApp_API.Controllers
 
             if (qrCode == null)
                 return NotFound("QR Code Not Found");
+            BreadPoints? BP = BreadPoints.Find(qrCode.BreadPointID);
+            if (BP == null)
+                return BadRequest("BreadPoint Not Found");
 
             var authResult = await authorizationService.AuthorizeAsync(
                 User,
-                qrCode.UserID,
+                BP.UserID,
                 "UserOwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -132,9 +135,12 @@ namespace BreadApp_API.Controllers
 
             if (qr == null)
                 return BadRequest("Qr does not Exist.");
+            BreadPoints? BP = BreadPoints.Find(qr.BreadPointID);
+            if (BP == null)
+                return BadRequest("BreadPoint Not Found");
             var authResult = await authorizationService.AuthorizeAsync(
                 User,
-                qr.UserID,
+                BP.UserID,
                 "UserOwnerOrAdmin");
             if (!authResult.Succeeded)
                 return Forbid(); // 403

@@ -10,7 +10,7 @@ public class UserOwnerOrAdminHandler : AuthorizationHandler<UserOwnerOrAdminRequ
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
         UserOwnerOrAdminRequirement requirement,
-        int studentId)
+        int UserID)
     {
         // Admin override
         if (context.User.IsInRole("Admin"))
@@ -23,7 +23,7 @@ public class UserOwnerOrAdminHandler : AuthorizationHandler<UserOwnerOrAdminRequ
         var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (int.TryParse(userId, out int authenticatedStudentId) &&
-            authenticatedStudentId == studentId)
+            authenticatedStudentId == UserID)
         {
             context.Succeed(requirement);
         }
