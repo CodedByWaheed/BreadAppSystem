@@ -52,7 +52,18 @@ namespace StudentApi.Controllers
                 }, sessionInfo);
                 return Unauthorized("Invalid credentials");
             }
-            
+
+            if (UserObjDTO.IsActive == false)
+            {
+
+                Auth.InsertAuthAction(new
+                AuthModel.AuthDTO
+                {
+                    UsernameAttempted = request.NaionalNumber,
+                    Action = false
+                }, sessionInfo);
+                return Unauthorized("Account is inactive, please contact support");
+            }
             Users User = new Users(UserObjDTO);
 
             // Step 3: Create claims that represent the authenticated user's identity.
