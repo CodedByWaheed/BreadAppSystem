@@ -283,7 +283,7 @@ namespace BreadApp_API.Controllers
             if (user == null)
                 return BadRequest("User Not found");
 
-            if (user.DeleteUser(HardDelete: false , sessionInfo:sessionInfo))
+            if (user.DeleteUser(HardDelete: HardDelete , sessionInfo:sessionInfo))
                 return Ok("User Deleted Successfully");
 
             return BadRequest("Some error Occured .");
