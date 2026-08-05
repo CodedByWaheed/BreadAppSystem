@@ -25,7 +25,7 @@ namespace BreadApp_DL
         public class QrInfoDTO
         {
             public QrInfoDTO(int QRCodeID, Guid PublicID, int UserID, int BreadPointID,
-                int PortionCount, int Status, byte[] Token,
+                int PortionCount, int Status, /*byte[] Token,*/
                 DateTime CreatedAt, DateTime ExpiresAt, DateTime? ScannedAt, bool IsScanned)
             {
                 this.QRCodeID = QRCodeID;
@@ -34,7 +34,7 @@ namespace BreadApp_DL
                 this.BreadPointID = BreadPointID;
                 this.PortionCount = PortionCount;
                 this.Status = Status;
-                this.Token = Token;
+                //this.Token = Token;
                 this.CreatedAt = CreatedAt;
                 this.ExpiresAt = ExpiresAt;
                 this.ScannedAt = ScannedAt;
@@ -47,7 +47,7 @@ namespace BreadApp_DL
             public int BreadPointID { get; set; }
             public int PortionCount { get; set; }
             public int Status { get; set; }
-            public byte[] Token { get; set; }
+            //public byte[] Token { get; set; }
             public DateTime CreatedAt { get; set; }
             public DateTime ExpiresAt { get; set; }
             public DateTime? ScannedAt { get; set; }
@@ -109,7 +109,7 @@ namespace BreadApp_DL
                 BreadPointID: reader.GetInt32(reader.GetOrdinal("BreadPointID")),
                 PortionCount: reader.GetInt32(reader.GetOrdinal("PortionCount")),
                 Status: reader.GetInt32(reader.GetOrdinal("Status")),
-                Token: reader.IsDBNull(reader.GetOrdinal("Token"))? null : (byte[])reader["Token"],
+                //Token: reader.IsDBNull(reader.GetOrdinal("Token"))? null : (byte[])reader["Token"],
                 CreatedAt: reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                 ExpiresAt: reader.GetDateTime(reader.GetOrdinal("ExpiresAt")),
                 ScannedAt: reader.IsDBNull(reader.GetOrdinal("ScannedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ScannedAt")),
