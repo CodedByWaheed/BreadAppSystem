@@ -17,6 +17,15 @@ namespace BreadApp_Struct.Models
             public int? ActiveDistributionPoints { get; set; }
             public int? TotalUsers { get; set; }
         }
+        public class BreadPointStatisticsDTO
+        {
+            public int? TotalOrders { get; set; }
+            public int? Waiting { get; set; }
+            public int? Deliviered { get; set; }
+            public int? Cancelled { get; set; }
+            public int? Expired { get; set; }
+            public decimal? TotalMoneyRecived { get; set; }
+        }
         public class LogsStatisticsDTO
         {
             public int? TotalLoginToday { get; set; }

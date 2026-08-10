@@ -17,6 +17,10 @@ namespace BreadApp_BL
         public static StatisticsModel.LogsStatisticsDTO? GetLogsStatistics()
         {
             return StatisticsData.GetLogStatistics();
-        }   
+        }
+        public static StatisticsModel.BreadPointStatisticsDTO? GetBreadPointStatistics(int BreadPointID)
+        {
+            return StatisticsData.GetBreadPointStatistics(BreadPointID);
+        }
     }
 }

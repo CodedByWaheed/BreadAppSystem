@@ -54,6 +54,26 @@ namespace BreadApp_DL
             }
             return null;
         }
+        public static StatisticsModel.BreadPointStatisticsDTO? GetBreadPointStatistics(int BreadPointID)
+        {
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("usp_GetBreadPointStatistics", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
+
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        return MapToBreadPointStatistics(reader);
+                    }
+
+                }
+            }
+            return null;
+        }
 
         //-----------------------------/////////////MAPPER/////////////------------------------------
         private static StatisticsModel.AdminStatisticsDTO MapToAdminStatistics(SqlDataReader reader)
@@ -79,6 +99,20 @@ namespace BreadApp_DL
                 SuspiciousActivities = reader.GetInt32(reader.GetOrdinal("SuspiciousActivities"))
             };
         }
+        private static StatisticsModel.BreadPointStatisticsDTO MapToBreadPointStatistics(SqlDataReader reader)
+        {
+            return new StatisticsModel.BreadPointStatisticsDTO
+            {
+                TotalOrders = reader.GetInt32(reader.GetOrdinal("TotalOrders")),
+                Waiting = reader.GetInt32(reader.GetOrdinal("Waiting")),
+                Deliviered = reader.GetInt32(reader.GetOrdinal("Delivered")),
+                Cancelled = reader.GetInt32(reader.GetOrdinal("Cancelled")),
+                Expired = reader.GetInt32(reader.GetOrdinal("Expired")),
+                TotalMoneyRecived = reader.GetDecimal(reader.GetOrdinal("TotalRecivedToday"))
+
+            };
+        }
+
     }
 }
 
