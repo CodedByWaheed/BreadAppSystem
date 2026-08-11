@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using static BreadApp_DL.UserModel;
+using static BreadApp_Struct.Models.UserModel;
 
 namespace BreadApp_BL
 {
@@ -159,9 +160,14 @@ namespace BreadApp_BL
         {
             return UsersData.DeleteUser(UserID,sessionInfo, HardDelete);
         }
-        public static List<UserModel.UserInfoDTO> GetAllUsers(int? BreadPointID, bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
+
+        public static List<UserByBreadPointDTO> GetAllUsers(int?BreadPointID , int PageNumber = 1, int PageSize = 10)
         {
-            return UsersData.GetUsers(BreadPointID, IsActive, PageNumber, PageSize, true);
+            return UsersData.GetUsers(BreadPointID, PageNumber, PageSize);
+        }
+        public static List<UserModel.UserInfoDTO> GetAllUsers( bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
+        {
+            return UsersData.GetUsers(IsActive, PageNumber, PageSize , endUser:true);
         }
         public static UserModel.UserObjDTO? GetUserBy(int? UserID = null, Guid? PublicID = null, String? NationalNumber = null, string? Phone = null)
         {

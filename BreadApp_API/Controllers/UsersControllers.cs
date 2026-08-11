@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography.Xml;
 using static BreadApp_DL.UserModel;
+using static BreadApp_Struct.Models.UserModel;
 
 namespace BreadApp_API.Controllers
 {
@@ -16,7 +17,7 @@ namespace BreadApp_API.Controllers
     [ApiController]
     public class UsersControllers : ControllerBase
     {
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("All", Name = "GetAllUsers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -25,13 +26,29 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<IEnumerable<UserModel.UserInfoDTO>>> GetAllUsers([FromServices] IAuthorizationService authorizationService,int? BreadPointID = null, bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
+        public ActionResult<IEnumerable<UserModel.UserInfoDTO>> GetAllUsers(bool? IsActive = true, int PageNumber = 1, int PageSize = 10 )
         {
-            if (BreadPointID.HasValue && BreadPointID < 1) 
+            return Ok(Users.GetAllUsers(IsActive ,PageNumber, PageSize ));
+        }
+
+
+
+       
+        [HttpGet("AllByBreadPoint", Name = "GetAllUsersByBreadPoint")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<UserByBreadPointDTO>>> GetAllUsersByBreadPoint([FromServices] IAuthorizationService authorizationService, int? BreadPointID = null, int PageNumber = 1, int PageSize = 10)
+        {
+            if (BreadPointID.HasValue && BreadPointID < 1)
                 return BadRequest("Invalid Bread Point ID.");
 
             var BreadPoint = BreadPoints.GetBreadPointBy(BreadPointID: BreadPointID);
-            if(BreadPoint == null)
+            if (BreadPoint == null)
                 return NotFound("Bread Point not found.....");
 
             var authResult = await authorizationService.AuthorizeAsync(
@@ -42,12 +59,14 @@ namespace BreadApp_API.Controllers
             if (!authResult.Succeeded)
                 return Forbid(); // 403
 
-            return Ok(Users.GetAllUsers(BreadPointID ,IsActive ,PageNumber, PageSize ));
+            return Ok(Users.GetAllUsers(BreadPointID, PageNumber, PageSize));
         }
 
 
 
-        
+
+
+
         [HttpGet("By", Name = "GetUserBy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
