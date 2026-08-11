@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Protocols;
 using System.Configuration;
 using System.Data;
 using static BreadApp_DL.UserModel;
+using static BreadApp_Struct.Models.UserModel;
 
 namespace BreadApp_DL
 {
@@ -179,6 +180,20 @@ namespace BreadApp_DL
                     Role: reader.GetString(reader.GetOrdinal("Role"))
                 );
         }
+        private static UserByBreadPointDTO MapRowUserByBreadPoint(SqlDataReader reader)
+        {
+            return new UserByBreadPointDTO(
+                    UserID: reader.GetInt32(reader.GetOrdinal("UserID")),
+                    NationalNumber: reader.GetString(reader.GetOrdinal("NationalNumber")),
+                    FullName: reader.GetString(reader.GetOrdinal("FullName")),
+                    CreatedAt: reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                    IsScanned: reader.GetBoolean(reader.GetOrdinal("IsScanned")),
+                    ScannedAt: reader.IsDBNull(reader.GetOrdinal("ScannedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ScannedAt"))
+                );
+        }
+
+
+
 
         public static UserObjDTO? GetUserBy(int? UserID  = null , Guid? PublicID = null ,
             String? NationalNumber = null, string? Phone = null)
@@ -214,7 +229,7 @@ namespace BreadApp_DL
             return null;
         }
 
-        public static List<UserModel.UserObjDTO> GetUsers(int? BreadPointID , bool? IsActive = true, int pageNumber = 1, int pageSize = 10)
+        public static List<UserModel.UserObjDTO> GetUsers(bool? IsActive = true, int pageNumber = 1, int pageSize = 10)
         {
            
             var UserList = new List<UserObjDTO>();
@@ -226,7 +241,6 @@ namespace BreadApp_DL
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@PageNumber", pageNumber< 1 ? 1 : pageNumber);
                     cmd.Parameters.AddWithValue("@PageRow", pageSize<1 ? 10 : pageSize);
-                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
                     cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
 
                     conn.Open();
@@ -243,7 +257,40 @@ namespace BreadApp_DL
             return UserList;
         }
 
-        public static List<UserModel.UserInfoDTO> GetUsers(int? BreadPointID, bool? IsActive = true, int pageNumber = 1, int pageSize = 10 ,bool EndUser = false)
+        public static List<UserByBreadPointDTO> GetUsers(int? BreadPointID, int pageNumber = 1, int pageSize = 10)
+        {
+
+            var UserList = new List<UserByBreadPointDTO>();
+
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_Users_Get", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
+                    cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
+                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
+                    var OutputParam = new SqlParameter("@RecordCount", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(OutputParam);
+
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        UserList.Add(MapRowUserByBreadPoint(reader));
+                    }
+                }
+
+            }
+
+            return UserList;
+        }
+
+        public static List<UserModel.UserInfoDTO> GetUsers(bool? IsActive = true, int pageNumber = 1, int pageSize = 10, bool endUser = false)
         {
 
             var UserList = new List<UserInfoDTO>();
@@ -255,7 +302,6 @@ namespace BreadApp_DL
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@PageNumber", pageNumber < 1 ? 1 : pageNumber);
                     cmd.Parameters.AddWithValue("@PageRow", pageSize < 1 ? 10 : pageSize);
-                    cmd.Parameters.AddWithValue("@BreadPointID", BreadPointID);
                     cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
                     var OutputParam = new SqlParameter("@RecordCount", SqlDbType.Int)
                     {
@@ -275,6 +321,10 @@ namespace BreadApp_DL
 
             return UserList;
         }
+      
+        
+        
+        
         public static int CreateUser(UserModel.UserObjDTO user , SessionContextInfo sessionInfo)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
