@@ -146,5 +146,38 @@ namespace BreadApp_API.Controllers
 
         }
 
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("Cancel/{TransactionID}", Name = "CancelTransaction")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult CancelTransaction(int TransactionID, [FromServices] SessionContextInfo sessionInfo)
+        {
+            Access.Insert(sessionInfo);
+            if (TransactionID < 1)
+                return BadRequest("ID Can't be less than 1");
+
+            Transactions? Trans = Transactions.Find(TransactionID);
+            if (Trans == null)
+                return BadRequest("Transaction not found");
+
+            Trans.Status = Transactions.enStatus.Canceled;
+
+
+            if (Trans.Confirm(sessionInfo))
+                return Ok(new
+                {
+                    Confirmed = true
+                });
+
+            return BadRequest("Transaction Confirm Failed");
+
+        }
     }
 }

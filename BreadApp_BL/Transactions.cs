@@ -166,6 +166,13 @@ namespace BreadApp_BL
 
             return false;
         }
+        public bool Cancel(SessionContextInfo sessionInfo)
+        {
+            if (this.TransactionID > 0)
+                return TransactionsData.CancelTransaction(sessionInfo: sessionInfo, TransactionID: this.TransactionID);
+
+            return false;
+        }
 
         public bool Delete(SessionContextInfo sessionInfo, bool HardDelete = false)
         {

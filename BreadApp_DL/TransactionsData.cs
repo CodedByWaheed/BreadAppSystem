@@ -380,6 +380,27 @@ namespace BreadApp_DL
                 return (int)outputParam.Value > 0;
             }
         }
+        public static bool CancelTransaction(int TransactionID, SessionContextInfo sessionInfo)
+        {
+            using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
+            using (SqlCommand cmd = new SqlCommand("sp_Transactions_Cancel", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@TransactionID", TransactionID);
+
+                var outputParam = new SqlParameter()
+                {
+                    Direction = ParameterDirection.ReturnValue
+                };
+                cmd.Parameters.Add(outputParam);
+
+                conn.Open();
+                SetSessionContext(conn, sessionInfo);
+                cmd.ExecuteNonQuery();
+                return (int)outputParam.Value > 0;
+            }
+        }
 
         public static bool UpdateTransaction(int TransactionID, SessionContextInfo sessionInfo, int? Status = null, string? Notes = null)
         {
