@@ -250,7 +250,7 @@ namespace BreadApp_API.Controllers
             if (breadPoint == null)
                 return NotFound("BreadPoint Not found");
 
-            if (breadPoint.Delete(sessionInfo, HardDelete))
+            if (breadPoint.Delete(sessionInfo, false))
                 return Ok("BreadPoint Deleted Successfully");
 
             return BadRequest("Some error Occured.");
