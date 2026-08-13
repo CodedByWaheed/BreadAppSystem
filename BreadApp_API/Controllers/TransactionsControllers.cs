@@ -170,10 +170,10 @@ namespace BreadApp_API.Controllers
             Trans.Status = Transactions.enStatus.Canceled;
 
 
-            if (Trans.Confirm(sessionInfo))
+            if (Trans.Cancel(sessionInfo))
                 return Ok(new
                 {
-                    Confirmed = true
+                    Canceled = true
                 });
 
             return BadRequest("Transaction Confirm Failed");
