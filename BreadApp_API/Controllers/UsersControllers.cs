@@ -191,7 +191,7 @@ namespace BreadApp_API.Controllers
             user.PasswordHash = string.IsNullOrEmpty(UserDTO.Password)? user.PasswordHash : BCrypt.Net.BCrypt.HashPassword(UserDTO.Password); ;
             user.WifeNational = string.IsNullOrEmpty(UserDTO.WifeNational) ? user.WifeNational : UserDTO.WifeNational;
             user.HusbNational = string.IsNullOrEmpty(UserDTO.HusbNational) ? user.HusbNational : UserDTO.HusbNational;
-
+            user.IsActive = UserDTO.IsActive.HasValue ? UserDTO.IsActive.Value : user.IsActive;
 
             if (user.Save(sessionInfo))
             {
@@ -200,6 +200,8 @@ namespace BreadApp_API.Controllers
             return BadRequest("Falied to Update User.");
 
         }
+
+
 
         [Authorize(Roles = "Admin")]
         [HttpPut("Promotion/{UserID}", Name = "PromotionUser")]

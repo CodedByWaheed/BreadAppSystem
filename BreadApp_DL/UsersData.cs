@@ -25,6 +25,7 @@ namespace BreadApp_DL
             public string? Password { get; set; } = null;
             public string? WifeNational { get; set; } = null;
             public string? HusbNational { get; set; } = null;
+            public bool? IsActive { get; set; } = null;
         }
         // this is what i gave for the front
         public class UserInfoDTO
