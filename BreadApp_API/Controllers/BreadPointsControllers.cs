@@ -87,10 +87,32 @@ namespace BreadApp_API.Controllers
                 return BadRequest("Error in Phone, Number must be at least 10 digits.");
 
             BreadPoints breadPoint = new BreadPoints(breadPointDTO, BreadPoints.enMode.Add);
-            if(breadPointDTO.Password != null)
+
+            var user = Users.Find(breadPoint.UserID);
+            breadPoint.PublicID = user.PublicID;
+            breadPoint.NationalNumber = user.NationalNumber;
+            breadPoint.FirstName = user.FirstName;
+            breadPoint.SecondName = user.SecondName;
+            breadPoint.LastName = user.LastName;
+            breadPoint.DateOfBirth = user.DateOfBirth;
+            breadPoint.MaritalStatus = user.MaritalStatus;
+            breadPoint.FamilyNumber = user.FamilyNumber;
+            breadPoint.Phone = user.Phone;
+            breadPoint.PasswordHash = user.PasswordHash;
+            breadPoint.WalletBalance = user.WalletBalance;
+            breadPoint.WifeNational = user.WifeNational;
+            breadPoint.HusbNational = user.HusbNational;
+            breadPoint.IsActive = user.IsActive;
+            breadPoint.RefreshTokenHash = user.RefreshTokenHash;
+            breadPoint.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            breadPoint.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
+           
+
+            if (breadPointDTO.Password != null)
                 breadPoint.PasswordHash = BCrypt.Net.BCrypt.HashPassword(breadPointDTO.Password);
+            
             breadPoint.Role = "BreadPoint";
-            breadPoint.IsActive = false;
+            breadPoint.BPIsActive = true;
 
             if (breadPoint.Save(sessionInfo))
             {
@@ -156,6 +178,7 @@ namespace BreadApp_API.Controllers
                 return BadRequest("BreadPointID is required.");
 
             BreadPoints? breadPoint = BreadPoints.Find(breadPointDTO.BreadPointID);
+           
             if (breadPoint == null)
                 return NotFound($"BreadPoint with id {breadPointDTO.BreadPointID} not found.");
 
@@ -195,6 +218,7 @@ namespace BreadApp_API.Controllers
         {
             Access.Insert(sessionInfo);
             BreadPoints? BreadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
+            
 
             if (BreadPoint == null)
             {
@@ -249,9 +273,18 @@ namespace BreadApp_API.Controllers
             BreadPoints? breadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
             if (breadPoint == null)
                 return NotFound("BreadPoint Not found");
+            
 
-            if (breadPoint.Delete(sessionInfo, false))
-                return Ok("BreadPoint Deleted Successfully");
+            breadPoint.Role = HardDelete ? "User":"BreadPoint";
+
+            if (breadPoint.Save(sessionInfo))
+            {
+                if (breadPoint.Delete(sessionInfo, HardDelete))
+                    return Ok("BreadPoint Deleted Successfully");
+            }
+           
+
+            
 
             return BadRequest("Some error Occured.");
         }

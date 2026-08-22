@@ -33,7 +33,7 @@ namespace BreadApp_BL
         /// besides UserID, which is needed to know who owns this BreadPoint.
         /// </summary>
         public BreadPoints(BreadPointModel.BreadPointDataDTO BreadPointDTO, enMode Mode = enMode.Update)
-            :base((UserModel.UserDataDTO)BreadPointDTO ,(Users.enMode)Mode)
+            :base((UserModel.UserDataDTO)BreadPointDTO ,Users.enMode.Update)
         {
             
             this.BreadPointID = BreadPointDTO.BreadPointID.HasValue ? BreadPointDTO.BreadPointID.Value : -1;
@@ -122,8 +122,8 @@ namespace BreadApp_BL
 
         public bool Save(SessionContextInfo sessionInfo)
         {
-            if(_Mode == enMode.Add)
-                base.Save(sessionInfo); // Save the inherited User fields first, then handle the BreadPoint-specific fields.
+            
+            base.Save(sessionInfo); // Save the inherited User fields first, then handle the BreadPoint-specific fields.
 
             switch (_Mode)
             {
@@ -183,9 +183,28 @@ namespace BreadApp_BL
         public static BreadPoints? Find(int? BreadPointID = null, Guid? PublicID = null , string? Name = null)
         {
             var dto = BreadPointsData.GetBreadPointObjBy(BreadPointID: BreadPointID, PublicID: PublicID, Name: Name);
+
             if (dto == null)
                 return null;
-
+            var user = Users.Find(dto.UserID);
+            dto.PublicID = user.PublicID;
+            dto.NationalNumber = user.NationalNumber;
+            dto.FirstName = user.FirstName;
+            dto.SecondName = user.SecondName;
+            dto.LastName = user.LastName;
+            dto.DateOfBirth = user.DateOfBirth;
+            dto.MaritalStatus = user.MaritalStatus;
+            dto.FamilyNumber = user.FamilyNumber;
+            dto.Phone = user.Phone;
+            dto.PasswordHash = user.PasswordHash;
+            dto.WalletBalance = user.WalletBalance;
+            dto.WifeNational = user.WifeNational;
+            dto.HusbNational = user.HusbNational;
+            dto.IsActive = user.IsActive;
+            dto.RefreshTokenHash = user.RefreshTokenHash;
+            dto.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            dto.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
+            dto.Role = user.Role;
             return new BreadPoints(dto);
         }
     }
