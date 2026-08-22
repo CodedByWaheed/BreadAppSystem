@@ -87,10 +87,33 @@ namespace BreadApp_API.Controllers
                 return BadRequest("Error in Phone, Number must be at least 10 digits.");
 
             BreadPoints breadPoint = new BreadPoints(breadPointDTO, BreadPoints.enMode.Add);
+            
+
+            Users user = Users.Find(breadPoint.UserID);
+            breadPoint.PublicID = user.PublicID;
+            breadPoint.NationalNumber = user.NationalNumber;
+            breadPoint.FirstName = user.FirstName;
+            breadPoint.SecondName = user.SecondName;
+            breadPoint.LastName = user.LastName;
+            breadPoint.DateOfBirth = user.DateOfBirth;
+            breadPoint.MaritalStatus = user.MaritalStatus;
+            breadPoint.FamilyNumber = user.FamilyNumber;
+            breadPoint.Phone = user.Phone;
+            breadPoint.PasswordHash = user.PasswordHash;
+            breadPoint.WalletBalance = user.WalletBalance;
+            breadPoint.WifeNational = user.WifeNational;
+            breadPoint.HusbNational = user.HusbNational;
+            breadPoint.IsActive = user.IsActive;
+            breadPoint.RefreshTokenHash = user.RefreshTokenHash;
+            breadPoint.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            breadPoint.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
+
+
             if(breadPointDTO.Password != null)
                 breadPoint.PasswordHash = BCrypt.Net.BCrypt.HashPassword(breadPointDTO.Password);
+            
             breadPoint.Role = "BreadPoint";
-            breadPoint.IsActive = false;
+            breadPoint.IsActive = true;
 
             if (breadPoint.Save(sessionInfo))
             {
@@ -122,7 +145,25 @@ namespace BreadApp_API.Controllers
                 return BadRequest("Name Can't be less than 2 characters.");
 
             BreadPoints? BP = BreadPoints.Find (BreadPointID: BreadPointID ?? null, PublicID: PublicID ?? null, Name: Name ?? null);
-
+            Users user = Users.Find(BP.UserID);
+            BP.PublicID = user.PublicID;
+            BP.NationalNumber = user.NationalNumber;
+            BP.FirstName = user.FirstName;
+            BP.SecondName = user.SecondName;
+            BP.LastName = user.LastName;
+            BP.DateOfBirth = user.DateOfBirth;
+            BP.MaritalStatus = user.MaritalStatus;
+            BP.FamilyNumber = user.FamilyNumber;
+            BP.Phone = user.Phone;
+            BP.PasswordHash = user.PasswordHash;
+            BP.WalletBalance = user.WalletBalance;
+            BP.WifeNational = user.WifeNational;
+            BP.HusbNational = user.HusbNational;
+            BP.IsActive = user.IsActive;
+            BP.RefreshTokenHash = user.RefreshTokenHash;
+            BP.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            BP.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
+            BP.Role = user.Role;
             if (BP == null)
                 return NotFound("BreadPoint Not Found");
 
@@ -156,6 +197,25 @@ namespace BreadApp_API.Controllers
                 return BadRequest("BreadPointID is required.");
 
             BreadPoints? breadPoint = BreadPoints.Find(breadPointDTO.BreadPointID);
+            Users user = Users.Find(breadPoint.UserID);
+            breadPoint.PublicID = user.PublicID;
+            breadPoint.NationalNumber = user.NationalNumber;
+            breadPoint.FirstName = user.FirstName;
+            breadPoint.SecondName = user.SecondName;
+            breadPoint.LastName = user.LastName;
+            breadPoint.DateOfBirth = user.DateOfBirth;
+            breadPoint.MaritalStatus = user.MaritalStatus;
+            breadPoint.FamilyNumber = user.FamilyNumber;
+            breadPoint.Phone = user.Phone;
+            breadPoint.PasswordHash = user.PasswordHash;
+            breadPoint.WalletBalance = user.WalletBalance;
+            breadPoint.WifeNational = user.WifeNational;
+            breadPoint.HusbNational = user.HusbNational;
+            breadPoint.IsActive = user.IsActive;
+            breadPoint.RefreshTokenHash = user.RefreshTokenHash;
+            breadPoint.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            breadPoint.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
+            breadPoint.Role = user.Role;
             if (breadPoint == null)
                 return NotFound($"BreadPoint with id {breadPointDTO.BreadPointID} not found.");
 
@@ -195,6 +255,25 @@ namespace BreadApp_API.Controllers
         {
             Access.Insert(sessionInfo);
             BreadPoints? BreadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
+            Users user = Users.Find(BreadPoint.UserID);
+            BreadPoint.PublicID = user.PublicID;
+            BreadPoint.NationalNumber = user.NationalNumber;
+            BreadPoint.FirstName = user.FirstName;
+            BreadPoint.SecondName = user.SecondName;
+            BreadPoint.LastName = user.LastName;
+            BreadPoint.DateOfBirth = user.DateOfBirth;
+            BreadPoint.MaritalStatus = user.MaritalStatus;
+            BreadPoint.FamilyNumber = user.FamilyNumber;
+            BreadPoint.Phone = user.Phone;
+            BreadPoint.PasswordHash = user.PasswordHash;
+            BreadPoint.WalletBalance = user.WalletBalance;
+            BreadPoint.WifeNational = user.WifeNational;
+            BreadPoint.HusbNational = user.HusbNational;
+            BreadPoint.IsActive = user.IsActive;
+            BreadPoint.RefreshTokenHash = user.RefreshTokenHash;
+            BreadPoint.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            BreadPoint.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
+            BreadPoint.Role = user.Role;
 
             if (BreadPoint == null)
             {
@@ -249,9 +328,35 @@ namespace BreadApp_API.Controllers
             BreadPoints? breadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
             if (breadPoint == null)
                 return NotFound("BreadPoint Not found");
+            Users user = Users.Find(breadPoint.UserID);
+            breadPoint.PublicID = user.PublicID;
+            breadPoint.NationalNumber = user.NationalNumber;
+            breadPoint.FirstName = user.FirstName;
+            breadPoint.SecondName = user.SecondName;
+            breadPoint.LastName = user.LastName;
+            breadPoint.DateOfBirth = user.DateOfBirth;
+            breadPoint.MaritalStatus = user.MaritalStatus;
+            breadPoint.FamilyNumber = user.FamilyNumber;
+            breadPoint.Phone = user.Phone;
+            breadPoint.PasswordHash = user.PasswordHash;
+            breadPoint.WalletBalance = user.WalletBalance;
+            breadPoint.WifeNational = user.WifeNational;
+            breadPoint.HusbNational = user.HusbNational;
+            breadPoint.IsActive = user.IsActive;
+            breadPoint.RefreshTokenHash = user.RefreshTokenHash;
+            breadPoint.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            breadPoint.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
 
-            if (breadPoint.Delete(sessionInfo, false))
-                return Ok("BreadPoint Deleted Successfully");
+            breadPoint.Role = HardDelete ? "User":"BreadPoint";
+
+            if (breadPoint.Save(sessionInfo))
+            {
+                if (breadPoint.Delete(sessionInfo, HardDelete))
+                    return Ok("BreadPoint Deleted Successfully");
+            }
+           
+
+            
 
             return BadRequest("Some error Occured.");
         }

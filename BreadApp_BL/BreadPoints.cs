@@ -33,7 +33,7 @@ namespace BreadApp_BL
         /// besides UserID, which is needed to know who owns this BreadPoint.
         /// </summary>
         public BreadPoints(BreadPointModel.BreadPointDataDTO BreadPointDTO, enMode Mode = enMode.Update)
-            :base((UserModel.UserDataDTO)BreadPointDTO ,(Users.enMode)Mode)
+            :base((UserModel.UserDataDTO)BreadPointDTO ,Users.enMode.Update)
         {
             
             this.BreadPointID = BreadPointDTO.BreadPointID.HasValue ? BreadPointDTO.BreadPointID.Value : -1;
@@ -122,8 +122,8 @@ namespace BreadApp_BL
 
         public bool Save(SessionContextInfo sessionInfo)
         {
-            if(_Mode == enMode.Add)
-                base.Save(sessionInfo); // Save the inherited User fields first, then handle the BreadPoint-specific fields.
+            
+            base.Save(sessionInfo); // Save the inherited User fields first, then handle the BreadPoint-specific fields.
 
             switch (_Mode)
             {
