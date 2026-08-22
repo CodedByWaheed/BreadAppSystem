@@ -144,7 +144,25 @@ namespace BreadApp_API.Controllers
                 return BadRequest("Name Can't be less than 2 characters.");
 
             BreadPoints? BP = BreadPoints.Find (BreadPointID: BreadPointID ?? null, PublicID: PublicID ?? null, Name: Name ?? null);
-
+            Users user = Users.Find(BP.UserID);
+            BP.PublicID = user.PublicID;
+            BP.NationalNumber = user.NationalNumber;
+            BP.FirstName = user.FirstName;
+            BP.SecondName = user.SecondName;
+            BP.LastName = user.LastName;
+            BP.DateOfBirth = user.DateOfBirth;
+            BP.MaritalStatus = user.MaritalStatus;
+            BP.FamilyNumber = user.FamilyNumber;
+            BP.Phone = user.Phone;
+            BP.PasswordHash = user.PasswordHash;
+            BP.WalletBalance = user.WalletBalance;
+            BP.WifeNational = user.WifeNational;
+            BP.HusbNational = user.HusbNational;
+            BP.IsActive = user.IsActive;
+            BP.RefreshTokenHash = user.RefreshTokenHash;
+            BP.RefreshTokenExpiresAt = user.RefreshTokenExpiresAt;
+            BP.RefreshTokenRevokedAt = user.RefreshTokenRevokedAt;
+            BP.Role = user.Role;
             if (BP == null)
                 return NotFound("BreadPoint Not Found");
 
@@ -178,7 +196,6 @@ namespace BreadApp_API.Controllers
                 return BadRequest("BreadPointID is required.");
 
             BreadPoints? breadPoint = BreadPoints.Find(breadPointDTO.BreadPointID);
-           
             if (breadPoint == null)
                 return NotFound($"BreadPoint with id {breadPointDTO.BreadPointID} not found.");
 
@@ -218,7 +235,6 @@ namespace BreadApp_API.Controllers
         {
             Access.Insert(sessionInfo);
             BreadPoints? BreadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
-            
 
             if (BreadPoint == null)
             {
@@ -273,18 +289,9 @@ namespace BreadApp_API.Controllers
             BreadPoints? breadPoint = BreadPoints.Find(BreadPointID: BreadPointID);
             if (breadPoint == null)
                 return NotFound("BreadPoint Not found");
-            
 
-            breadPoint.Role = HardDelete ? "User":"BreadPoint";
-
-            if (breadPoint.Save(sessionInfo))
-            {
-                if (breadPoint.Delete(sessionInfo, HardDelete))
-                    return Ok("BreadPoint Deleted Successfully");
-            }
-           
-
-            
+            if (breadPoint.Delete(sessionInfo, false))
+                return Ok("BreadPoint Deleted Successfully");
 
             return BadRequest("Some error Occured.");
         }
