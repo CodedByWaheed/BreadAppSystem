@@ -36,8 +36,8 @@ namespace BreadApp_API.Controllers
             if (UserID.HasValue)
                 ID = UserID;
             else if (BreadPointID.HasValue)
-                ID = QRsList.FirstOrDefault(qr => qr.BreadPointID == BreadPointID)?.UserID;
-            
+                ID = BreadPoints.Find(BreadPointID.Value)?.UserID;
+
             if (ID == null)
                 return NotFound("UserID or BreadPointID is Required");
 
