@@ -81,7 +81,7 @@ namespace BreadApp_BL
                 this.BreadPointID,
                 this.PortionCount,
                 (int)this.Status,
-                //this.Token ,
+                this.Token ,
                 this.CreatedAt ,
                 this.ExpiresAt ,
                 this.ScannedAt ?? DateTime.MinValue,
