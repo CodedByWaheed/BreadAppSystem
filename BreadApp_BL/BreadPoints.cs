@@ -1,5 +1,6 @@
 ﻿using BreadApp_DL;
 using BreadApp_Struct.Common;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace BreadApp_BL
 {
@@ -171,9 +172,9 @@ namespace BreadApp_BL
         /// </summary>
         public static BreadPointModel.BreadPointInfoDTO? GetBreadPointBy(
             int? BreadPointID = null, Guid? PublicID = null,
-            string? Name = null, bool? IsActive = null)
+            string? Name = null, bool? IsActive = null ,int? UserID = null)
         {
-            return BreadPointsData.GetBreadPointBy(BreadPointID:BreadPointID, PublicID:PublicID, Name:Name, IsActive);
+            return BreadPointsData.GetBreadPointBy(BreadPointID:BreadPointID, PublicID:PublicID, Name:Name, IsActive,UserID : UserID);
         }
 
         /// <summary>

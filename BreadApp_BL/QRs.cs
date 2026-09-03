@@ -12,6 +12,7 @@ namespace BreadApp_BL
 
         public int QRCodeID { get; set; } = -1;
         public Guid PublicID { get; set; } = Guid.Empty;
+        public string FullName { get; set; } = string.Empty;
         public int UserID { get; set; } = -1;
         public int BreadPointID { get; set; } = -1;
         public int PortionCount { get; set; } = 0;
@@ -77,6 +78,7 @@ namespace BreadApp_BL
             return new QRModel.QrInfoDTO(
                 this.QRCodeID,
                 this.PublicID,
+                this.FullName,
                 this.UserID,
                 this.BreadPointID,
                 this.PortionCount,

@@ -7,3 +7,4 @@ debug
 *.vcxproj.user
 Config.json
 Readme.md
+.env

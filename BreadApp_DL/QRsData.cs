@@ -24,12 +24,13 @@ namespace BreadApp_DL
         /// </summary>
         public class QrInfoDTO
         {
-            public QrInfoDTO(int QRCodeID, Guid PublicID, int UserID, int BreadPointID,
+            public QrInfoDTO(int QRCodeID, Guid PublicID, string FullName ,int UserID, int BreadPointID,
                 int PortionCount, int Status, byte[] Token,
                 DateTime CreatedAt, DateTime ExpiresAt, DateTime? ScannedAt, bool IsScanned)
             {
                 this.QRCodeID = QRCodeID;
                 this.PublicID = PublicID;
+                this.FullName = FullName;
                 this.UserID = UserID;
                 this.BreadPointID = BreadPointID;
                 this.PortionCount = PortionCount;
@@ -43,6 +44,7 @@ namespace BreadApp_DL
 
             public int QRCodeID { get; set; }
             public Guid PublicID { get; set; }
+            public string FullName { get; set; }
             public int UserID { get; set; }
             public int BreadPointID { get; set; }
             public int PortionCount { get; set; }
@@ -105,6 +107,7 @@ namespace BreadApp_DL
             (
                 QRCodeID: reader.GetInt32(reader.GetOrdinal("QRCodeID")),
                 PublicID: reader.GetGuid(reader.GetOrdinal("PublicID")),
+                FullName: reader.GetString(reader.GetOrdinal("FullName")),
                 UserID: reader.GetInt32(reader.GetOrdinal("UserID")),
                 BreadPointID: reader.GetInt32(reader.GetOrdinal("BreadPointID")),
                 PortionCount: reader.GetInt32(reader.GetOrdinal("PortionCount")),
@@ -263,7 +266,7 @@ namespace BreadApp_DL
                 cmd.Parameters.AddWithValue("@UserID", qrDTO.UserID);
                 cmd.Parameters.AddWithValue("@BreadPointID", qrDTO.BreadPointID);
                 cmd.Parameters.AddWithValue("@PortionCount", qrDTO.PortionCount < 1 ? 1 : qrDTO.PortionCount);
-                cmd.Parameters.AddWithValue("@PortionPrice", 3.50/*qrDTO.PortionPrice < 0 ? 3.5M : qrDTO.PortionPrice*/);
+                cmd.Parameters.AddWithValue("@PortionPrice", 3.0/*qrDTO.PortionPrice < 0 ? 3.0M : qrDTO.PortionPrice*/);
                 var outputParam = new SqlParameter("@NewToken", SqlDbType.VarBinary , 32)
                 {
                     Direction = ParameterDirection.Output

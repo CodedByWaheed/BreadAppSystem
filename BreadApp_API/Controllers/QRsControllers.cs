@@ -67,10 +67,12 @@ namespace BreadApp_API.Controllers
         {
             if (QRCodeID.HasValue && QRCodeID < 1)
                 return BadRequest("QR Code ID Cannot be less than 1");
-            if (Token == null || Token.Length < 2)
+            if (Token != null && Token.Length < 2)
                 return BadRequest("Token Can't be less than 2 characters.");
 
-            byte[] PlainToken = FromBase64Url(Token);
+            byte[]? PlainToken = null;
+            if (Token != null)
+                 PlainToken = FromBase64Url(Token);
 
             var qrCode = QRs.GetOneQRCodeBy(QRCodeID: QRCodeID ?? null, PublicID: PublicID ?? null, Token: PlainToken ?? null);
 

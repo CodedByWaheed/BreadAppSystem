@@ -42,15 +42,17 @@ namespace BreadApp_API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public ActionResult<BreadPointInfoDTO> GetBreadPointBy(int? BreadPointID, Guid? PublicID, string? Name)
+        public ActionResult<BreadPointInfoDTO> GetBreadPointBy(int? BreadPointID,int? UserID, Guid? PublicID, string? Name)
         {
             
             if (BreadPointID.HasValue && BreadPointID < 1)
                 return BadRequest("BreadPoint ID Cannot be less than 1");
+            if (UserID.HasValue && UserID < 1)
+                return BadRequest("UserID Cannot be less than 1");
             if (!string.IsNullOrEmpty(Name) && Name.Length < 2)
                 return BadRequest("Name Can't be less than 2 characters.");
 
-            var breadPoint = BreadPoints.GetBreadPointBy(BreadPointID: BreadPointID ?? null, PublicID: PublicID ?? null, Name: Name ?? null);
+            var breadPoint = BreadPoints.GetBreadPointBy(BreadPointID: BreadPointID ?? null, PublicID: PublicID ?? null, Name: Name ?? null ,UserID: UserID ??null);
 
             if (breadPoint == null)
                 return NotFound("BreadPoint Not Found");

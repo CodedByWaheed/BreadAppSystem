@@ -158,7 +158,8 @@ namespace BreadApp_DL
             int? BreadPointID = null,
             Guid? PublicID = null,
             string? Name = null,
-            bool? IsActive = true)
+            bool? IsActive = true,
+            int? UserID = null)
         {
             using (SqlConnection conn = new SqlConnection(clsConnectionSetting.ConnectionString))
             using (SqlCommand cmd = new SqlCommand("sp_BreadPoints_Get", conn))
@@ -169,6 +170,7 @@ namespace BreadApp_DL
                 cmd.Parameters.AddWithValue("@PublicID", PublicID ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Name", Name ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@IsActive", IsActive ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@UserID", UserID ?? (object)DBNull.Value);
                 var outputParam = new SqlParameter("@RecordsCount", SqlDbType.Int)
                 {
                     Direction = ParameterDirection.Output
