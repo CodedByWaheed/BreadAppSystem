@@ -62,9 +62,10 @@ namespace BreadApp_DL
 
         public class TransactionUserInfoDTO
         {
-            public TransactionUserInfoDTO(int TransactionID, Guid PublicID, string SenderUsername,
+            public TransactionUserInfoDTO(int TransactionID, Guid PublicID  , string SenderUsername,
                 string? ReceiverUsername, string? BreadPointName, int? QRCodeID,
-                decimal Amount, string TransactionType, string Status, DateTime? ConfirmedAt, string Notes)
+                decimal Amount, string TransactionType, string Status, DateTime? ConfirmedAt, string Notes,
+                int? senderUserID, int? receiverUserID)
             {
                 this.TransactionID = TransactionID;
                 this.PublicID = PublicID;
@@ -77,11 +78,15 @@ namespace BreadApp_DL
                 this.Status = Status;
                 this.ConfirmedAt = ConfirmedAt;
                 this.Notes = Notes;
+                this.SenderUserID = senderUserID;
+                this.ReceiverUserID = receiverUserID;
             }
 
             public int TransactionID { get; set; }
             public Guid PublicID { get; set; }
+            public int? SenderUserID { get; set; }
             public string? SenderName { get; set; }
+            public int? ReceiverUserID { get; set; }
             public string? ReceiverName { get; set; }
             public string? BreadPointName { get; set; }
             public int? QRCodeID { get; set; }
@@ -166,7 +171,9 @@ namespace BreadApp_DL
                 TransactionType: reader.GetString(reader.GetOrdinal("TransactionType")),
                 Status: reader.GetString(reader.GetOrdinal("Status")),
                 ConfirmedAt: reader.IsDBNull(reader.GetOrdinal("ConfirmedAt")) ? null : reader.GetDateTime(reader.GetOrdinal("ConfirmedAt")),
-                Notes: reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString(reader.GetOrdinal("Notes"))
+                Notes: reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString(reader.GetOrdinal("Notes")),
+                senderUserID: reader.IsDBNull(reader.GetOrdinal("SenderUserID")) ? null : reader.GetInt32(reader.GetOrdinal("SenderUserID")),
+                receiverUserID: reader.IsDBNull(reader.GetOrdinal("ReceiverUserID")) ? null : reader.GetInt32(reader.GetOrdinal("ReceiverUserID"))
             );
         }
 
