@@ -13,9 +13,17 @@ using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args); 
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+    throw new InvalidOperationException("Connection String is not configured.");
 
-BreadApp_DL.clsConnectionSetting.SetConnection(connectionString!);
+BreadApp_DL.clsConnectionSetting.SetConnection(connectionString);
+
+var secretKey = builder.Configuration["JWT_SECRET_KEY"] ?? 
+    throw new InvalidOperationException("JWT_SECRET_KEY is not configured.");
+
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+
+
 
 // ===============================
 // JWT Authentication Configuration
@@ -58,7 +66,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // The secret key used to validate the JWT signature.
             // This must be the same key used when generating the token.
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"))
+                Encoding.UTF8.GetBytes(secretKey))
         };
     });
 

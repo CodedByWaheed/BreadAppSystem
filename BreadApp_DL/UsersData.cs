@@ -386,7 +386,7 @@ namespace BreadApp_DL
                     
                     cmd.Parameters.AddWithValue("@RefreshTokenHash", user.RefreshTokenHash);
                     cmd.Parameters.AddWithValue("@RefreshTokenExpiresAt", user.RefreshTokenExpiresAt);
-                    cmd.Parameters.AddWithValue("@RefreshTokenRevokedAt", user.RefreshTokenRevokedAt);
+                    cmd.Parameters.AddWithValue("@RefreshTokenRevokedAt", user.RefreshTokenRevokedAt ?? (object)DBNull.Value);
 
 
                     var outputParam = new SqlParameter()
