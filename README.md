@@ -1,134 +1,83 @@
-# Bread Distribution System (Bread App)
+# BreadAppSystem
 
-## Overview
+BreadAppSystem is a .NET 8 solution for managing bread distribution workflows (beneficiaries, QR validation, distribution points, transactions, and reporting). The repository contains the primary ASP.NET Core Web API project and supporting projects.
 
-Bread App is a digital bread distribution management system designed to improve the transparency, efficiency, and accountability of bread aid programs.
+This README provides quick start instructions and common development tasks. For more details, inspect individual project folders such as BreadApp_API.
 
-The system enables organizations, bakeries, distribution centers, and beneficiaries to manage bread distribution through QR-code validation, real-time transaction tracking, and centralized administration.
+Prerequisites
+-------------
+- .NET 8 SDK
+- Visual Studio 2022/2026 or VS Code with C# tooling
+- Optional: SQL Server (or other DB) for production/local database
 
----
+Repository layout
+-----------------
+- BreadApp_API/         - ASP.NET Core Web API (primary project)
+- src/                  - Domain and infrastructure libraries (if present)
+- tests/                - Unit/integration tests (if present)
+- BreadAppSystem.slnx   - Solution file
 
-## Features
+Quick start
+-----------
+1. Clone the repository:
 
-### Beneficiary Management
+   ```bash
+   git clone https://github.com/CodedByWaheed/BreadAppSystem.git
+   cd BreadAppSystem
+   ```
 
-* Register and manage beneficiaries
-* Assign bread quotas
-* Generate unique QR codes for beneficiaries
-* View distribution history
+2. Build and run the API (command line):
 
-### QR Code Validation
+   ```bash
+   dotnet restore
+   dotnet build
+   dotnet run --project BreadApp_API
+   ```
 
-* Secure QR code generation
-* Fast QR code scanning
-* Prevent duplicate distributions
-* Real-time verification
+3. Or open BreadAppSystem.slnx in Visual Studio and run the `BreadApp_API` project.
 
-### Bread Point Management
+Configuration
+-------------
+The API uses standard ASP.NET Core configuration sources (appsettings.json, environment variables, user secrets).
 
-* Register and manage bread distribution points
-* Monitor daily distributions
-* Track inventory and activity
+- Provide a database connection string (e.g. `ConnectionStrings:DefaultConnection`).
+- Provide JWT/auth secrets if authentication is enabled.
 
-### Transaction Management
+Do not commit secrets to source control. Use environment variables or user secrets for local development.
 
-* Record bread distribution transactions
-* Transfer bread allocations
-* View transaction history
-* Audit trail for all operations
+Database / EF Core
+------------------
+If the solution uses EF Core migrations, typical commands are:
 
-### User Management
+  ```bash
+  dotnet ef migrations add <Name> --project BreadApp_API --startup-project BreadApp_API
+  dotnet ef database update --project BreadApp_API --startup-project BreadApp_API
+  ```
 
-* Role-based access control
-* Administrators
-* Distribution staff
-* Bread point operators
+Adjust project flags to match where the DbContext and startup host live.
 
-### Reporting & Analytics
+Tests
+-----
+Run all test projects with:
 
-* Daily distribution reports
-* Beneficiary activity reports
-* Bread point performance reports
-* Transaction summaries
+  ```bash
+  dotnet test
+  ```
 
----
+Common commands
+---------------
+- Build: `dotnet build`
+- Run API: `dotnet run --project BreadApp_API`
+- Run tests: `dotnet test`
 
-## System Architecture
+Contributing
+------------
+Fork, create a feature branch, add tests for changes, and open a pull request. Keep changes focused and include a clear description.
 
-### Backend
+License
+-------
+No license file is included. Add an appropriate license (for example MIT) if you intend to publish this repository.
 
-* ASP.NET Core Web API
-* SQL Server Database
-* RESTful API Architecture
-* JWT Authentication
-
-
-### Mobile Application
-
-* Flutter
-
-### Database
-
-* Microsoft SQL Server & T-Sql
-
-
-
----
-
-## Technology Stack
-
-| Layer             | Technology        |
-| ----------------- | ----------------- |
-| Mobile App        | Flutter           |
-| Backend API       | ASP.NET Core      |
-| Database          | SQL Server        |
-| Authentication    | JWT               |
-| API Communication | REST API          |
-
----
-
-## Core Workflow
-
-1. Administrator registers beneficiaries.
-2. System generates a unique QR code.
-3. Beneficiary visits a bread point.
-4. Operator scans the QR code.
-5. System validates eligibility.
-6. Distribution transaction is recorded.
-7. Reports are updated automatically.
-
----
-
-## Security Features
-
-* JWT Authentication
-* Role-Based Authorization
-* Secure API Endpoints
-* Transaction Logging
-* Duplicate Distribution Prevention
-* QR Validation Checks
-
----
-
-## Future Enhancements
-
-* SMS Notifications
-* Push Notifications
-* Multi-language Support
-* Offline Synchronization
-* AI-Based Distribution Analytics
-* Geographic Distribution Tracking
-
-
-## License
-
-This project is developed as an MVP for digital bread distribution and humanitarian aid management.
-
-## Contributors
-
-* Backend Developer
-* Flutter Developer
-
----
-
-Built to improve fairness, transparency, and efficiency in bread distribution programs.
+Contact
+-------
+Open an issue in the repository for questions or reach out to the project owner.
