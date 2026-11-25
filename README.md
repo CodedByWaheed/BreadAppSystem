@@ -45,16 +45,6 @@ The API uses standard ASP.NET Core configuration sources (appsettings.json, envi
 
 Do not commit secrets to source control. Use environment variables or user secrets for local development.
 
-Database / EF Core
-------------------
-If the solution uses EF Core migrations, typical commands are:
-
-  ```bash
-  dotnet ef migrations add <Name> --project BreadApp_API --startup-project BreadApp_API
-  dotnet ef database update --project BreadApp_API --startup-project BreadApp_API
-  ```
-
-Adjust project flags to match where the DbContext and startup host live.
 
 Tests
 -----
@@ -70,14 +60,3 @@ Common commands
 - Run API: `dotnet run --project BreadApp_API`
 - Run tests: `dotnet test`
 
-Contributing
-------------
-Fork, create a feature branch, add tests for changes, and open a pull request. Keep changes focused and include a clear description.
-
-License
--------
-No license file is included. Add an appropriate license (for example MIT) if you intend to publish this repository.
-
-Contact
--------
-Open an issue in the repository for questions or reach out to the project owner.
